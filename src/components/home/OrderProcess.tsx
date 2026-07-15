@@ -57,25 +57,33 @@ const STEPS: Step[] = [
 interface StepCardProps {
   step: Step;
   side: "left" | "right" | "mobile";
+  index: number;
 }
 
-function StepCard({ step, side }: StepCardProps) {
+function StepCard({ step, side, index }: StepCardProps) {
   const Icon = step.icon;
 
   const startX =
-    side === "left" ? -28 : side === "right" ? 28 : 0;
+    side === "left" ? -20 : side === "right" ? 20 : 0;
 
   return (
     <motion.article
       initial={{
         opacity: 0,
         x: startX,
-        y: 12,
+        y: 10,
       }}
       whileInView={{
         opacity: 1,
         x: 0,
         y: 0,
+      }}
+      whileHover={{
+        y: -4,
+        transition: {
+          duration: 0.3,
+          ease: [0.22, 1, 0.36, 1],
+        },
       }}
       viewport={{
         once: true,
@@ -84,6 +92,7 @@ function StepCard({ step, side }: StepCardProps) {
       transition={{
         duration: 0.75,
         ease: [0.22, 1, 0.36, 1],
+        delay: index * 0.08,
       }}
       className="
         group relative overflow-hidden rounded-[26px]
@@ -94,8 +103,7 @@ function StepCard({ step, side }: StepCardProps) {
         to-transparent
         p-5
         shadow-[0_18px_50px_rgba(0,0,0,0.28)]
-        transition-all duration-300
-        hover:-translate-y-1
+        transition-[border-color,background-color,box-shadow] duration-300
         hover:border-primary/40
         hover:bg-primary/[0.025]
         hover:shadow-[0_24px_60px_rgba(0,0,0,0.42),0_0_28px_rgba(255,106,0,0.06)]
@@ -202,7 +210,7 @@ export default function OrderProcess() {
                   <div className="hidden md:block">
                     {isLeft && (
                       <div className="mr-5">
-                        <StepCard step={step} side="left" />
+                        <StepCard step={step} side="left" index={index} />
                       </div>
                     )}
                   </div>
@@ -243,14 +251,14 @@ export default function OrderProcess() {
                   <div className="hidden md:block">
                     {!isLeft && (
                       <div className="ml-5">
-                        <StepCard step={step} side="right" />
+                        <StepCard step={step} side="right" index={index} />
                       </div>
                     )}
                   </div>
 
                   {/* Карточка на телефоне */}
                   <div className="ml-14 md:hidden">
-                    <StepCard step={step} side="mobile" />
+                    <StepCard step={step} side="mobile" index={index} />
                   </div>
                 </div>
               );

@@ -61,46 +61,56 @@ export default function OtherProducts() {
   const [active, setActive] = useState<DetailModalData | null>(null);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
       <SectionHeading title="Другие товары FORMIKA" />
 
-      <div className="grid sm:grid-cols-2 gap-6">
+      <div className="mx-auto grid max-w-5xl gap-5 sm:grid-cols-2">
         {PRODUCTS.map((p, i) => (
           <motion.div
             key={p.title}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{
+              y: -4,
+              transition: {
+                duration: 0.3,
+                ease: [0.22, 1, 0.36, 1],
+              },
+            }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="flex flex-col overflow-hidden rounded-2xl border border-border hover:border-primary/60 transition-colors"
+            className="group relative aspect-[4/3] overflow-hidden rounded-[26px] border border-white/10 bg-black shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-[border-color,box-shadow] duration-300 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] sm:aspect-[3/2]"
             data-testid={`card-product-${i}`}
           >
-            <div className="relative h-56 overflow-hidden group">
-              <img
-                src={p.img}
-                alt={p.title}
-                width={640}
-                height={640}
-                loading="lazy"
-                decoding="async"
-                className={`absolute inset-0 w-full h-full object-cover ${p.imagePosition ?? "object-center"} transition-transform duration-700 group-hover:scale-105`}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-              <h3 className="absolute inset-x-0 bottom-[-30px] p-6 font-serif uppercase tracking-wide text-2xl text-white">
+            <img
+              src={p.img}
+              alt={p.title}
+              width={640}
+              height={640}
+              loading="lazy"
+              decoding="async"
+              className={`absolute inset-0 h-full w-full object-cover ${p.imagePosition ?? "object-center"} transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
+
+            <button
+              type="button"
+              onClick={() => setActive(p.modal)}
+              className="absolute left-4 top-4 inline-flex max-w-[calc(100%-2rem)] items-center justify-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-2 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md transition-colors hover:border-primary/60 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-[10px] sm:tracking-[0.08em]"
+              data-testid={`btn-product-details-${i}`}
+            >
+              Подробнее <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </button>
+
+            <div className="absolute inset-x-4 bottom-4">
+              <h3 className="font-sans text-lg font-semibold leading-snug text-white sm:text-xl">
                 {p.title}
               </h3>
-            </div>
 
-            <div className="flex flex-1 flex-col p-6">
-              <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
-              <button
-                type="button"
-                onClick={() => setActive(p.modal)}
-                className="mt-5 inline-flex items-center justify-center gap-2 self-start rounded-full border border-border bg-background/60 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-foreground hover:border-primary/60 hover:text-primary transition-colors"
-                data-testid={`btn-product-details-${i}`}
-              >
-                Подробнее <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm">
+                {p.desc}
+              </p>
             </div>
           </motion.div>
         ))}

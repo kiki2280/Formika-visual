@@ -108,13 +108,13 @@ export default function WorksGallery() {
       className="relative mx-auto max-w-7xl scroll-mt-20 px-4 py-20 sm:px-6 md:py-24 lg:px-8"
     >
       {/* Заголовок блока */}
-            <SectionHeading
+      <SectionHeading
         title="Наши работы"
         subtitle="Персональные композиции, созданные по фотографиям и историям наших клиентов."
       />
 
       {/* Карточки работ */}
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {WORKS.map((work, index) => (
           <motion.div
             key={work.title}
@@ -127,7 +127,7 @@ export default function WorksGallery() {
             <button
               type="button"
               onClick={() => setActive(work.modal)}
-              className="group relative block aspect-[16/10] w-full overflow-hidden rounded-[28px] border border-white/10 bg-card text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="group relative block aspect-[4/5] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               data-testid={`card-work-${index}`}
             >
               <img
@@ -139,27 +139,26 @@ export default function WorksGallery() {
                 decoding="async"
                 className={`absolute inset-0 block h-full w-full object-cover ${
                   work.imagePosition ?? "object-center"
-                } transition-transform duration-700 ease-out group-hover:scale-[1.035]`}
+                } transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
               />
 
               {/* Мягкое затемнение изображения */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
 
-              {/* Текстовая панель */}
-              <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/55 p-4 backdrop-blur-md sm:p-5">
-                <h3 className="font-sans text-lg font-semibold leading-snug tracking-[-0.02em] text-white sm:text-xl">
+              <span className="absolute left-4 top-4 inline-flex max-w-[calc(100%-2rem)] items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-2 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md sm:text-[10px] sm:tracking-[0.08em]">
+                Подробнее
+
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </span>
+
+              <div className="absolute inset-x-4 bottom-4">
+                <h3 className="font-sans text-lg font-semibold leading-snug text-white">
                   {work.title}
                 </h3>
 
-                <p className="mt-1.5 text-sm leading-relaxed text-white/60">
+                <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm">
                   {work.desc}
                 </p>
-
-                <span className="mt-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-primary">
-                  Подробнее
-
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
               </div>
             </button>
           </motion.div>
