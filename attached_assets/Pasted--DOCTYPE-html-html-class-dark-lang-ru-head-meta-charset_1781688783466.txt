@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FORMIKA | Конфигуратор</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary": "#c6c6c7",
+                        "surface-container-high": "#2a2a2a",
+                        "outline-variant": "#5a4136",
+                        "on-primary-fixed": "#351000",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "tertiary-container": "#989999",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary": "#c8c6c5",
+                        "surface-tint": "#ffb694",
+                        "on-tertiary": "#2f3131",
+                        "primary-fixed-dim": "#ffb694",
+                        "primary-fixed": "#ffdbcc",
+                        "secondary-container": "#4a4949",
+                        "on-surface-variant": "#e2bfb0",
+                        "on-tertiary-container": "#2f3132",
+                        "surface-dim": "#131313",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "outline": "#a98a7d",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#7b2f00",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-container-highest": "#353535",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-bright": "#393939",
+                        "primary-container": "#ff6a00",
+                        "background": "#131313",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-container": "#bab8b7",
+                        "surface-variant": "#353535",
+                        "surface-container-low": "#1c1b1b",
+                        "inverse-primary": "#a14000",
+                        "surface": "#131313",
+                        "error-container": "#93000a",
+                        "on-secondary": "#313030",
+                        "primary": "#ffb694",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "on-primary-container": "#571f00",
+                        "on-background": "#e5e2e1",
+                        "on-surface": "#e5e2e1",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#571f00",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-container": "#20201f",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#313030"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-desktop": "80px",
+                        "section-gap": "120px",
+                        "container-max": "1440px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["EB Garamond"],
+                        "headline-md": ["EB Garamond"],
+                        "body-md": ["Montserrat"],
+                        "headline-lg": ["EB Garamond"],
+                        "body-lg": ["Montserrat"],
+                        "label-bold": ["Montserrat"],
+                        "button-text": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "label-bold": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "button-text": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #111111;
+            color: #e5e2e1;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .card-premium {
+            background: #1A1A1A;
+            border: 1px solid #333333;
+            transition: all 0.3s ease;
+        }
+        .card-premium:hover {
+            border-color: #FF6A00;
+            box-shadow: 0 0 20px -5px rgba(255, 106, 0, 0.2);
+        }
+        .rim-light {
+            border-left: 1px solid #FF6A00;
+            border-top: 1px solid #FF6A00;
+        }
+        .brick-float {
+            position: absolute;
+            z-index: -1;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            pointer-events: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .active-ring {
+            box-shadow: 0 0 0 2px #FF6A00;
+        }
+    </style>
+</head>
+<body class="font-body-md">
+<!-- TopNavBar -->
+<nav class="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-white/5 shadow-2xl">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="text-xl font-bold tracking-tighter text-on-surface dark:text-on-surface uppercase">FORMIKA</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant hover:text-on-surface transition-colors text-button-text font-button-text" href="#">Наши работы</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors text-button-text font-button-text" href="#">Преимущества</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 text-button-text font-button-text" href="#">Каталог</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors text-button-text font-button-text" href="#">Отзывы</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors text-button-text font-button-text" href="#">Соцсети</a>
+</div>
+<div class="flex items-center space-x-6">
+<span class="text-on-surface-variant text-button-text font-button-text cursor-pointer">RU | LV | EN</span>
+<button class="bg-primary-container text-white px-6 py-2 rounded-full font-bold hover:scale-95 transition-all duration-150">ЗАКАЗАТЬ</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative pt-24 pb-16 overflow-hidden text-center">
+<img alt="" class="brick-float w-16 opacity-40 top-20 left-10 rotate-12" data-alt="A single bright orange LEGO brick floating in a dark, atmospheric void with soft focus blur. The lighting is cinematic, highlighting the plastic texture and the iconic studs on top. Deep shadows and a high-contrast black background create a premium, collectible feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQWGE60t7OqoUtvsdtKots8rWSjWYn2CDB5M0Lrt9OOcA1aNqDwnCeqCAdyDtEYVrYS6JLABSiZCMkcozrJzZyF8YHWXLKNI3KHpUZ43G-exrt1tum5yrAosh2Ihxe2LvZ_sfQEF3_ldfiqjTfxD6v-dw24cFwXQ7mzS_RacrXgAUEa9PHHlKGI0ggWRlymPLDjf6d9q3BfEkxipBrTauIGlE7QOIJhAeTO7oP_Krbo3eWDm30n76w_7t9-hqZrjAFTs-XDeoOFWI"/>
+<img alt="" class="brick-float w-24 opacity-30 bottom-10 right-20 -rotate-45" data-alt="A high-resolution 3D render of an orange toy building block drifting through a dark, luxury-themed space. The brick has a glossy finish with subtle rim lighting. The composition is artistic, emphasizing depth and precision in a minimalist industrial setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhhtSdI21yKamVeus5iiHyJvsnAl9PJuOvKh-Hj8YvbZyep7Zr0FUOcTdl3bOn3caGH2oif_hhG3lYOAmYB_UPduKtNZmWL7Rj0uKUECFFLymw0WFttHDkj8Vl-GQOOaU9dwtcHQ4oijmwgCQWOKDPxxYeIKCSHXOHwdKEv9a9nr5Jx3eNJkrxayZb5WtWbkOycRpHdH_a1XVZAVmGBBn_vJmDCyXNrPR8PT7mydDgXDXp3AuOCBJFEPbnb-ceAMdMuXz3FsRZiOc"/>
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-6">Создайте свою уникальную композицию</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-8">Выберите детали, соберите примерный макет и отправьте заявку в Telegram.</p>
+</div>
+</header>
+<!-- Product Type Selection -->
+<section class="py-12 max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="relative rounded-2xl overflow-hidden group cursor-pointer border-2 border-primary-container h-96">
+<img alt="Рамка" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtN_i2nj-e5JLTxHpPfoxDVC_H3-n14DpenfXzXe3zt_dS4Oly4IqVOxFOjoR77T3jlmc5lAjsgZ6E5y9oKGyTrHBfy58LXnuGQaH9nupBP6_1lCKuzNqQyA6gidbanLIxvCXEw0TXXPwNvq94PLLxnYPqHm9DB40A0NpMgnEHYjFKr14s7Qb899FmQNpv9s8K9MDywX-3WV2lPFrMIhJu4ND4Vl-mj4NkdkQs7WfDiOJdgn3X19MMoI5lpatsjxOyCl2JinUNksg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-8">
+<h3 class="font-headline-md text-headline-md mb-2 text-white">Рамка</h3>
+<p class="text-white/80 text-body-md">Персонализированная картина в премиальном обрамлении</p>
+</div>
+</div>
+<div class="relative rounded-2xl overflow-hidden group cursor-pointer border-2 border-transparent hover:border-white/20 h-96">
+<img alt="Брелок" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLgyde3anLrA1R-54-50gpV8V66R8Ck-JJSpfRiPzQM3lWfBloR5yf5N-couVbA8jnwrwuzvBkpMy7y9vmL5-jz6CNiRYkUEUHEtewgDHN2hUo3PS-X4uiberMYj46kEAlp3sj2Lx1ZsSQt6OPZlFL84ZrmxLcRvP_zp-6wnaqZIYuhZYhIAa4wPm3DbrqzUkdCrCc7gmVUzumYygM1pC4iZNmu0qRJ3wgB9e95hwkI-EgLnrEv3bAq-spED1BdEX_pDsqX7h-9WA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-8">
+<h3 class="font-headline-md text-headline-md mb-2 text-white">Брелок</h3>
+<p class="text-white/80 text-body-md">Стильный аксессуар с вашими любимыми героями</p>
+</div>
+</div>
+<div class="relative rounded-2xl overflow-hidden group cursor-pointer border-2 border-transparent hover:border-white/20 h-96">
+<img alt="Кастомная фигурка" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkvWBBSiBOgCa20IplfKqIjLEjoLBPC0Vt6lcRDfyxnoLce7OwgmFSIFG4V9r6K5JwiLBPbd4TlfZhsoJcK2LeJYdRsGz4jd3aeIp34uAiq8RXmiyxV6S8SqLDwJhemVxek-pk6j-shD_XiNK0Hc0IVlF-AEU0_J-BeDKeg3i985ZB7RhmzTlSMjUo5_kB9bb_QFBF1yw9Stxg-JcwqUEfh-7WaE1SbgD2cYwViown6MTtyvs1vqsTPN2h_8ulZX7zspWaeAq53Sc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-8">
+<h3 class="font-headline-md text-headline-md mb-2 text-white">Кастомная фигурка</h3>
+<p class="text-white/80 text-body-md">Полностью уникальный персонаж по вашему фото</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Frame Configurator -->
+<section class="pb-section-gap max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left: Parts Catalog -->
+<div class="lg:col-span-3 space-y-6">
+<!-- Frame Options -->
+<div class="space-y-4 pb-6 border-b border-white/10">
+<h4 class="font-label-bold text-label-bold uppercase tracking-widest text-primary-container">Настройки рамки</h4>
+<div>
+<span class="text-xs text-on-surface-variant uppercase mb-2 block">Размер</span>
+<div class="flex space-x-2">
+<button class="flex-1 py-2 text-xs border border-primary-container bg-primary-container/10 text-white rounded">10x15</button>
+<button class="flex-1 py-2 text-xs border border-white/10 text-on-surface-variant hover:border-white/30 rounded">17x22</button>
+<button class="flex-1 py-2 text-xs border border-white/10 text-on-surface-variant hover:border-white/30 rounded">22x17</button>
+</div>
+</div>
+<div>
+<span class="text-xs text-on-surface-variant uppercase mb-2 block">Цвет</span>
+<div class="flex space-x-2">
+<button class="flex-1 py-2 text-xs border border-primary-container bg-primary-container/10 text-white rounded">Чёрная</button>
+<button class="flex-1 py-2 text-xs border border-white/10 text-on-surface-variant hover:border-white/30 rounded">Белая</button>
+</div>
+</div>
+</div>
+<!-- Lighting Options -->
+<div class="space-y-4 pb-6 border-b border-white/10">
+<h4 class="font-label-bold text-label-bold uppercase tracking-widest text-primary-container">Подсветка</h4>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 text-xs border border-white/10 text-on-surface-variant hover:border-white/30 rounded">Нет</button>
+<button class="py-2 text-xs border border-white/10 text-on-surface-variant hover:border-white/30 rounded">LED Гирлянда</button>
+<button class="py-2 text-xs border border-primary-container bg-primary-container/10 text-white rounded">LED RGB</button>
+<button class="py-2 text-xs border border-white/10 text-on-surface-variant hover:border-white/30 rounded">LED Облака</button>
+</div>
+</div>
+<div class="flex items-center justify-between mb-4 mt-6">
+<h4 class="font-label-bold text-label-bold uppercase tracking-widest text-primary-container">Элементы</h4>
+<span class="text-xs text-on-surface-variant">5 Категорий</span>
+</div>
+<div class="space-y-4 max-h-[800px] overflow-y-auto pr-2 scrollbar-hide">
+<button class="w-full bg-white/5 border border-white/10 text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center space-x-2 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-lg">person_add</span>
+<span>Добавить человечка</span>
+</button>
+<!-- Category Example: Лица -->
+<div>
+<button class="w-full flex items-center justify-between py-2 border-b border-white/5 text-on-surface group">
+<span class="font-label-bold text-sm">Персонаж 1: Лица</span>
+<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<div class="grid grid-cols-3 gap-2 pt-4">
+<div class="bg-surface-container-low p-2 rounded-lg border border-transparent hover:border-primary-container cursor-pointer transition-all active-ring">
+<div class="aspect-square bg-surface-container-high rounded-md mb-1 flex items-center justify-center">
+<span class="text-[10px] text-white/40">F-01</span>
+</div>
+<p class="text-[10px] text-center truncate">Классик</p>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg border border-transparent hover:border-primary-container cursor-pointer transition-all">
+<div class="aspect-square bg-surface-container-high rounded-md mb-1 flex items-center justify-center">
+<span class="text-[10px] text-white/40">F-02</span>
+</div>
+<p class="text-[10px] text-center truncate">Улыбка</p>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg border border-transparent hover:border-primary-container cursor-pointer transition-all">
+<div class="aspect-square bg-surface-container-high rounded-md mb-1 flex items-center justify-center">
+<span class="text-[10px] text-white/40">F-03</span>
+</div>
+<p class="text-[10px] text-center truncate">Борода</p>
+</div>
+</div>
+</div>
+<!-- Category Example: Волосы -->
+<div>
+<button class="w-full flex items-center justify-between py-2 border-b border-white/5 text-on-surface group">
+<span class="font-label-bold text-sm">Персонаж 1: Волосы</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="grid grid-cols-3 gap-2 pt-4">
+<div class="bg-surface-container-low p-2 rounded-lg border border-transparent hover:border-primary-container cursor-pointer transition-all">
+<div class="aspect-square bg-surface-container-high rounded-md mb-1 flex items-center justify-center">
+<span class="text-[10px] text-white/40">H-01</span>
+</div>
+<p class="text-[10px] text-center truncate">Брюнет</p>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg border border-transparent hover:border-primary-container cursor-pointer transition-all">
+<div class="aspect-square bg-surface-container-high rounded-md mb-1 flex items-center justify-center">
+<span class="text-[10px] text-white/40">H-02</span>
+</div>
+<p class="text-[10px] text-center truncate">Блонд</p>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg border border-transparent hover:border-primary-container cursor-pointer transition-all">
+<div class="aspect-square bg-surface-container-high rounded-md mb-1 flex items-center justify-center">
+<span class="text-[10px] text-white/40">H-03</span>
+</div>
+<p class="text-[10px] text-center truncate">Рыжий</p>
+</div>
+</div>
+</div>
+<!-- Category Example: Одежда Верх -->
+<div>
+<button class="w-full flex items-center justify-between py-4 border-b border-white/5 text-on-surface-variant hover:text-white transition-colors">
+<span class="font-label-bold text-sm uppercase">Персонаж 1: Одежда Верх</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<!-- Category Example: Одежда Низ -->
+<div>
+<button class="w-full flex items-center justify-between py-4 border-b border-white/5 text-on-surface-variant hover:text-white transition-colors">
+<span class="font-label-bold text-sm uppercase">Персонаж 1: Одежда Низ</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<!-- Others simple list -->
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between py-4 border-b border-white/5 text-on-surface-variant hover:text-white transition-colors">
+<span class="font-label-bold text-sm uppercase">Питомцы</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between py-4 border-b border-white/5 text-on-surface-variant hover:text-white transition-colors">
+<span class="font-label-bold text-sm uppercase">Аксессуары</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Center: Preview -->
+<div class="lg:col-span-6">
+<div class="sticky top-28 bg-[#1A1A1A] p-4 md:p-12 rounded-3xl border border-white/5 flex items-center justify-center min-h-[600px]">
+<div class="w-full max-w-md bg-white border-8 border-gray-200 aspect-[3/4] flex items-center justify-center p-8 relative">
+<div class="w-full h-full border border-gray-300 flex flex-col items-center justify-center bg-gray-50 relative">
+<img alt="" class="w-32 opacity-20 grayscale" data-alt="A ghosted, high-end visual representation of a custom LEGO minifigure standing against a minimalist background inside a photo frame. The figure is shown with soft, neutral lighting to indicate a preview state, with subtle technical blueprints and measurements visible in the background for a professional configurator aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg6lDFi0S6IPLo7LORTrRr-ZpXd6fFDPUyQ9-Av8kVy0f7XGMlZbMuifEO4K7jcly7S5TblAehz_327aJBgwy9YiA6iMW0P7aefWYGTNuWiJrhoUL8YFFwT_526DTV8BpJFMNhU_eD41xq4RC7N17GzGMjMRkjSt2NehrtOKqPvhU-CFVT_mS6x7sYL0nGmeWN1aMU2FAMKNjx9JPE6nNNRbRd0Z02OQHMZS4Yg9pUzfYJ6ZICYoOMWbouIr0OQzr_EAOR_tbs0a0"/>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 font-bold tracking-widest uppercase">ПРЕВЬЮ</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Summary -->
+<div class="lg:col-span-3">
+<div class="glass p-6 rounded-2xl border border-white/5">
+<h3 class="font-headline-md text-headline-md mb-6">Ваш заказ</h3>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Рамка 10x15 Чёрная</span>
+<span class="font-bold">45.00 €</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Подсветка: LED RGB</span>
+<span class="font-bold">10.00 €</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Персонаж 1: Лицо F-01, Волосы H-01, Верх C-01, Низ P-03</span>
+<span class="font-bold">20.00 €</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Питомец: P3 (Кот)</span>
+<span class="font-bold">5.00 €</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Аксессуары: Нет</span>
+<span class="font-bold">0.00 €</span>
+</div>
+<div class="pt-4 border-t border-white/10 flex justify-between items-end">
+<span class="font-label-bold uppercase tracking-widest text-xs">Итого</span>
+<span class="text-2xl font-bold text-primary-container">80.00 €</span>
+</div>
+</div>
+<p class="text-[10px] text-on-surface-variant leading-relaxed italic mb-6">
+                        Финальная цена подтверждается после согласования деталей в Telegram.
+                    </p>
+<div class="space-y-3">
+<button class="w-full bg-primary-container text-white py-4 rounded-xl font-bold flex items-center justify-center space-x-3 group hover:brightness-110 transition-all">
+<span class="material-symbols-outlined">send</span>
+<span>Открыть Telegram</span>
+</button>
+<button class="w-full bg-white/5 border border-white/10 text-white py-4 rounded-xl font-bold hover:bg-white/10 transition-all" onclick="navigator.clipboard.writeText('Рамка 10x15 Чёрная\nПодсветка: LED RGB\nПерсонаж 1: Лицо F-01, Волосы H-01, Верх C-01, Низ P-03\nПитомец: P3\nАксессуары: Нет\nКомментарий: ')">
+                            Скопировать заказ
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Keychains & Details -->
+<section class="py-section-gap bg-surface-container-lowest/50">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="grid md:grid-cols-2 gap-16">
+<!-- Keychain selection -->
+<div>
+<h2 class="font-headline-md text-headline-md mb-8">Готовые брелоки</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="card-premium p-4 rounded-2xl group cursor-pointer">
+<div class="aspect-square bg-black rounded-xl overflow-hidden mb-4">
+<img alt="Batman &amp; Shark Keychain" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A close-up photograph of several colorful custom LEGO minifigure keychains being held in a hand. The keychains feature Batman and characters in shark suits in vibrant pink, blue, and black. The scene is set outdoors with a soft bokeh background, emphasizing the playful and collectible nature of the items." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVGvKYZxwtb-eXakHMUTzAvd03buS8FlGh93HGBYEdYBufTY-eHQf8hoJC9uB6vzyr2VbA5ylr8bw-zld6lTCO_0nNo2cPxTphBTrAgmoSRHklJ5jjtPG8046fOcT1bKdqVOZjalLqUbGagdqhjvXcZgwOZZjvy4pmKVjX48ylAlBYzvrRl5xfFpZIp8eM_yyjRo2cOR1jX7ylbpXMs3zDL8U8Wn9xfG7fRVmMnK_RgYfBzFa81QKE6HktnnQ2d0sIt71CqkrtnmA"/>
+</div>
+<p class="font-label-bold text-sm">Batman &amp; Friends</p>
+<p class="text-xs text-primary-container">8.00 €</p>
+</div>
+<div class="card-premium p-4 rounded-2xl group cursor-pointer flex flex-col items-center justify-center border-dashed">
+<span class="material-symbols-outlined text-4xl mb-2 text-white/20">add_circle</span>
+<p class="text-xs font-label-bold uppercase">Собрать свой</p>
+</div>
+</div>
+</div>
+<!-- Ideas & Upload -->
+<div class="space-y-8">
+<div>
+<h2 class="font-headline-md text-headline-md mb-8">Ваши идеи и фото</h2>
+<div class="grid grid-cols-1 gap-6">
+<div class="border-2 border-dashed border-white/10 rounded-2xl p-12 text-center hover:border-primary-container/50 transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-4xl mb-4 text-white/20 group-hover:text-primary-container group-hover:scale-110 transition-all">cloud_upload</span>
+<p class="text-sm font-label-bold text-on-surface-variant">Добавить фотографии</p>
+<p class="text-[10px] text-white/20 mt-2">JPG, PNG до 10MB</p>
+</div>
+<textarea class="w-full bg-surface-container-low border border-white/5 rounded-2xl p-6 text-on-surface placeholder:text-white/20 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none min-h-[160px]" placeholder="Опишите идею, пожелания, даты и важные детали..."></textarea>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Area -->
+<section class="py-section-gap relative">
+<div class="max-w-container-max mx-auto px-margin-desktop text-center relative z-10">
+<h2 class="font-display-lg text-headline-lg mb-4">Готовы к заказу?</h2>
+<p class="text-on-surface-variant mb-12 max-w-xl mx-auto">Ваш макет почти готов. Скачайте превью или сразу переходите в диалог с нашим мастером.</p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-4">
+<button class="px-10 py-5 bg-white/5 hover:bg-white/10 rounded-xl font-bold border border-white/10 flex items-center space-x-3 transition-all">
+<span class="material-symbols-outlined">download</span>
+<span>Скачать превью</span>
+</button>
+<button class="px-10 py-5 bg-primary-container text-white rounded-xl font-extrabold flex items-center space-x-3 shadow-2xl hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span>Оформить заказ в Telegram</span>
+</button>
+</div>
+<div class="mt-16 pt-16 border-t border-white/5">
+<img alt="Formika Masters" class="mx-auto w-32 h-32 rounded-full border-4 border-primary-container shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" data-alt="A professional close-up of two custom LEGO minifigures representing a male and female creator. They are meticulously designed with unique hairstyles and outfits, standing against a neutral studio backdrop. The lighting is crisp, highlighting the fine plastic details and friendly facial expressions, embodying the brand's personal and crafted approach." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXSBvI_X6TKl0_MqETzRZJGyWCYgQWC04fBNDzB0A1_sNzU94GhBtXme002SQpzISkEd1yubrYZa2qotlgfxhGlHupsPR1MYhudh7UZlBETR01FfFpGb6FSUIiRcVVTKe8hjvx7FuVHiPn3HZLJuKz5v87Q0kIhWhA9JpzB6D3R8BPRSVNF_lEPeHhzrQiIh_5QQOAYkKFvB3NBXVZqyKkuqj9EE_Aem6arniRx90bC-zaL6eOmP1obCjkb0vDUFmz2v1ECWqCaMg"/>
+<p class="mt-4 font-label-bold text-sm tracking-widest text-primary-container">MASTERS AT WORK</p>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-white/10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<div class="space-y-6">
+<div class="text-lg font-bold text-on-surface dark:text-on-surface">FORMIKA</div>
+<p class="text-on-surface-variant text-body-md">Создаем историю в каждом кирпичике. Уникальные подарки для тех, кто ценит детали.</p>
+</div>
+<div class="space-y-4">
+<div class="font-label-bold text-primary dark:text-primary uppercase tracking-widest text-xs">Навигация</div>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Наши работы</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Преимущества</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Отзывы</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Контакты</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<div class="font-label-bold text-primary dark:text-primary uppercase tracking-widest text-xs">Соцсети</div>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Telegram</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Instagram</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Facebook</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">TikTok</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<div class="font-label-bold text-primary dark:text-primary uppercase tracking-widest text-xs">Услуги</div>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Доставка по Латвии</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Доставка по Европе</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Индивидуальные заказы</a></li>
+</ul>
+</div>
+</div>
+<div class="py-8 border-t border-white/5 text-center">
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">© 2024 FORMIKA. BCE ПРАВА ЗАЩИЩЕНЫ.</p>
+</div>
+</footer>
+<script>
+        // Micro-interaction: Parallax floating bricks based on mouse
+        document.addEventListener('mousemove', (e) => {
+            const bricks = document.querySelectorAll('.brick-float');
+            const x = (window.innerWidth - e.pageX * 2) / 100;
+            const y = (window.innerHeight - e.pageY * 2) / 100;
+
+            bricks.forEach((brick, index) => {
+                const speed = (index + 1) * 0.5;
+                brick.style.transform = `translateX(${x * speed}px) translateY(${y * speed}px) rotate(${x * 2}deg)`;
+            });
+        });
+    </script>
+</body></html>

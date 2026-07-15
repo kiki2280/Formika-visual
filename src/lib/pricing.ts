@@ -1,0 +1,42 @@
+export type DeliveryMethod = "delivery" | "pickup";
+
+export const PRICING = {
+  frame: { "10x15": 15, "17x22": 18, "22x17": 18 },
+  extraCharacter: 5,
+  lighting: {
+    "Без подсветки": 0,
+    "LED-гирлянда": 5,
+    "LED RGB": 7,
+    "LED с облаками": 12,
+  },
+  pet: 3,
+  accessory: 2,
+  heart: 0.5,
+  customBg: 5,
+  readyKeychain: 7,
+  customKeychainChar: 7,
+  delivery: 4.5,
+};
+
+export const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
+  delivery: "Доставка",
+  pickup: "Самовывоз",
+};
+
+export const PICKUP_NOTE =
+  "Самовывоз возможен в центре Риги, более точный адрес уточняется в личных сообщениях.";
+
+export function getDeliveryPrice(method: DeliveryMethod | null): number {
+  return method === "delivery" ? PRICING.delivery : 0;
+}
+
+export function formatEuro(n: number): string {
+  return Number.isInteger(n) ? `${n}€` : `${n.toFixed(2).replace(".", ",")}€`;
+}
+
+export const READY_KEYCHAINS = [
+  { id: "kb-black-batman", name: "Чёрный Бэтмен", price: 7, img: "optimized/ready-keychain-3.webp" },
+  { id: "kb-pink-batman", name: "Розовый Бэтмен", price: 7, img: "optimized/ready-keychain-4.webp" },
+  { id: "kb-blue-shark", name: "Синяя акула", price: 7, img: "optimized/ready-keychain-1.webp" },
+  { id: "kb-pink-shark", name: "Розовая акула", price: 7, img: "optimized/ready-keychain-2.webp" },
+];

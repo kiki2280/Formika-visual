@@ -1,0 +1,218 @@
+Create a modern desktop-first order builder page for FORMIKA.
+
+Design requirements:
+
+* Premium dark theme
+* Black background
+* Orange accent color #FF6A00
+* White text
+* Cormorant Garamond for headings
+* Montserrat for body text
+* Floating orange LEGO bricks across the page
+* Style must match a luxury gift brand
+
+Page title:
+
+Create Your Unique Composition
+
+Remove any large hero product image.
+
+Start directly with product selection.
+
+━━━━━━━━━━━━━━━━━━━━
+
+STEP 1
+
+Product type:
+
+* Frame
+* Keychain
+* Custom Figure
+
+Display as large image cards.
+
+━━━━━━━━━━━━━━━━━━━━
+
+FRAME BUILDER
+
+Left sidebar:
+
+Frame size:
+
+* 10x15
+* 17x22
+* 22x17
+
+Frame color:
+
+* Black
+* White
+
+Lighting:
+
+* No lighting
+* LED Garland
+* LED RGB
+* LED Clouds
+
+━━━━━━━━━━━━━━━━━━━━
+
+Characters section
+
+Button:
+
+Add Character
+
+Each character has:
+
+* Face
+* Hair
+* Top Clothing
+* Bottom Clothing
+
+Allow multiple characters.
+
+Character 1
+
+Character 2
+
+Character 3
+
+Each character has independent selections.
+
+━━━━━━━━━━━━━━━━━━━━
+
+Keep categories:
+
+* Pets
+* Accessories
+
+Remove categories:
+
+* Cars
+* Backgrounds
+
+━━━━━━━━━━━━━━━━━━━━
+
+Center area
+
+Live Preview
+
+Simple 2D preview.
+
+No zoom.
+
+No rotation.
+
+No drag and drop.
+
+Automatically place selected items.
+
+━━━━━━━━━━━━━━━━━━━━
+
+Right sidebar
+
+Your Order
+
+Show:
+
+Frame size
+
+Frame color
+
+Lighting
+
+Character 1 details
+
+Character 2 details
+
+Pets
+
+Accessories
+
+Estimated price
+
+━━━━━━━━━━━━━━━━━━━━
+
+Copy Order button
+
+Copy ALL selected options.
+
+Example:
+
+Frame 17x22
+
+Black
+
+LED RGB
+
+Character 1
+
+Face F01
+
+Hair H02
+
+Top T03
+
+Bottom B04
+
+Pet P01
+
+Accessory A02
+
+━━━━━━━━━━━━━━━━━━━━
+
+KEYCHAIN SECTION
+
+When user selects Keychain:
+
+Open modal window.
+
+Two options:
+
+* Ready-made Keychains
+* Build Your Own Keychain
+
+Ready-made:
+
+* Black Batman
+* Pink Batman
+* Blue Shark
+* Pink Shark
+
+Build your own:
+
+Face
+
+Hair
+
+Top Clothing
+
+Bottom Clothing
+
+Accessories
+
+━━━━━━━━━━━━━━━━━━━━
+
+CUSTOM FIGURE SECTION
+
+Same builder as characters.
+
+No frame.
+
+No lighting.
+
+Only figure customization.
+
+━━━━━━━━━━━━━━━━━━━━
+
+Buttons:
+
+Copy Order
+
+Open Telegram
+
+Upload Photos
+
+Desktop layout only.
+Make the page visually match the FORMIKA homepage.
