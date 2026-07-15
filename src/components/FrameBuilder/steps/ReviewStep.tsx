@@ -1,5 +1,4 @@
 import { type Dispatch, type SetStateAction } from "react";
-import { Link } from "wouter";
 import { Copy, Send } from "lucide-react";
 import {
   DELIVERY_LABELS,

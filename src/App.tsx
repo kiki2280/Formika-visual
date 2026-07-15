@@ -7,7 +7,11 @@ import NotFound from "@/pages/not-found";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import Terms from "@/pages/terms";
 
-const Toaster = lazy(() => import("@/components/ui/toaster").then((mod) => ({ default: mod.Toaster })));
+const Toaster = lazy(() =>
+  import("@/components/ui/toaster").then((mod) => ({
+    default: mod.Toaster,
+  })),
+);
 
 function Router() {
   return (
