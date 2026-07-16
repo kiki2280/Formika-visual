@@ -109,6 +109,7 @@ export default function WorksGallery() {
     >
       {/* Заголовок блока */}
       <SectionHeading
+        eyebrow="Примеры наших работ"
         title="Наши работы"
         subtitle="Персональные композиции, созданные по фотографиям и историям наших клиентов."
       />

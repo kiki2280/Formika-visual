@@ -68,6 +68,7 @@ export default function CommunityCTA() {
 
           <div className="relative">
             <SectionHeading
+              eyebrow="FORMIKA в соцсетях"
               title="Присоединяйтесь к сообществу FORMIKA"
               subtitle="Новые работы, идеи подарков и процесс создания — в наших социальных сетях."
             />

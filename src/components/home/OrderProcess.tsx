@@ -151,6 +151,7 @@ export default function OrderProcess() {
     <section className="relative overflow-hidden py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
+          eyebrow="Этапы создания"
           title="Как мы создаём ваш подарок"
           subtitle="От идеи до готовой композиции — просто и понятно."
         />

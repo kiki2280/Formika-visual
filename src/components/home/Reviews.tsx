@@ -151,6 +151,7 @@ export default function Reviews() {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
+          eyebrow="Истории наших клиентов"
           title="Отзывы клиентов"
           subtitle="Тёплые слова о персональных подарках, созданных в FORMIKA."
         />

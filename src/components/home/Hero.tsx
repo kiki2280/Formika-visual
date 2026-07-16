@@ -8,6 +8,7 @@ import {
   Sparkles,
   Truck,
 } from "lucide-react";
+import SectionHeading from "@/components/SectionHeading";
 
 const base = import.meta.env.BASE_URL;
 
@@ -64,22 +65,17 @@ export default function Hero() {
       <div className="grid items-center gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
         {/* Левая часть */}
         <div className="relative z-20">
-          <p className="mb-5 text-xs font-extrabold uppercase tracking-[0.24em] text-primary sm:text-sm">
-            Персонализированные LEGO-композиции
-          </p>
-
-          <h1 className="max-w-2xl font-serif text-3xl font-semibold leading-[1.08] tracking-normal text-white min-[390px]:text-4xl sm:text-5xl lg:text-[58px]">
-            Подарок, который
-            <br />
-            рассказывает
-            <br />
-            <span className="font-semibold text-primary">вашу историю</span>
-          </h1>
-
-          <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            Создаём персональные рамки и брелоки по вашим фотографиям —
-            с фигурками, аксессуарами, надписями и подсветкой.
-          </p>
+          <SectionHeading
+            eyebrow="Персонализированные LEGO-композиции"
+            title={"Подарок, который\nрассказывает"}
+            accentTitle="вашу историю"
+            subtitle="Создаём персональные рамки и брелоки по вашим фотографиям — с фигурками, аксессуарами, надписями и подсветкой."
+            align="left"
+            as="h1"
+            size="display"
+            animated={false}
+            className="mb-0"
+          />
 
           {/* Кнопки */}
           <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row">

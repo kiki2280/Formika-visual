@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import Navbar from "@/components/Navbar";
 import PageBackground from "@/components/PageBackground";
 import Footer from "@/components/Footer";
+import SectionHeading from "@/components/SectionHeading";
 
 interface LegalPageProps {
   title: string;
@@ -29,20 +30,22 @@ export default function LegalPage({ title, intro, sections }: LegalPageProps) {
           </Link>
 
           <div className="mt-8 rounded-3xl border border-border bg-card/75 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-xl">
-            <p className="text-primary text-xs font-semibold uppercase tracking-[0.22em] mb-4">
-              FORMIKA
-            </p>
-            <h1 className="font-serif text-[15px] font-semibold leading-tight min-[360px]:text-lg sm:text-2xl md:text-4xl lg:text-5xl">
-              {title}
-            </h1>
-            <p className="mt-5 text-sm sm:text-base text-muted-foreground leading-relaxed">
-              {intro}
-            </p>
+            <SectionHeading
+              eyebrow="FORMIKA"
+              title={title}
+              subtitle={intro}
+              align="left"
+              as="h1"
+              size="legal"
+              animated={false}
+              uppercase={false}
+              className="mb-8"
+            />
 
             <div className="mt-8 space-y-7">
               {sections.map((section) => (
                 <section key={section.title} className="border-t border-border pt-6">
-                  <h2 className="font-serif text-lg font-semibold sm:text-xl md:text-2xl">{section.title}</h2>
+                  <h2 className="font-sans text-lg font-semibold sm:text-xl md:text-2xl">{section.title}</h2>
                   <div className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed space-y-3">
                     {section.content}
                   </div>

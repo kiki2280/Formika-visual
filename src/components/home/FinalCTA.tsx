@@ -1,6 +1,7 @@
 ﻿import { Link } from "wouter";
 import { motion } from "@/lib/motion";
 import { ArrowRight, Clock3, Send } from "lucide-react";
+import SectionHeading from "@/components/SectionHeading";
 
 export default function FinalCTA() {
   return (
@@ -34,22 +35,15 @@ export default function FinalCTA() {
           <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.1] blur-[105px]" />
 
           <div className="relative">
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">
-              Ваша история — в деталях
-            </p>
-
-            <h2 className="mx-auto mt-5 max-w-3xl font-serif text-2xl font-medium uppercase leading-[1.18] tracking-normal text-white sm:text-4xl lg:text-5xl">
-              Создайте подарок,
-              <br />
-              который расскажет
-              <br />
-              <span className="text-primary">вашу историю</span>
-            </h2>
-
-            <p className="mx-auto mt-6 max-w-xl font-sans text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Выберите детали композиции, а мы аккуратно создадим ваш
-              персональный подарок.
-            </p>
+            <SectionHeading
+              eyebrow="Ваша история — в деталях"
+              title={"Создайте подарок,\nкоторый расскажет"}
+              accentTitle="вашу историю"
+              subtitle="Выберите детали композиции, а мы аккуратно создадим ваш персональный подарок."
+              size="wide"
+              animated={false}
+              className="mb-0"
+            />
 
             <div className="mt-8 flex justify-center">
               <Link

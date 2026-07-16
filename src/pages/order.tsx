@@ -44,6 +44,7 @@ export default function Order() {
           <>
             <div className="mb-10 md:mb-12">
               <SectionHeading
+                eyebrow="Начните с формата"
                 title="Создайте свою уникальную композицию"
                 subtitle="Выберите тип товара — дальше мы проведём вас по всем шагам сборки."
               />

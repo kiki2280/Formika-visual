@@ -46,6 +46,7 @@ export default function Advantages() {
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
+          eyebrow="Почему выбирают FORMIKA"
           title="Наши преимущества"
           subtitle="Простой и понятный процесс — от вашей идеи до готового подарка."
         />

@@ -62,7 +62,10 @@ export default function OtherProducts() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <SectionHeading title="Другие товары FORMIKA" />
+      <SectionHeading
+        eyebrow="Больше идей для подарка"
+        title="Другие товары FORMIKA"
+      />
 
       <div className="mx-auto grid max-w-5xl gap-5 sm:grid-cols-2">
         {PRODUCTS.map((p, i) => (

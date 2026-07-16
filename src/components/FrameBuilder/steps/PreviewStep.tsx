@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FrameOrderState } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import Preview from "../Preview";
+import SectionHeading from "@/components/SectionHeading";
 
 interface StepProps {
   state: FrameOrderState;
@@ -19,12 +20,15 @@ export default function PreviewStep({ state, onChange, onBack, onNext }: StepPro
       </div>
 
       <aside className="space-y-4 lg:sticky lg:top-28">
-        <div className="space-y-2 text-center lg:text-left">
-          <h2 className="font-serif text-2xl font-semibold sm:text-3xl">Соберите примерный макет</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Перетащите человечков, сердечки и детали фона внутри рамки.
-          </p>
-        </div>
+        <SectionHeading
+          eyebrow="Конструктор рамки"
+          title="Соберите примерный макет"
+          subtitle="Перетащите человечков, сердечки и детали фона внутри рамки."
+          align="left"
+          size="compact"
+          animated={false}
+          className="mb-0"
+        />
 
         <div className="rounded-2xl border border-primary/45 bg-primary/10 px-4 py-3 text-sm leading-relaxed text-foreground shadow-[0_12px_30px_rgba(0,0,0,0.22)] sm:px-5">
           <span className="font-semibold text-primary">Подсказка: </span>

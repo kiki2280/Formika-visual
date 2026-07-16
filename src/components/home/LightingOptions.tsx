@@ -61,7 +61,11 @@ export default function LightingOptions() {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <SectionHeading title="Варианты подсветки" subtitle="Выберите атмосферу вашей композиции" />
+      <SectionHeading
+        eyebrow="Атмосфера в деталях"
+        title="Варианты подсветки"
+        subtitle="Выберите атмосферу вашей композиции"
+      />
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {OPTIONS.map((o, i) => (

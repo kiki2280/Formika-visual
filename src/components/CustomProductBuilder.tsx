@@ -15,6 +15,7 @@ import {
 } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import DeliveryMethodSelector from "@/components/DeliveryMethodSelector";
+import SectionHeading from "@/components/SectionHeading";
 import { useToast } from "@/hooks/use-toast";
 import { CONTACTS } from "@/lib/contacts";
 import CharacterBuilder from "./CharacterBuilder";
@@ -504,16 +505,14 @@ export default function CustomProductBuilder({
 
   const renderChoice = () => (
     <div className="space-y-4">
-      <div>
-        <h2 className="font-serif text-2xl font-medium tracking-normal sm:text-3xl">
-          Брелки
-        </h2>
-
-        <p className="mt-1 text-sm text-muted-foreground">
-          Выберите готовые брелки или кастомную
-          сборку.
-        </p>
-      </div>
+      <SectionHeading
+        eyebrow="Конструктор брелока"
+        title="Брелки"
+        subtitle="Выберите готовые брелки или кастомную сборку."
+        size="compact"
+        animated={false}
+        className="mb-0"
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         {choiceCard({

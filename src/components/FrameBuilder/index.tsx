@@ -8,6 +8,7 @@ import {
 import { computeFramePricing } from "@/lib/frameOrder";
 import { Button } from "@/components/ui/button";
 import BuilderProgress from "@/components/BuilderProgress";
+import SectionHeading from "@/components/SectionHeading";
 import SizeStep from "./steps/SizeStep";
 import ColorStep from "./steps/ColorStep";
 import LightingStep from "./steps/LightingStep";
@@ -233,15 +234,14 @@ export default function FrameBuilder({
       />
 
       {!isPreviewStep && (
-        <div className="mb-8 mt-7 text-center">
-          <h2 className="font-serif text-3xl font-medium leading-tight tracking-normal text-white sm:text-4xl">
-            {current.title}
-          </h2>
-
-          <p className="mx-auto mt-2 max-w-xl font-sans text-sm leading-relaxed text-muted-foreground sm:text-base">
-            {current.subtitle}
-          </p>
-        </div>
+        <SectionHeading
+          eyebrow="Конструктор рамки"
+          title={current.title}
+          subtitle={current.subtitle}
+          size="compact"
+          animated={false}
+          className="mb-8 mt-7"
+        />
       )}
 
       <AnimatePresence mode="wait">
