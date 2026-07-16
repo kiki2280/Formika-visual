@@ -87,7 +87,7 @@ export default function LightingOptions() {
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
             </div>
             <div className="absolute inset-x-0 bottom-0 p-6">
-              <h3 className="font-serif uppercase tracking-wide text-lg md:text-xl text-white">{o.title}</h3>
+              <h3 className="font-sans text-lg font-semibold uppercase tracking-normal text-white md:text-xl">{o.title}</h3>
               <p className="mt-1 text-sm text-gray-300">{o.desc}</p>
               <button
                 type="button"

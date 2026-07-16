@@ -243,7 +243,7 @@ export default function CharacterEditor({
   return (
     <div className="relative mt-4 rounded-xl border border-border bg-card p-4">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h4 className="font-serif text-lg font-semibold">Человечек {index + 1}</h4>
+        <h4 className="font-sans text-lg font-semibold">Человечек {index + 1}</h4>
         {onRemove && (
           <Button
             variant="ghost"

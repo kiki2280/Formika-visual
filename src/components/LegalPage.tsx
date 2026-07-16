@@ -32,7 +32,7 @@ export default function LegalPage({ title, intro, sections }: LegalPageProps) {
             <p className="text-primary text-xs font-semibold uppercase tracking-[0.22em] mb-4">
               FORMIKA
             </p>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
+            <h1 className="font-serif text-[15px] font-semibold leading-tight min-[360px]:text-lg sm:text-2xl md:text-4xl lg:text-5xl">
               {title}
             </h1>
             <p className="mt-5 text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -42,7 +42,7 @@ export default function LegalPage({ title, intro, sections }: LegalPageProps) {
             <div className="mt-8 space-y-7">
               {sections.map((section) => (
                 <section key={section.title} className="border-t border-border pt-6">
-                  <h2 className="font-serif text-xl sm:text-2xl font-bold">{section.title}</h2>
+                  <h2 className="font-serif text-lg font-semibold sm:text-xl md:text-2xl">{section.title}</h2>
                   <div className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed space-y-3">
                     {section.content}
                   </div>

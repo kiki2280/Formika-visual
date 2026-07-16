@@ -68,12 +68,12 @@ export default function Hero() {
             Персонализированные LEGO-композиции
           </p>
 
-          <h1 className="max-w-2xl font-sans text-4xl font-semibold leading-[1.02] tracking-[-0.035em] text-white sm:text-5xl lg:text-[58px]">
+          <h1 className="max-w-2xl font-serif text-3xl font-semibold leading-[1.08] tracking-normal text-white min-[390px]:text-4xl sm:text-5xl lg:text-[58px]">
             Подарок, который
             <br />
             рассказывает
             <br />
-            <span className="font-bold text-primary">вашу историю</span>
+            <span className="font-semibold text-primary">вашу историю</span>
           </h1>
 
           <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">

@@ -38,7 +38,7 @@ export default function FinalCTA() {
               Ваша история — в деталях
             </p>
 
-            <h2 className="mx-auto mt-5 max-w-3xl font-serif text-3xl uppercase leading-[1.15] tracking-[0.09em] text-white sm:text-4xl lg:text-5xl">
+            <h2 className="mx-auto mt-5 max-w-3xl font-serif text-2xl font-medium uppercase leading-[1.18] tracking-normal text-white sm:text-4xl lg:text-5xl">
               Создайте подарок,
               <br />
               который расскажет

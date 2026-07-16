@@ -115,8 +115,8 @@ export default function ColorStep({
             <div className="p-5">
               <h3
                 className={`
-                  font-serif text-xl font-medium
-                  tracking-[0.01em]
+                  font-sans text-xl font-medium
+                  tracking-normal
 
                   ${
                     isSelected

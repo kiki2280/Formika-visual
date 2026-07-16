@@ -53,7 +53,7 @@ const DEFAULT_CLOTHING = {
  * Размер текста задаётся отдельно у каждого заголовка.
  */
 const HEADING_CLASS =
-  "font-serif font-medium tracking-[0.01em]";
+  "font-sans font-semibold tracking-normal";
 
 const COPY = {
   keychain: {
@@ -505,9 +505,7 @@ export default function CustomProductBuilder({
   const renderChoice = () => (
     <div className="space-y-4">
       <div>
-        <h2
-          className={`text-2xl sm:text-3xl ${HEADING_CLASS}`}
-        >
+        <h2 className="font-serif text-2xl font-medium tracking-normal sm:text-3xl">
           Брелки
         </h2>
 

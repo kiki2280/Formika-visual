@@ -92,7 +92,7 @@ export default function DetailModal({ data, onClose }: DetailModalProps) {
               <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-tight pr-12">
+            <h2 className="pr-12 font-sans text-3xl font-bold tracking-normal md:text-4xl">
               {data.title}
             </h2>
             <p className="mt-4 text-base text-muted-foreground max-w-2xl leading-relaxed">

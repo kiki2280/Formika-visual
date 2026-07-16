@@ -136,7 +136,7 @@ export default function CharacterOptionModal({
       >
         <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-4 sm:px-6">
           <div>
-            <h3 className="font-serif text-xl font-bold sm:text-2xl">{title}</h3>
+            <h3 className="font-sans text-xl font-bold sm:text-2xl">{title}</h3>
             {options && (
               <p className="mt-1 text-xs text-muted-foreground">
                 Выберите вариант из списка

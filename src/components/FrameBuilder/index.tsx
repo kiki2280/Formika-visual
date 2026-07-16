@@ -234,7 +234,7 @@ export default function FrameBuilder({
 
       {!isPreviewStep && (
         <div className="mb-8 mt-7 text-center">
-          <h2 className="font-serif text-3xl font-medium leading-tight tracking-[0.01em] text-white sm:text-4xl">
+          <h2 className="font-serif text-3xl font-medium leading-tight tracking-normal text-white sm:text-4xl">
             {current.title}
           </h2>
 

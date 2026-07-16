@@ -38,8 +38,8 @@
   --color-sidebar: hsl(var(--sidebar));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
 
-  --font-sans: Montserrat, "Segoe UI", Arial, sans-serif;
-  --font-serif: "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope", "Segoe UI", Arial, sans-serif;
+  --font-serif: "Unbounded", "Segoe UI", Arial, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -263,8 +263,11 @@
     color: #e5e2e1;
     @apply font-sans antialiased;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2 {
     @apply font-serif;
+  }
+  h3, h4, h5, h6 {
+    @apply font-sans;
   }
 }
 

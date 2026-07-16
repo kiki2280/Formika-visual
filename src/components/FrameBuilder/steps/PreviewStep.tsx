@@ -20,7 +20,7 @@ export default function PreviewStep({ state, onChange, onBack, onNext }: StepPro
 
       <aside className="space-y-4 lg:sticky lg:top-28">
         <div className="space-y-2 text-center lg:text-left">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold">Соберите примерный макет</h2>
+          <h2 className="font-serif text-2xl font-semibold sm:text-3xl">Соберите примерный макет</h2>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Перетащите человечков, сердечки и детали фона внутри рамки.
           </p>

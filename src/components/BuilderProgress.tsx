@@ -27,7 +27,7 @@ export default function BuilderProgress({
               Шаг {stepNumber} из {totalSteps}
             </p>
 
-            <p className="mt-1 truncate font-serif text-base font-medium tracking-[0.01em] text-white">
+            <p className="mt-1 truncate font-sans text-base font-medium tracking-normal text-white">
               {title}
             </p>
           </div>
