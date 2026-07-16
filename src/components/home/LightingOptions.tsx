@@ -1,8 +1,16 @@
-﻿import { useState } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import { motion } from "@/lib/motion";
 import { ArrowRight } from "lucide-react";
+import GalleryModal, {
+  type GalleryModalData,
+} from "@/components/GalleryModal";
 import SectionHeading from "./SectionHeading";
-import DetailModal, { DetailModalData } from "./DetailModal";
 
 const base = import.meta.env.BASE_URL;
 
@@ -20,7 +28,12 @@ const IMG = {
   rgb3: `${base}images/optimized/light-rgb-card3.webp`,
 };
 
-const OPTIONS: { title: string; desc: string; img: string; modal: DetailModalData }[] = [
+const OPTIONS: {
+  title: string;
+  desc: string;
+  img: string;
+  modal: GalleryModalData;
+}[] = [
   {
     title: "LED-гирлянда",
     desc: "Тёплый уютный свет от гирлянды",
@@ -29,7 +42,11 @@ const OPTIONS: { title: string; desc: string; img: string; modal: DetailModalDat
       title: "LED-гирлянда",
       description:
         "Тёплый уютный свет с одним режимом свечения. Подходит для мягкой домашней атмосферы.",
-      examples: [{ img: IMG.garland1 }, { img: IMG.garland2 }, { img: IMG.garland3 }],
+      images: [
+        { src: IMG.garland1 },
+        { src: IMG.garland2 },
+        { src: IMG.garland3 },
+      ],
     },
   },
   {
@@ -40,24 +57,42 @@ const OPTIONS: { title: string; desc: string; img: string; modal: DetailModalDat
       title: "LED RGB",
       description:
         "Яркая цветная подсветка. Подходит, если хочется более заметный эффект и возможность разных оттенков.",
-      examples: [{ img: IMG.rgb1 }, { img: IMG.rgb2 }, { img: IMG.rgb3 }],
+      images: [
+        { src: IMG.rgb1 },
+        { src: IMG.rgb2 },
+        { src: IMG.rgb3 },
+      ],
     },
   },
   {
     title: "LED с облаками",
     desc: "Объёмный эффект облаков и мягкое рассеянное свечение",
-    img: IMG.clouds1 ,
+    img: IMG.clouds1,
     modal: {
       title: "LED с облаками",
       description:
         "Объёмный декоративный эффект с мягким рассеиванием света. Выглядит более необычно и ярко.",
-      examples: [{ img: IMG.clouds1 }, { img: IMG.clouds2 }, { img: IMG.clouds3 }],
+      images: [
+        { src: IMG.clouds1 },
+        { src: IMG.clouds2 },
+        { src: IMG.clouds3 },
+      ],
     },
   },
 ];
 
 export default function LightingOptions() {
-  const [active, setActive] = useState<DetailModalData | null>(null);
+  const [active, setActive] = useState<GalleryModalData | null>(null);
+  const activeTriggerRef = useRef<HTMLElement>(null);
+  const closeGallery = useCallback(() => setActive(null), []);
+
+  const openGallery = (
+    data: GalleryModalData,
+    trigger: HTMLElement,
+  ) => {
+    activeTriggerRef.current = trigger;
+    setActive(data);
+  };
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -75,8 +110,20 @@ export default function LightingOptions() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="group relative overflow-hidden rounded-2xl border border-border hover:border-primary/60 transition-colors"
+            onClick={(event: ReactMouseEvent<HTMLDivElement>) =>
+              openGallery(o.modal, event.currentTarget)
+            }
+            onKeyDown={(event: ReactKeyboardEvent<HTMLDivElement>) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openGallery(o.modal, event.currentTarget);
+              }
+            }}
+            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border transition-colors hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             data-testid={`card-lighting-${i}`}
+            role="button"
+            tabIndex={0}
+            aria-label={`Открыть галерею ${o.title}`}
           >
             <div className="relative h-80 overflow-hidden">
               <img
@@ -95,7 +142,10 @@ export default function LightingOptions() {
               <p className="mt-1 text-sm text-gray-300">{o.desc}</p>
               <button
                 type="button"
-                onClick={() => setActive(o.modal)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  openGallery(o.modal, event.currentTarget);
+                }}
                 className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary hover:gap-2.5 transition-all"
                 data-testid={`btn-lighting-details-${i}`}
               >
@@ -106,7 +156,16 @@ export default function LightingOptions() {
         ))}
       </div>
 
-      <DetailModal data={active} onClose={() => setActive(null)} />
+      <GalleryModal
+        data={active}
+        onClose={closeGallery}
+        returnFocusRef={activeTriggerRef}
+        cta={{
+          label: "Заказать",
+          href: "/order",
+          testId: "btn-modal-order",
+        }}
+      />
     </section>
   );
 }

@@ -1,10 +1,11 @@
 import { motion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 export interface SectionHeadingProps {
   eyebrow: string;
-  title: string;
-  accentTitle?: string;
+  title: ReactNode;
+  accentTitle?: ReactNode;
   subtitle?: string;
   align?: "left" | "center";
   as?: "h1" | "h2";
@@ -12,6 +13,8 @@ export interface SectionHeadingProps {
   animated?: boolean;
   uppercase?: boolean;
   className?: string;
+  titleClassName?: string;
+  accentTitleClassName?: string;
 }
 
 const TITLE_SIZES = {
@@ -38,6 +41,8 @@ export default function SectionHeading({
   animated = true,
   uppercase = true,
   className,
+  titleClassName,
+  accentTitleClassName,
 }: SectionHeadingProps) {
   const Heading = as;
   const isCentered = align === "center";
@@ -73,11 +78,19 @@ export default function SectionHeading({
           uppercase && "uppercase",
           TITLE_SIZES[size],
           isCentered ? "mx-auto max-w-6xl" : "max-w-3xl",
+          titleClassName,
         )}
       >
         <span className="whitespace-pre-line">{title}</span>
         {accentTitle && (
-          <span className="mt-1 block text-primary">{accentTitle}</span>
+          <span
+            className={cn(
+              "mt-1 block text-primary",
+              accentTitleClassName,
+            )}
+          >
+            {accentTitle}
+          </span>
         )}
       </Heading>
 

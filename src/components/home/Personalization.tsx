@@ -68,6 +68,7 @@ export default function Personalization() {
           eyebrow="Кастомизация без границ"
           title="Что можно"
           accentTitle="Персонализировать"
+          accentTitleClassName="whitespace-nowrap text-[clamp(1.125rem,5.6vw,1.5rem)] sm:text-[2.5rem] md:text-[2.875rem] lg:text-[3.625rem] xl:text-[3.75rem]"
           subtitle="Каждую композицию можно настроить под вашу историю — от внешности персонажей до фона, надписи и подсветки."
           size="wide"
         />

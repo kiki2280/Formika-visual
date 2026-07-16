@@ -47,7 +47,14 @@ export default function Advantages() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Почему выбирают FORMIKA"
-          title="Наши преимущества"
+          title={
+            <>
+              <span>Наши</span>{" "}
+              <span className="block whitespace-nowrap text-[clamp(1.5rem,7vw,1.875rem)] sm:inline sm:text-[2.75rem] md:text-5xl lg:text-[3.5rem]">
+                преимущества
+              </span>
+            </>
+          }
           subtitle="Простой и понятный процесс — от вашей идеи до готового подарка."
         />
 

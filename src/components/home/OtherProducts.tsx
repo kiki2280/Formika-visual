@@ -1,8 +1,16 @@
-﻿import { useState } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import { motion } from "@/lib/motion";
 import { ArrowRight } from "lucide-react";
+import GalleryModal, {
+  type GalleryModalData,
+} from "@/components/GalleryModal";
 import SectionHeading from "./SectionHeading";
-import DetailModal, { DetailModalData } from "./DetailModal";
 
 const base = import.meta.env.BASE_URL;
 
@@ -22,7 +30,7 @@ const PRODUCTS: {
   desc: string;
   img: string;
   imagePosition?: string;
-  modal: DetailModalData;
+  modal: GalleryModalData;
 }[] = [
   {
     title: "Готовые брелочки",
@@ -33,11 +41,11 @@ const PRODUCTS: {
       title: "Готовые брелочки",
       description:
         "Готовые модели FORMIKA, которые можно заказать сразу. Отличный небольшой подарок или дополнение к рамке.",
-      examples: [
-        { img: IMG.readyKeychain3 },
-        { img: IMG.readyKeychain4 },
-        { img: IMG.readyKeychain1 },
-        { img: IMG.readyKeychain2 },
+      images: [
+        { src: IMG.readyKeychain3 },
+        { src: IMG.readyKeychain4 },
+        { src: IMG.readyKeychain1 },
+        { src: IMG.readyKeychain2 },
       ],
     },
   },
@@ -50,15 +58,27 @@ const PRODUCTS: {
       title: "Кастомные брелочки",
       description:
         "Брелок с человечком, которого можно собрать под себя — лицо, причёска, одежда и аксессуары на ваш вкус.",
-      examples: [
-        { img: IMG.productKeychain1 }, { img: IMG.productKeychain2 }, { img: IMG.productKeychain3 },
+      images: [
+        { src: IMG.productKeychain1 },
+        { src: IMG.productKeychain2 },
+        { src: IMG.productKeychain3 },
       ],
     },
   },
 ];
 
 export default function OtherProducts() {
-  const [active, setActive] = useState<DetailModalData | null>(null);
+  const [active, setActive] = useState<GalleryModalData | null>(null);
+  const activeTriggerRef = useRef<HTMLElement>(null);
+  const closeGallery = useCallback(() => setActive(null), []);
+
+  const openGallery = (
+    data: GalleryModalData,
+    trigger: HTMLElement,
+  ) => {
+    activeTriggerRef.current = trigger;
+    setActive(data);
+  };
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
@@ -82,8 +102,20 @@ export default function OtherProducts() {
             }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="group relative aspect-[3/2] overflow-hidden rounded-[26px] border border-white/10 bg-black shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-[border-color,box-shadow] duration-300 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)]"
+            onClick={(event: ReactMouseEvent<HTMLDivElement>) =>
+              openGallery(p.modal, event.currentTarget)
+            }
+            onKeyDown={(event: ReactKeyboardEvent<HTMLDivElement>) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openGallery(p.modal, event.currentTarget);
+              }
+            }}
+            className="group relative aspect-[3/2] cursor-pointer overflow-hidden rounded-[26px] border border-white/10 bg-black shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-[border-color,box-shadow] duration-300 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             data-testid={`card-product-${i}`}
+            role="button"
+            tabIndex={0}
+            aria-label={`Открыть галерею ${p.title}`}
           >
             <img
               src={p.img}
@@ -108,7 +140,10 @@ export default function OtherProducts() {
 
               <button
                 type="button"
-                onClick={() => setActive(p.modal)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  openGallery(p.modal, event.currentTarget);
+                }}
                 className="mt-2 inline-flex max-w-full items-center justify-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md transition-colors hover:border-primary/60 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:mt-3 sm:py-2 sm:text-[10px] sm:tracking-[0.08em]"
                 data-testid={`btn-product-details-${i}`}
               >
@@ -119,7 +154,16 @@ export default function OtherProducts() {
         ))}
       </div>
 
-      <DetailModal data={active} onClose={() => setActive(null)} />
+      <GalleryModal
+        data={active}
+        onClose={closeGallery}
+        returnFocusRef={activeTriggerRef}
+        cta={{
+          label: "Заказать",
+          href: "/order",
+          testId: "btn-modal-order",
+        }}
+      />
     </section>
   );
 }
