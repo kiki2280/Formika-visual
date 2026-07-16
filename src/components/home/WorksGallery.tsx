@@ -145,12 +145,6 @@ export default function WorksGallery() {
               {/* Мягкое затемнение изображения */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
 
-              <span className="absolute left-4 top-4 inline-flex max-w-[calc(100%-2rem)] items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-2 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md sm:text-[10px] sm:tracking-[0.08em]">
-                Подробнее
-
-                <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
-              </span>
-
               <div className="absolute inset-x-4 bottom-4">
                 <h3 className="font-sans text-lg font-semibold leading-snug text-white">
                   {work.title}
@@ -159,6 +153,12 @@ export default function WorksGallery() {
                 <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm">
                   {work.desc}
                 </p>
+
+                <span className="mt-3 inline-flex max-w-full items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-2 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md sm:text-[10px] sm:tracking-[0.08em]">
+                  Подробнее
+
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+                </span>
               </div>
             </button>
           </motion.div>
