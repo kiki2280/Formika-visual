@@ -66,8 +66,10 @@ export default function Navbar() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [activeSection, setActiveSection] =
     useState<NavSectionId>("home");
+  const navbarRef = useRef<HTMLElement>(null);
   const lockedScrollYRef = useRef(0);
   const bodyStyleSnapshotRef = useRef<BodyStyleSnapshot | null>(null);
   const pendingNavigationRef = useRef<(() => void) | null>(null);
@@ -201,6 +203,77 @@ export default function Navbar() {
   }, [closeMobileMenu, isMobileMenuOpen]);
 
   /*
+   * На мобильных скрываем Header только после заметного движения
+   * вниз. Постоянный spacer остаётся в потоке и не сдвигает страницу.
+   */
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      setIsNavbarVisible(true);
+      return;
+    }
+
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    let animationFrame = 0;
+    let lastScrollY = window.scrollY;
+    let directionStartY = lastScrollY;
+    let direction: "up" | "down" | null = null;
+
+    const updateNavbar = () => {
+      animationFrame = 0;
+      const currentScrollY = Math.max(window.scrollY, 0);
+
+      if (desktopQuery.matches || currentScrollY <= 16) {
+        setIsNavbarVisible(true);
+        lastScrollY = currentScrollY;
+        directionStartY = currentScrollY;
+        direction = null;
+        return;
+      }
+
+      const nextDirection =
+        currentScrollY > lastScrollY ? "down" : "up";
+
+      if (nextDirection !== direction) {
+        direction = nextDirection;
+        directionStartY = currentScrollY;
+      }
+
+      if (Math.abs(currentScrollY - directionStartY) >= 14) {
+        setIsNavbarVisible(direction === "up");
+        directionStartY = currentScrollY;
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    const scheduleNavbarUpdate = () => {
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(updateNavbar);
+    };
+
+    const handleViewportChange = () => {
+      if (desktopQuery.matches) {
+        setIsNavbarVisible(true);
+      }
+
+      lastScrollY = window.scrollY;
+      directionStartY = lastScrollY;
+      direction = null;
+    };
+
+    window.addEventListener("scroll", scheduleNavbarUpdate, {
+      passive: true,
+    });
+    desktopQuery.addEventListener("change", handleViewportChange);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("scroll", scheduleNavbarUpdate);
+      desktopQuery.removeEventListener("change", handleViewportChange);
+    };
+  }, [isMobileMenuOpen]);
+
+  /*
    * Определяем активный раздел страницы
    * во время прокрутки.
    */
@@ -296,9 +369,16 @@ export default function Navbar() {
     const section = document.getElementById(id);
 
     if (section) {
-      section.scrollIntoView({
+      const navbarHeight = navbarRef.current?.offsetHeight ?? 72;
+      const targetTop =
+        section.getBoundingClientRect().top +
+        window.scrollY -
+        navbarHeight -
+        8;
+
+      window.scrollTo({
+        top: Math.max(targetTop, 0),
         behavior: "smooth",
-        block: "start",
       });
 
       return;
@@ -390,16 +470,24 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="
-        fixed top-0 z-50 w-full lg:sticky
-        border-b border-white/[0.08]
+        ref={navbarRef}
+        className={`
+        fixed left-0 right-0 top-0 z-50 w-full
         bg-[#0d0d0d]/90
+        pt-[env(safe-area-inset-top)]
         shadow-[0_10px_35px_rgba(0,0,0,0.22)]
         backdrop-blur-xl
-      "
+        transition-[transform,opacity] duration-200 ease-out
+        ${
+          isNavbarVisible || isMobileMenuOpen
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0"
+        }
+      `}
       >
       {/* Деликатное свечение сверху */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/[0.08]" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-5">
@@ -586,7 +674,10 @@ export default function Navbar() {
       </div>
       </nav>
 
-      <div className="h-[72px] lg:hidden" aria-hidden="true" />
+      <div
+        className="h-[calc(72px+env(safe-area-inset-top))]"
+        aria-hidden="true"
+      />
 
       {/* Мобильное меню */}
 {isMobileMenuVisible && (
@@ -595,7 +686,7 @@ export default function Navbar() {
     <button
       type="button"
       className={`
-        fixed inset-x-0 bottom-0 top-[72px] z-40
+        fixed inset-x-0 bottom-0 top-[calc(72px+env(safe-area-inset-top))] z-40
         bg-black/80 backdrop-blur-sm
         transition-opacity duration-200
         lg:hidden
@@ -615,8 +706,8 @@ export default function Navbar() {
     <div
       id="mobile-nav-menu"
       className={`
-        fixed left-3 right-3 top-[82px] z-50
-        max-h-[calc(100dvh-94px)]
+        fixed left-3 right-3 top-[calc(82px+env(safe-area-inset-top))] z-50
+        max-h-[calc(100dvh-94px-env(safe-area-inset-top))]
         overflow-y-auto overscroll-contain
         rounded-[24px]
         border border-white/[0.10]

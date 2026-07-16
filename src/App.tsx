@@ -1,4 +1,9 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import {
+  Switch,
+  Route,
+  Router as WouterRouter,
+  useLocation,
+} from "wouter";
 import { lazy, Suspense, useEffect, useState } from "react";
 import Home from "@/pages/index";
 import Order from "@/pages/order";
@@ -26,6 +31,27 @@ function Router() {
   );
 }
 
+function ScrollToTop() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location]);
+
+  useEffect(() => {
+    if (!("scrollRestoration" in window.history)) return;
+
+    const previousValue = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = previousValue;
+    };
+  }, []);
+
+  return null;
+}
+
 function App() {
   const [showToaster, setShowToaster] = useState(false);
 
@@ -38,6 +64,7 @@ function App() {
   return (
     <>
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <ScrollToTop />
         <Router />
       </WouterRouter>
       {showToaster && (
