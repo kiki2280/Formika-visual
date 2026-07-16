@@ -240,7 +240,11 @@ export default function FrameBuilder({
           subtitle={current.subtitle}
           size="compact"
           animated={false}
-          className="mb-8 mt-7"
+          className={`mb-8 mt-7 ${
+            current.key === "lighting"
+              ? "[&_h2]:text-2xl min-[360px]:[&_h2]:text-[1.625rem] sm:[&_h2]:text-3xl md:[&_h2]:text-4xl"
+              : ""
+          }`}
         />
       )}
 

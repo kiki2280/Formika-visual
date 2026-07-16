@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import BrandLogo from "./BrandLogo";
@@ -11,6 +11,10 @@ type NavSectionId =
   | "community";
 
 type LanguageCode = "RU" | "LV" | "EN";
+
+interface BodyStyleSnapshot {
+  styleAttribute: string | null;
+}
 
 const NAV_ITEMS: {
   label: string;
@@ -64,8 +68,12 @@ export default function Navbar() {
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
   const [activeSection, setActiveSection] =
     useState<NavSectionId>("home");
+  const lockedScrollYRef = useRef(0);
+  const bodyStyleSnapshotRef = useRef<BodyStyleSnapshot | null>(null);
+  const pendingNavigationRef = useRef<(() => void) | null>(null);
 
   const openMobileMenu = useCallback(() => {
+    pendingNavigationRef.current = null;
     setIsMobileMenuVisible(true);
     setIsMobileMenuOpen(true);
   }, []);
@@ -116,11 +124,60 @@ export default function Navbar() {
   useEffect(() => {
     if (!isMobileMenuOpen) return;
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const body = document.body;
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    lockedScrollYRef.current = window.scrollY;
+    bodyStyleSnapshotRef.current = {
+      styleAttribute: body.getAttribute("style"),
+    };
+
+    body.style.position = "fixed";
+    body.style.top = `-${lockedScrollYRef.current}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+
+    if (scrollbarWidth > 0) {
+      body.style.paddingRight = `${scrollbarWidth}px`;
+    }
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      const snapshot = bodyStyleSnapshotRef.current;
+
+      if (snapshot) {
+        if (snapshot.styleAttribute === null) {
+          body.removeAttribute("style");
+        } else {
+          body.setAttribute("style", snapshot.styleAttribute);
+        }
+      }
+
+      bodyStyleSnapshotRef.current = null;
+      const lockedScrollY = lockedScrollYRef.current;
+      const pendingNavigation = pendingNavigationRef.current;
+      pendingNavigationRef.current = null;
+
+      window.requestAnimationFrame(() => {
+        const root = document.documentElement;
+        const rootStyleAttribute = root.getAttribute("style");
+
+        root.style.scrollBehavior = "auto";
+        window.scrollTo(0, lockedScrollY);
+        root.scrollTop = lockedScrollY;
+
+        if (rootStyleAttribute === null) {
+          root.removeAttribute("style");
+        } else {
+          root.setAttribute("style", rootStyleAttribute);
+        }
+
+        if (pendingNavigation) {
+          window.requestAnimationFrame(pendingNavigation);
+        }
+      });
     };
   }, [isMobileMenuOpen]);
 
@@ -255,55 +312,92 @@ export default function Navbar() {
   };
 
   const goToSection = (id: NavSectionId) => {
-    closeMobileMenu();
     setActiveSection(id);
 
-    if (location !== "/") {
-      setLocation("/");
+    const navigate = () => {
+      if (location !== "/") {
+        setLocation("/");
 
-      window.setTimeout(() => {
-        scrollToSection(id);
-      }, 120);
+        window.setTimeout(() => {
+          scrollToSection(id);
+        }, 120);
 
+        return;
+      }
+
+      scrollToSection(id);
+    };
+
+    if (isMobileMenuOpen) {
+      pendingNavigationRef.current = navigate;
+      closeMobileMenu();
       return;
     }
 
-    scrollToSection(id);
+    navigate();
   };
 
   const goToHome = () => {
-    closeMobileMenu();
     setActiveSection("home");
 
-    if (location !== "/") {
-      setLocation("/");
+    const navigate = () => {
+      if (location !== "/") {
+        setLocation("/");
 
-      window.setTimeout(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      }, 120);
+        window.setTimeout(() => {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }, 120);
 
+        return;
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    };
+
+    if (isMobileMenuOpen) {
+      pendingNavigationRef.current = navigate;
+      closeMobileMenu();
       return;
     }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    navigate();
+  };
+
+  const goToOrder = () => {
+    const navigate = () => {
+      setLocation("/order");
+
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      });
+    };
+
+    if (isMobileMenuOpen) {
+      pendingNavigationRef.current = navigate;
+      closeMobileMenu();
+      return;
+    }
+
+    navigate();
   };
 
   return (
-    <nav
-      className="
-        sticky top-0 z-50 w-full
+    <>
+      <nav
+        className="
+        fixed top-0 z-50 w-full lg:sticky
         border-b border-white/[0.08]
         bg-[#0d0d0d]/90
         shadow-[0_10px_35px_rgba(0,0,0,0.22)]
         backdrop-blur-xl
       "
-    >
+      >
       {/* Деликатное свечение сверху */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
 
@@ -490,6 +584,9 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      </nav>
+
+      <div className="h-[72px] lg:hidden" aria-hidden="true" />
 
       {/* Мобильное меню */}
 {isMobileMenuVisible && (
@@ -639,7 +736,10 @@ export default function Navbar() {
       {/* Кнопка заказа */}
       <Link
         href="/order"
-        onClick={closeMobileMenu}
+        onClick={(event) => {
+          event.preventDefault();
+          goToOrder();
+        }}
         className="
           group mt-3 flex h-12 w-full
           items-center justify-center gap-2
@@ -661,7 +761,6 @@ export default function Navbar() {
     </div>
   </>
 )}
-      
-    </nav>
+    </>
   );
 }

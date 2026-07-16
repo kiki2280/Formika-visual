@@ -72,7 +72,7 @@ export default function Personalization() {
           size="wide"
         />
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
           {OPTIONS.map((option, index) => {
             const Icon = option.icon;
 
@@ -86,17 +86,17 @@ export default function Personalization() {
                   duration: 0.45,
                   delay: index * 0.05,
                 }}
-                className="group relative flex h-[230px] overflow-hidden rounded-[28px] border border-white/[0.11] bg-[linear-gradient(145deg,rgba(34,34,36,0.93),rgba(20,20,22,0.94))] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.035),inset_-1px_0_0_rgba(255,106,0,0.045),0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-[2px] transition-[transform,border-color,box-shadow] duration-300 lg:h-[250px] lg:p-7 lg:hover:-translate-y-1 lg:hover:border-primary/35 lg:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.045),inset_-1px_0_0_rgba(255,106,0,0.07),0_24px_58px_rgba(0,0,0,0.42),0_0_26px_rgba(255,106,0,0.06)]"
+                className="group relative flex h-[190px] overflow-hidden rounded-[28px] border border-white/[0.11] bg-[linear-gradient(145deg,rgba(34,34,36,0.93),rgba(20,20,22,0.94))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035),inset_-1px_0_0_rgba(255,106,0,0.045),0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-[2px] transition-[transform,border-color,box-shadow] duration-300 sm:h-[230px] sm:p-6 lg:h-[250px] lg:p-7 lg:hover:-translate-y-1 lg:hover:border-primary/35 lg:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.045),inset_-1px_0_0_rgba(255,106,0,0.07),0_24px_58px_rgba(0,0,0,0.42),0_0_26px_rgba(255,106,0,0.06)]"
                 data-testid={`card-personalization-${index}`}
               >
-                <div className="pointer-events-none absolute left-6 right-16 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-primary/10" />
+                <div className="pointer-events-none absolute left-5 right-16 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-primary/10 sm:left-6" />
                 <div className="pointer-events-none absolute right-0 top-5 h-24 w-px bg-gradient-to-b from-primary/30 to-transparent" />
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_8%,rgba(255,106,0,0.075),transparent_34%)]" />
 
                 <div className="relative flex h-full w-full flex-col">
                   <div className="flex items-start justify-between gap-4">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.055] text-primary transition-[border-color,background-color] duration-300 group-hover:border-primary/20 group-hover:bg-primary/10">
-                      <Icon className="h-5 w-5" strokeWidth={1.8} />
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.055] text-primary transition-[border-color,background-color] duration-300 group-hover:border-primary/20 group-hover:bg-primary/10 sm:h-11 sm:w-11">
+                      <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} />
                     </span>
 
                     <span className="font-sans text-xs font-semibold tracking-[0.12em] text-white/40">
@@ -104,12 +104,12 @@ export default function Personalization() {
                     </span>
                   </div>
 
-                  <div className="mt-8">
-                    <h3 className="font-sans text-lg font-semibold leading-snug tracking-normal text-white">
+                  <div className="mt-5 sm:mt-8">
+                    <h3 className="font-sans text-base font-semibold leading-snug tracking-normal text-white sm:text-lg">
                       {option.title}
                     </h3>
 
-                    <p className="mt-2.5 font-sans text-sm font-normal leading-relaxed text-white/65">
+                    <p className="mt-2 font-sans text-[13px] font-normal leading-relaxed text-white/65 sm:mt-2.5 sm:text-sm">
                       {option.description}
                     </p>
                   </div>

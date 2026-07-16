@@ -82,7 +82,7 @@ export default function OtherProducts() {
             }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="group relative aspect-[4/3] overflow-hidden rounded-[26px] border border-white/10 bg-black shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-[border-color,box-shadow] duration-300 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] sm:aspect-[3/2]"
+            className="group relative aspect-[3/2] overflow-hidden rounded-[26px] border border-white/10 bg-black shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-[border-color,box-shadow] duration-300 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)]"
             data-testid={`card-product-${i}`}
           >
             <img
@@ -95,10 +95,10 @@ export default function OtherProducts() {
               className={`absolute inset-0 h-full w-full object-cover ${p.imagePosition ?? "object-center"} transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10 sm:from-black/95 sm:via-black/20 sm:to-black/20" />
 
-            <div className="absolute inset-x-4 bottom-4">
-              <h3 className="font-sans text-lg font-semibold leading-snug text-white sm:text-xl">
+            <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4">
+              <h3 className="font-sans text-base font-semibold leading-snug text-white sm:text-xl">
                 {p.title}
               </h3>
 
@@ -109,7 +109,7 @@ export default function OtherProducts() {
               <button
                 type="button"
                 onClick={() => setActive(p.modal)}
-                className="mt-3 inline-flex max-w-full items-center justify-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-2 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md transition-colors hover:border-primary/60 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-[10px] sm:tracking-[0.08em]"
+                className="mt-2 inline-flex max-w-full items-center justify-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md transition-colors hover:border-primary/60 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:mt-3 sm:py-2 sm:text-[10px] sm:tracking-[0.08em]"
                 data-testid={`btn-product-details-${i}`}
               >
                 Подробнее <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />

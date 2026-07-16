@@ -101,7 +101,7 @@ function StepCard({ step, side, index }: StepCardProps) {
         from-white/[0.04]
         via-white/[0.02]
         to-transparent
-        p-5
+        p-4 sm:p-5
         shadow-[0_18px_50px_rgba(0,0,0,0.28)]
         transition-[border-color,background-color,box-shadow] duration-300
         hover:border-primary/40
@@ -117,8 +117,8 @@ function StepCard({ step, side, index }: StepCardProps) {
         <div className="flex items-center gap-3">
           <span
             className="
-              flex h-11 w-11 shrink-0 items-center justify-center
-              rounded-2xl border border-primary/30
+              flex h-9 w-9 shrink-0 items-center justify-center
+              rounded-xl border border-primary/30 sm:h-11 sm:w-11 sm:rounded-2xl
               bg-primary/10 text-primary
               transition-all duration-300
               group-hover:border-primary/50
@@ -126,7 +126,7 @@ function StepCard({ step, side, index }: StepCardProps) {
               group-hover:shadow-[0_0_24px_rgba(255,106,0,0.15)]
             "
           >
-            <Icon className="h-5 w-5" strokeWidth={1.8} />
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={1.8} />
           </span>
 
           <p className="font-sans text-xs font-bold uppercase tracking-[0.15em] text-primary">
@@ -134,11 +134,11 @@ function StepCard({ step, side, index }: StepCardProps) {
           </p>
         </div>
 
-        <h3 className="mt-5 font-sans text-lg font-semibold leading-snug text-white">
+        <h3 className="mt-4 font-sans text-base font-semibold leading-snug text-white sm:mt-5 sm:text-lg">
           {step.title}
         </h3>
 
-        <p className="mt-3 font-sans text-sm leading-relaxed text-white/50">
+        <p className="mt-2 font-sans text-[13px] leading-relaxed text-white/50 sm:mt-3 sm:text-sm">
           {step.description}
         </p>
       </div>
@@ -156,7 +156,7 @@ export default function OrderProcess() {
           subtitle="От идеи до готовой композиции — просто и понятно."
         />
 
-        <div className="relative mx-auto mt-14 max-w-5xl">
+        <div className="relative mx-auto mt-10 max-w-5xl sm:mt-14">
           {/* Вертикальная линия на компьютере */}
           <motion.div
             initial={{ scaleY: 0, opacity: 0 }}
@@ -185,7 +185,7 @@ export default function OrderProcess() {
               ease: [0.22, 1, 0.36, 1],
             }}
             className="
-              absolute bottom-7 left-[21px] top-7 w-px
+              absolute bottom-6 left-[18px] top-6 w-px
               origin-top
               bg-gradient-to-b
               from-transparent via-primary/65 to-transparent
@@ -193,7 +193,7 @@ export default function OrderProcess() {
             "
           />
 
-          <div className="space-y-10 md:space-y-6">
+          <div className="space-y-3 sm:space-y-10 md:space-y-6">
             {STEPS.map((step, index) => {
               const isLeft = index % 2 === 0;
 
@@ -235,8 +235,8 @@ export default function OrderProcess() {
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     className="
-                      absolute left-0 top-5 z-10
-                      flex h-11 w-11 items-center justify-center
+                      absolute left-0 top-4 z-10
+                      flex h-9 w-9 items-center justify-center
                       rounded-full border border-primary/60
                       bg-[#17120f] text-primary
                       shadow-[0_0_24px_rgba(255,106,0,0.16)]
@@ -258,7 +258,7 @@ export default function OrderProcess() {
                   </div>
 
                   {/* Карточка на телефоне */}
-                  <div className="ml-14 md:hidden">
+                  <div className="ml-12 md:hidden">
                     <StepCard step={step} side="mobile" index={index} />
                   </div>
                 </div>

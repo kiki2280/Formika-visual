@@ -1,4 +1,5 @@
-import { motion } from "@/lib/motion";
+import { useState } from "react";
+import { AnimatePresence, motion } from "@/lib/motion";
 import { Quote, Star } from "lucide-react";
 import SectionHeading from "./SectionHeading";
 
@@ -66,18 +67,20 @@ function ReviewCard({ review, index }: ReviewCardProps) {
 
   return (
     <motion.article
+      layout
       initial={{ opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{
         duration: 0.45,
         delay: (index % 3) * 0.06,
       }}
       className="
-        group relative flex min-h-[270px] flex-col overflow-hidden
+        group relative flex min-h-[220px] flex-col overflow-hidden sm:min-h-[270px]
         rounded-[28px] border border-white/10
         bg-gradient-to-br from-[#211d1a]/90 via-[#171513]/95 to-[#11100f]
-        p-6
+        p-4 sm:p-6
         shadow-[0_16px_42px_rgba(0,0,0,0.28)]
         transition-all duration-300
         hover:-translate-y-1 hover:border-primary/40
@@ -88,7 +91,7 @@ function ReviewCard({ review, index }: ReviewCardProps) {
       <div className="pointer-events-none absolute -right-14 -top-14 h-32 w-32 rounded-full bg-primary/[0.04] blur-3xl transition-colors duration-300 group-hover:bg-primary/[0.1]" />
 
       <Quote
-        className="pointer-events-none absolute right-5 top-5 h-10 w-10 text-primary/[0.09]"
+        className="pointer-events-none absolute right-4 top-4 h-8 w-8 text-primary/[0.09] sm:right-5 sm:top-5 sm:h-10 sm:w-10"
         strokeWidth={1.4}
       />
 
@@ -109,16 +112,16 @@ function ReviewCard({ review, index }: ReviewCardProps) {
         <span className="text-xs font-semibold text-white/30">5.0</span>
       </div>
 
-      <blockquote className="relative mt-7 flex-1">
-        <p className="font-sans text-[15px] leading-relaxed text-white/75">
+      <blockquote className="relative mt-4 flex-1 sm:mt-7">
+        <p className="font-sans text-sm leading-relaxed text-white/75 sm:text-[15px]">
           «{review.text}»
         </p>
       </blockquote>
 
-      <div className="relative mt-7 flex items-center gap-3 border-t border-white/10 pt-5">
+      <div className="relative mt-4 flex items-center gap-3 border-t border-white/10 pt-4 sm:mt-7 sm:pt-5">
         <span
           className="
-            flex h-11 w-11 shrink-0 items-center justify-center
+            flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11
             rounded-full border border-primary/30 bg-primary/10
             font-sans text-base font-bold text-primary
             shadow-[0_0_22px_rgba(255,106,0,0.08)]
@@ -142,6 +145,9 @@ function ReviewCard({ review, index }: ReviewCardProps) {
 }
 
 export default function Reviews() {
+  const [showAll, setShowAll] = useState(false);
+  const visibleReviews = showAll ? REVIEWS : REVIEWS.slice(0, 3);
+
   return (
     <section
       id="reviews"
@@ -156,15 +162,30 @@ export default function Reviews() {
           subtitle="Тёплые слова о персональных подарках, созданных в FORMIKA."
         />
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {REVIEWS.map((review, index) => (
-            <ReviewCard
-              key={`${review.name}-${index}`}
-              review={review}
-              index={index}
-            />
-          ))}
+        <div className="mt-10 grid gap-3 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence initial={false}>
+            {visibleReviews.map((review, index) => (
+              <ReviewCard
+                key={`${review.name}-${index}`}
+                review={review}
+                index={index}
+              />
+            ))}
+          </AnimatePresence>
         </div>
+
+        {REVIEWS.length > 3 && (
+          <div className="mt-6 flex justify-center sm:mt-8">
+            <button
+              type="button"
+              onClick={() => setShowAll((current) => !current)}
+              className="inline-flex h-11 items-center justify-center rounded-full border border-primary/40 bg-primary/[0.06] px-5 font-sans text-xs font-bold uppercase tracking-[0.07em] text-primary transition-all duration-300 hover:border-primary/65 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              data-testid="button-toggle-reviews"
+            >
+              {showAll ? "Скрыть" : "Посмотреть ещё"}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

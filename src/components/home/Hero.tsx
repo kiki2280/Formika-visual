@@ -62,7 +62,7 @@ export default function Hero() {
       id="home"
       className="relative mx-auto max-w-7xl scroll-mt-20 px-4 pb-20 pt-16 sm:px-6 lg:px-8 lg:pb-28 lg:pt-24"
     >
-      <div className="grid items-center gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
+      <div className="grid items-center gap-8 md:gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-10">
         {/* Левая часть */}
         <div className="relative z-20">
           <SectionHeading
@@ -156,7 +156,7 @@ export default function Hero() {
         </div>
 
         {/* Фотография для телефона */}
-        <div className="relative mx-auto mt-2 block w-full max-w-[330px] md:hidden">
+        <div className="relative mx-auto block w-full max-w-[240px] md:hidden">
           <div className="absolute inset-8 rounded-full bg-primary/15 blur-[70px]" />
 
           <img

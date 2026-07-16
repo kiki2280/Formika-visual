@@ -128,7 +128,7 @@ export default function WorksGallery() {
             <button
               type="button"
               onClick={() => setActive(work.modal)}
-              className="group relative block aspect-[4/5] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="group relative block aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:aspect-[4/5]"
               data-testid={`card-work-${index}`}
             >
               <img
@@ -146,16 +146,16 @@ export default function WorksGallery() {
               {/* Мягкое затемнение изображения */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
 
-              <div className="absolute inset-x-4 bottom-4">
-                <h3 className="font-sans text-lg font-semibold leading-snug text-white">
+              <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4">
+                <h3 className="font-sans text-base font-semibold leading-snug text-white sm:text-lg">
                   {work.title}
                 </h3>
 
-                <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm">
+                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/75 sm:mt-1.5 sm:text-sm">
                   {work.desc}
                 </p>
 
-                <span className="mt-3 inline-flex max-w-full items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-2 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md sm:text-[10px] sm:tracking-[0.08em]">
+                <span className="mt-2 inline-flex max-w-full items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md sm:mt-3 sm:py-2 sm:text-[10px] sm:tracking-[0.08em]">
                   Подробнее
 
                   <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
