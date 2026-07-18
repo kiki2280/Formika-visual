@@ -575,3 +575,18 @@
     transform: none;
   }
 }
+@media (max-width: 767px) {
+  .personalization-line-glow {
+    stroke-width: 5;
+    filter: drop-shadow(0 0 4px rgba(255, 106, 0, 0.16));
+  }
+
+  .personalization-line-core {
+    stroke-width: 1.25;
+    filter: drop-shadow(0 0 2px rgba(255, 106, 0, 0.42));
+  }
+
+  .personalization-node-circle {
+    will-change: auto;
+  }
+}

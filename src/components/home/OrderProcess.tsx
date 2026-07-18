@@ -136,18 +136,38 @@ export default function OrderProcess() {
     let stepThresholds: number[] = [];
     let activeStepIndex = -2;
 
+    /*
+     * targetProgress — точная позиция, которую задаёт прокрутка.
+     * currentProgress — плавная позиция, которую видит пользователь.
+     */
+    let targetProgress = 0;
+    let currentProgress = 0;
+    let currentVelocity = 0;
+    let lastFrameTime = 0;
+    let isInitialized = false;
+
+    /*
+     * На мобильных браузерах высота окна меняется при скрытии адресной
+     * строки. Сохраняем рабочую высоту, чтобы линия не дёргалась во время
+     * обычного вертикального скролла.
+     */
+    let viewportWidth = window.innerWidth;
+    let viewportHeight = window.innerHeight;
+
     const clamp = (value: number, min: number, max: number) =>
       Math.min(Math.max(value, min), max);
 
     const measure = () => {
       lineTop = line.offsetTop;
       lineHeight = Math.max(line.offsetHeight, 1);
+
       stepThresholds = stepRowsRef.current.map((row) => {
         if (!row) return 1;
 
         const rowCenter = row.offsetTop + row.offsetHeight / 2;
         return clamp((rowCenter - lineTop) / lineHeight, 0, 1);
       });
+
       needsMeasure = false;
     };
 
@@ -155,6 +175,7 @@ export default function OrderProcess() {
       if (nextActiveStepIndex === activeStepIndex) return;
 
       activeStepIndex = nextActiveStepIndex;
+
       stepRowsRef.current.forEach((row, index) => {
         if (!row) return;
 
@@ -167,23 +188,12 @@ export default function OrderProcess() {
       });
     };
 
-    const updateProgress = () => {
-      animationFrame = 0;
-
-      if (needsMeasure) measure();
-
-      const timelineRect = timeline.getBoundingClientRect();
-      const viewportFocus = window.innerHeight * 0.55;
-      const progressY = clamp(
-        viewportFocus - (timelineRect.top + lineTop),
-        0,
-        lineHeight,
-      );
-      const progress = progressY / lineHeight;
+    const renderProgress = (progress: number) => {
+      const progressY = progress * lineHeight;
 
       timeline.style.setProperty(
         "--order-scroll-progress",
-        progress.toFixed(4),
+        progress.toFixed(5),
       );
       timeline.style.setProperty(
         "--order-scroll-y",
@@ -195,39 +205,188 @@ export default function OrderProcess() {
       );
 
       let nextActiveStepIndex = -1;
+
       stepThresholds.forEach((threshold, index) => {
-        if (progress >= threshold) nextActiveStepIndex = index;
+        if (progress >= threshold) {
+          nextActiveStepIndex = index;
+        }
       });
+
       updateStepStates(nextActiveStepIndex);
     };
 
-    const scheduleUpdate = () => {
-      if (animationFrame) return;
-      animationFrame = window.requestAnimationFrame(updateProgress);
+    const calculateTargetProgress = () => {
+      if (needsMeasure) measure();
+
+      const timelineRect = timeline.getBoundingClientRect();
+
+      /*
+       * Линия ориентируется немного ниже центра экрана.
+       * На телефоне это делает прохождение карточек спокойнее.
+       */
+      const isMobile = viewportWidth < 768;
+      const viewportFocus = viewportHeight * (isMobile ? 0.58 : 0.55);
+
+      const progressY = clamp(
+        viewportFocus - (timelineRect.top + lineTop),
+        0,
+        lineHeight,
+      );
+
+      targetProgress = progressY / lineHeight;
+    };
+
+    const animateProgress = (timestamp: number) => {
+      animationFrame = 0;
+
+      if (needsMeasure) {
+        measure();
+        calculateTargetProgress();
+      }
+
+      if (!lastFrameTime) {
+        lastFrameTime = timestamp;
+      }
+
+      const deltaTime = Math.min(timestamp - lastFrameTime, 50);
+      lastFrameTime = timestamp;
+
+      const isMobile = viewportWidth < 768;
+      const progressDifference = targetProgress - currentProgress;
+
+      if (isMobile) {
+        /*
+         * Максимально плавная мобильная анимация.
+         *
+         * Вместо мгновенного следования за скроллом используется движение
+         * с инерцией: линия сначала мягко разгоняется, затем плавно тормозит.
+         * Ограничение скорости не даёт ей резко перескакивать вперёд после
+         * быстрого свайпа.
+         */
+        const deltaSeconds = Math.min(deltaTime, 32) / 1000;
+        const springStrength = 16;
+        const springDamping = 8.2;
+        const maxProgressSpeed = 0.46;
+
+        const acceleration =
+          progressDifference * springStrength -
+          currentVelocity * springDamping;
+
+        currentVelocity += acceleration * deltaSeconds;
+        currentVelocity = clamp(
+          currentVelocity,
+          -maxProgressSpeed,
+          maxProgressSpeed,
+        );
+
+        const previousProgress = currentProgress;
+        currentProgress += currentVelocity * deltaSeconds;
+
+        /*
+         * Не разрешаем пружине перелетать через конечную точку.
+         * Это убирает лёгкое подрагивание при остановке пальца.
+         */
+        const crossedTarget =
+          (targetProgress - previousProgress) *
+            (targetProgress - currentProgress) <=
+          0;
+
+        if (crossedTarget) {
+          currentProgress = targetProgress;
+          currentVelocity = 0;
+        }
+      } else {
+        /*
+         * Компьютерная версия остаётся такой же, как в удачном варианте.
+         */
+        const smoothingTime = 230;
+        const easing = 1 - Math.exp(-deltaTime / smoothingTime);
+
+        currentProgress += progressDifference * easing;
+      }
+
+      currentProgress = clamp(currentProgress, 0, 1);
+
+      const distance = Math.abs(targetProgress - currentProgress);
+      const velocityIsLow = Math.abs(currentVelocity) < 0.0008;
+
+      if (distance < 0.00035 && (!isMobile || velocityIsLow)) {
+        currentProgress = targetProgress;
+        currentVelocity = 0;
+      }
+
+      renderProgress(currentProgress);
+
+      if (
+        distance >= 0.00035 ||
+        (isMobile && Math.abs(currentVelocity) >= 0.0008)
+      ) {
+        animationFrame = window.requestAnimationFrame(animateProgress);
+      } else {
+        lastFrameTime = 0;
+      }
+    };
+
+    const scheduleAnimation = () => {
+      calculateTargetProgress();
+
+      /*
+       * При первой загрузке сразу выставляем правильное положение,
+       * чтобы линия не ехала через весь блок сама по себе.
+       */
+      if (!isInitialized) {
+        currentProgress = targetProgress;
+        currentVelocity = 0;
+        renderProgress(currentProgress);
+        isInitialized = true;
+        return;
+      }
+
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(animateProgress);
+      }
     };
 
     const handleResize = () => {
+      const nextViewportWidth = window.innerWidth;
+      const nextViewportHeight = window.innerHeight;
+      const isMobile = viewportWidth < 768;
+      const widthChanged = Math.abs(nextViewportWidth - viewportWidth) >= 2;
+
+      /*
+       * На телефоне игнорируем изменение только высоты окна:
+       * обычно это открытие или закрытие панели браузера во время скролла.
+       */
+      if (isMobile && !widthChanged) return;
+
+      viewportWidth = nextViewportWidth;
+      viewportHeight = nextViewportHeight;
       needsMeasure = true;
-      scheduleUpdate();
+      scheduleAnimation();
     };
 
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(section);
     resizeObserver.observe(timeline);
     resizeObserver.observe(line);
+
     stepRowsRef.current.forEach((row) => {
       if (row) resizeObserver.observe(row);
     });
 
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("scroll", scheduleAnimation, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
-    scheduleUpdate();
+
+    scheduleAnimation();
 
     return () => {
-      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("scroll", scheduleAnimation);
       window.removeEventListener("resize", handleResize);
       resizeObserver.disconnect();
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
     };
   }, []);
 

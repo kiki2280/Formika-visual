@@ -47,16 +47,16 @@ export default function Advantages() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Почему выбирают FORMIKA"
-          title={
-            <>
-              <span>Наши</span>{" "}
-              <span className="block whitespace-nowrap text-[clamp(1.5rem,7vw,1.875rem)] md:inline md:text-[inherit]">
-                преимущества
-              </span>
-            </>
-          }
-          subtitle="Простой и понятный процесс — от вашей идеи до готового подарка."
-        />
+title={
+  <>
+    <span>Наши</span>{" "}
+    <span className="block whitespace-nowrap text-[clamp(1.5rem,7vw,1.875rem)] md:inline md:text-[44px]">
+      преимущества
+    </span>
+  </>
+}
+subtitle="Простой и понятный процесс — от вашей идеи до готового подарка."
+/>
 
         <motion.div
           initial={{ opacity: 0, y: 26 }}
