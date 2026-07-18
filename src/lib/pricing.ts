@@ -18,14 +18,6 @@ export const PRICING = {
   delivery: 4.5,
 };
 
-export const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
-  delivery: "Доставка",
-  pickup: "Самовывоз",
-};
-
-export const PICKUP_NOTE =
-  "Самовывоз возможен в центре Риги, более точный адрес уточняется в личных сообщениях.";
-
 export function getDeliveryPrice(method: DeliveryMethod | null): number {
   return method === "delivery" ? PRICING.delivery : 0;
 }
@@ -35,8 +27,8 @@ export function formatEuro(n: number): string {
 }
 
 export const READY_KEYCHAINS = [
-  { id: "kb-black-batman", name: "Чёрный Бэтмен", price: 7, img: "optimized/ready-keychain-3.webp" },
-  { id: "kb-pink-batman", name: "Розовый Бэтмен", price: 7, img: "optimized/ready-keychain-4.webp" },
-  { id: "kb-blue-shark", name: "Синяя акула", price: 7, img: "optimized/ready-keychain-1.webp" },
-  { id: "kb-pink-shark", name: "Розовая акула", price: 7, img: "optimized/ready-keychain-2.webp" },
+  { id: "kb-black-batman", price: 7, img: "optimized/ready-keychain-3.webp" },
+  { id: "kb-pink-batman", price: 7, img: "optimized/ready-keychain-4.webp" },
+  { id: "kb-blue-shark", price: 7, img: "optimized/ready-keychain-1.webp" },
+  { id: "kb-pink-shark", price: 7, img: "optimized/ready-keychain-2.webp" },
 ];

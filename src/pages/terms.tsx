@@ -10,36 +10,39 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import LegalPage from "@/components/LegalPage";
 import { CONTACTS } from "@/lib/contacts";
 
 export default function Terms() {
+  const { t } = useTranslation();
+
   return (
     <LegalPage
-      title="Условия заказа"
-      intro="FORMIKA создаёт персонализированные изделия по индивидуальному запросу. Оформление проходит без регистрации — все детали подтверждаются лично в Telegram."
+      title={t("legal.terms.title")}
+      intro={t("legal.terms.intro")}
       sections={[
         {
-          title: "Как оформляется заказ",
+          title: t("legal.terms.processTitle"),
           content: (
             <div className="grid gap-3 sm:grid-cols-3">
               {[
                 {
                   number: "01",
-                  title: "Выбор",
-                  text: "Вы выбираете формат, фигурки, детали и оформление композиции.",
+                  title: t("legal.terms.choiceTitle"),
+                  text: t("legal.terms.choiceText"),
                   icon: ClipboardList,
                 },
                 {
                   number: "02",
-                  title: "Заявка",
-                  text: "Готовая заявка отправляется нам через Telegram.",
+                  title: t("legal.terms.applicationTitle"),
+                  text: t("legal.terms.applicationText"),
                   icon: Send,
                 },
                 {
                   number: "03",
-                  title: "Согласование",
-                  text: "Мы проверяем детали, наличие элементов, стоимость и сроки.",
+                  title: t("legal.terms.approvalTitle"),
+                  text: t("legal.terms.approvalText"),
                   icon: MessageCircle,
                 },
               ].map((item) => {
@@ -81,7 +84,7 @@ export default function Terms() {
           ),
         },
         {
-          title: "Когда заказ считается подтверждённым",
+          title: t("legal.terms.confirmationTitle"),
           content: (
             <div className="overflow-hidden rounded-[22px] border border-primary/25 bg-primary/[0.045]">
               <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
@@ -91,14 +94,11 @@ export default function Terms() {
 
                 <div className="min-w-0 flex-1">
                   <h3 className="font-sans text-base font-semibold text-white">
-                    После согласования всех деталей
+                    {t("legal.terms.afterApprovalTitle")}
                   </h3>
 
                   <p className="mt-2 font-sans text-sm leading-relaxed text-white/[0.48]">
-                    Отправленная заявка ещё не является окончательно
-                    подтверждённым заказом. Сначала мы проверяем возможность
-                    изготовления, наличие выбранных деталей, сроки и итоговую
-                    стоимость.
+                    {t("legal.terms.afterApprovalText")}
                   </p>
                 </div>
               </div>
@@ -112,11 +112,11 @@ export default function Terms() {
 
                   <div>
                     <p className="font-sans text-sm font-semibold text-white">
-                      До подтверждения
+                      {t("legal.terms.beforeConfirmationTitle")}
                     </p>
 
                     <p className="mt-1 font-sans text-xs leading-relaxed text-white/[0.4]">
-                      Мы уточняем комплектацию, стоимость и срок изготовления.
+                      {t("legal.terms.beforeConfirmationText")}
                     </p>
                   </div>
                 </div>
@@ -129,11 +129,11 @@ export default function Terms() {
 
                   <div>
                     <p className="font-sans text-sm font-semibold text-white">
-                      После подтверждения
+                      {t("legal.terms.afterConfirmationTitle")}
                     </p>
 
                     <p className="mt-1 font-sans text-xs leading-relaxed text-white/[0.4]">
-                      Заказ передаётся в работу после согласования с клиентом.
+                      {t("legal.terms.afterConfirmationText")}
                     </p>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export default function Terms() {
           ),
         },
         {
-          title: "Индивидуальное изготовление",
+          title: t("legal.terms.customProductionTitle"),
           content: (
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
@@ -152,13 +152,12 @@ export default function Terms() {
                   </div>
 
                   <h3 className="font-sans text-sm font-semibold text-white">
-                    Персональная композиция
+                    {t("legal.terms.personalCompositionTitle")}
                   </h3>
                 </div>
 
                 <p className="mt-3 font-sans text-sm leading-relaxed text-white/[0.45]">
-                  Каждое изделие создаётся по выбранным вами параметрам:
-                  формату, количеству фигурок, надписям, деталям и оформлению.
+                  {t("legal.terms.personalCompositionText")}
                 </p>
               </div>
 
@@ -169,21 +168,19 @@ export default function Terms() {
                   </div>
 
                   <h3 className="font-sans text-sm font-semibold text-white">
-                    Возможны небольшие отличия
+                    {t("legal.terms.differencesTitle")}
                   </h3>
                 </div>
 
                 <p className="mt-3 font-sans text-sm leading-relaxed text-white/[0.45]">
-                  Цвета, фигурки, аксессуары и подсветка могут немного
-                  отличаться от примеров на сайте из-за наличия деталей.
-                  Возможные замены согласовываются с клиентом.
+                  {t("legal.terms.differencesText")}
                 </p>
               </div>
             </div>
           ),
         },
         {
-          title: "Материалы клиента и публикации",
+          title: t("legal.terms.materialsTitle"),
           content: (
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
@@ -194,13 +191,11 @@ export default function Terms() {
 
                   <div>
                     <h3 className="font-sans text-sm font-semibold text-white">
-                      Фото и личные материалы
+                      {t("legal.terms.personalMaterialsTitle")}
                     </h3>
 
                     <p className="mt-2 font-sans text-sm leading-relaxed text-white/[0.45]">
-                      Отправленные фотографии, имена и другие материалы
-                      используются только для подготовки персонализированного
-                      заказа.
+                      {t("legal.terms.personalMaterialsText")}
                     </p>
                   </div>
                 </div>
@@ -214,13 +209,11 @@ export default function Terms() {
 
                   <div>
                     <h3 className="font-sans text-sm font-semibold text-white">
-                      Публикация готовой работы
+                      {t("legal.terms.publicationTitle")}
                     </h3>
 
                     <p className="mt-2 font-sans text-sm leading-relaxed text-white/[0.45]">
-                      Фотографии готового изделия могут быть опубликованы
-                      на сайте или в социальных сетях только с согласия
-                      клиента.
+                      {t("legal.terms.publicationText")}
                     </p>
                   </div>
                 </div>
@@ -229,7 +222,7 @@ export default function Terms() {
           ),
         },
         {
-          title: "Готовы оформить заказ?",
+          title: t("legal.terms.ctaTitle"),
           content: (
             <div className="relative overflow-hidden rounded-[22px] border border-primary/25 bg-primary/[0.05] p-5 sm:p-6">
               <div className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
@@ -242,12 +235,11 @@ export default function Terms() {
 
                   <div>
                     <h3 className="font-sans text-base font-semibold text-white">
-                      Все детали подтверждаются заранее
+                      {t("legal.terms.ctaSubtitle")}
                     </h3>
 
                     <p className="mt-1 max-w-lg font-sans text-sm leading-relaxed text-white/[0.45]">
-                      Перед началом работы мы согласуем состав композиции,
-                      возможные замены, стоимость и срок изготовления.
+                      {t("legal.terms.ctaText")}
                     </p>
                   </div>
                 </div>
@@ -266,7 +258,7 @@ export default function Terms() {
                   "
                 >
                   <Send className="mr-2 h-4 w-4" />
-                  Оформить заказ
+                  {t("legal.terms.orderButton")}
                 </a>
               </div>
             </div>

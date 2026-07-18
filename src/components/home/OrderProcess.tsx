@@ -8,48 +8,44 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 interface Step {
   number: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: LucideIcon;
 }
 
 const STEPS: Step[] = [
   {
     number: "01",
-    title: "Выбираете формат подарка",
-    description:
-      "Подбираете композицию, персонажей и дополнительные детали.",
+    titleKey: "home.orderProcess.chooseTitle",
+    descriptionKey: "home.orderProcess.chooseDescription",
     icon: Gift,
   },
   {
     number: "02",
-    title: "Отправляете заявку",
-    description:
-      "Готовая заявка отправляется нам через Telegram.",
+    titleKey: "home.orderProcess.submitTitle",
+    descriptionKey: "home.orderProcess.submitDescription",
     icon: Send,
   },
   {
     number: "03",
-    title: "Согласовываем детали",
-    description:
-      "Уточняем пожелания, стоимость, сроки и способ получения заказа.",
+    titleKey: "home.orderProcess.approveTitle",
+    descriptionKey: "home.orderProcess.approveDescription",
     icon: MessageCircle,
   },
   {
     number: "04",
-    title: "Создаём композицию",
-    description:
-      "После согласования и предоплаты аккуратно собираем ваш подарок.",
+    titleKey: "home.orderProcess.createTitle",
+    descriptionKey: "home.orderProcess.createDescription",
     icon: Hammer,
   },
   {
     number: "05",
-    title: "Передаём готовый заказ",
-    description:
-      "Самовывоз или доставка по Латвии и другим странам Европы.",
+    titleKey: "home.orderProcess.handoverTitle",
+    descriptionKey: "home.orderProcess.handoverDescription",
     icon: PackageCheck,
   },
 ];
@@ -59,6 +55,7 @@ interface StepCardProps {
 }
 
 function StepCard({ step }: StepCardProps) {
+  const { t } = useTranslation();
   const Icon = step.icon;
 
   return (
@@ -100,16 +97,16 @@ function StepCard({ step }: StepCardProps) {
           </span>
 
           <p className="order-process-step-label font-sans text-xs font-bold uppercase tracking-[0.15em] text-primary">
-            Шаг {step.number}
+            {t("common.stepNumber", { number: step.number })}
           </p>
         </div>
 
         <h3 className="mt-4 font-sans text-base font-semibold leading-snug text-white md:mt-5 md:text-lg">
-          {step.title}
+          {t(step.titleKey)}
         </h3>
 
         <p className="mt-2 font-sans text-[13px] leading-relaxed text-white/50 md:mt-3 md:text-sm">
-          {step.description}
+          {t(step.descriptionKey)}
         </p>
       </div>
     </article>
@@ -117,6 +114,7 @@ function StepCard({ step }: StepCardProps) {
 }
 
 export default function OrderProcess() {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
@@ -398,9 +396,9 @@ export default function OrderProcess() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Этапы создания"
-          title="Как мы создаём ваш подарок"
-          subtitle="От идеи до готовой композиции — просто и понятно."
+          eyebrow={t("home.orderProcess.eyebrow")}
+          title={t("home.orderProcess.title")}
+          subtitle={t("home.orderProcess.subtitle")}
         />
 
         <div

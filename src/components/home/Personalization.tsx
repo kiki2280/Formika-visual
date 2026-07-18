@@ -18,46 +18,47 @@ import {
 } from "framer-motion";
 import { useId, useRef } from "react";
 import SectionHeading from "@/components/SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const OPTIONS = [
   {
-    title: "Количество персонажей",
-    description: "Один человек, пара, семья или компания друзей.",
+    titleKey: "home.personalization.charactersTitle",
+    descriptionKey: "home.personalization.charactersDescription",
     icon: Users,
   },
   {
-    title: "Лица и причёски",
-    description: "Подберём внешность, подходящую под ваши фотографии.",
+    titleKey: "home.personalization.facesHairTitle",
+    descriptionKey: "home.personalization.facesHairDescription",
     icon: Scissors,
   },
   {
-    title: "Одежда",
-    description: "Выберите стиль, цвета и образ каждого персонажа.",
+    titleKey: "home.personalization.clothesTitle",
+    descriptionKey: "home.personalization.clothesDescription",
     icon: Shirt,
   },
   {
-    title: "Аксессуары",
-    description: "Добавьте хобби, профессию и важные детали истории.",
+    titleKey: "home.personalization.accessoriesTitle",
+    descriptionKey: "home.personalization.accessoriesDescription",
     icon: Sparkles,
   },
   {
-    title: "Питомцы",
-    description: "Разместите рядом любимого домашнего питомца.",
+    titleKey: "home.personalization.petsTitle",
+    descriptionKey: "home.personalization.petsDescription",
     icon: PawPrint,
   },
   {
-    title: "Фон",
-    description: "Подберите оформление под событие и настроение.",
+    titleKey: "home.personalization.backgroundTitle",
+    descriptionKey: "home.personalization.backgroundDescription",
     icon: Image,
   },
   {
-    title: "Надпись",
-    description: "Добавьте имена, дату или личное пожелание.",
+    titleKey: "home.personalization.inscriptionTitle",
+    descriptionKey: "home.personalization.inscriptionDescription",
     icon: Type,
   },
   {
-    title: "Подсветка",
-    description: "Выберите тёплый свет, RGB или эффект облаков.",
+    titleKey: "home.personalization.lightingTitle",
+    descriptionKey: "home.personalization.lightingDescription",
     icon: Lightbulb,
   },
 ];
@@ -346,6 +347,7 @@ function DesktopTimelineLine() {
 }
 
 export default function Personalization() {
+  const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const timelineRef = useRef<HTMLDivElement>(null);
 
@@ -396,15 +398,15 @@ export default function Personalization() {
 
       <div className="relative mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Кастомизация без границ"
-          title="Что можно"
+          eyebrow={t("home.personalization.eyebrow")}
+          title={t("home.personalization.title")}
           titleClassName="
             text-[clamp(2rem,10vw,2.5rem)]
             md:text-[44px]
             lg:text-[44px]
             xl:text-[44px]
           "
-          accentTitle="Персонализировать"
+          accentTitle={t("home.personalization.accent")}
           accentTitleClassName="
             -mt-1
             block
@@ -416,7 +418,7 @@ export default function Personalization() {
             lg:text-[2.25rem]
             xl:text-[2.5rem]
           "
-          subtitle="Каждую композицию можно настроить под вашу историю — от внешности персонажей до фона, надписи и подсветки."
+          subtitle={t("home.personalization.subtitle")}
           size="wide"
           className="mb-9 md:mb-8"
         />
@@ -451,7 +453,7 @@ export default function Personalization() {
 
               return (
                 <li
-                  key={option.title}
+                  key={option.titleKey}
                   className={`
                     personalization-timeline-item
                     group
@@ -561,7 +563,7 @@ export default function Personalization() {
                         xl:text-sm
                       "
                     >
-                      {option.title}
+                      {t(option.titleKey)}
                     </h3>
 
                     <p
@@ -580,7 +582,7 @@ export default function Personalization() {
                         xl:text-xs
                       "
                     >
-                      {option.description}
+                      {t(option.descriptionKey)}
                     </p>
                   </motion.div>
                 </li>

@@ -1,4 +1,4 @@
-import { ITEMS } from "@/lib/types";
+import { ITEMS, getAccessoryLabel } from "@/lib/types";
 
 interface AccessoryGlyphProps {
   id: string;
@@ -22,7 +22,7 @@ export default function AccessoryGlyph({
   labelFill = "#111111",
 }: AccessoryGlyphProps) {
   const accessory = ITEMS.accessories.find((item) => item.id === id);
-  const label = accessory?.label ?? id;
+  const label = getAccessoryLabel(id);
   const displayWidth = width ?? size;
   const displayHeight = height ?? size;
   const halfWidth = displayWidth / 2;
@@ -77,7 +77,7 @@ export default function AccessoryGlyph({
         fontWeight="bold"
         style={{ pointerEvents: "none", userSelect: "none" }}
       >
-        {id}
+        {label}
       </text>
     </g>
   );

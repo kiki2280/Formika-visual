@@ -2,10 +2,11 @@
 import { Send, Instagram, Facebook } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const SOCIALS = [
   {
-    label: "Telegram",
+    labelKey: "contacts.telegram",
     icon: Send,
     href: "https://t.me/formika_studio",
     testid: "social-telegram",
@@ -13,7 +14,7 @@ const SOCIALS = [
       "hover:border-[#229ED9] hover:bg-[#229ED9] hover:text-white hover:shadow-[0_14px_38px_rgba(34,158,217,0.35),0_0_30px_rgba(34,158,217,0.22)]",
   },
   {
-    label: "Instagram",
+    labelKey: "contacts.instagram",
     icon: Instagram,
     href: "https://www.instagram.com/f0rmika.studio/",
     testid: "social-instagram",
@@ -21,7 +22,7 @@ const SOCIALS = [
       "hover:border-[#E1306C] hover:bg-[linear-gradient(135deg,#833AB4_0%,#C13584_35%,#E1306C_65%,#F77737_100%)] hover:text-white hover:shadow-[0_14px_38px_rgba(225,48,108,0.32),0_0_32px_rgba(193,53,132,0.22)]",
   },
   {
-    label: "Facebook",
+    labelKey: "contacts.facebook",
     icon: Facebook,
     href: "https://www.facebook.com/share/1atrorx2fQ/?mibextid=wwXIfr",
     testid: "social-facebook",
@@ -29,7 +30,7 @@ const SOCIALS = [
       "hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white hover:shadow-[0_14px_38px_rgba(24,119,242,0.34),0_0_30px_rgba(24,119,242,0.2)]",
   },
   {
-    label: "TikTok",
+    labelKey: "contacts.tiktok",
     icon: SiTiktok,
     href: "https://www.tiktok.com/@f0rmika?_r=1&_t=ZN-97qNKEiZs38",
     testid: "social-tiktok",
@@ -39,6 +40,8 @@ const SOCIALS = [
 ];
 
 export default function CommunityCTA() {
+  const { t } = useTranslation();
+
   return (
     <section
       id="community"
@@ -68,16 +71,10 @@ export default function CommunityCTA() {
 
           <div className="relative">
             <SectionHeading
-              eyebrow="FORMIKA в соцсетях"
-              title={
-                <>
-                  <span className="block md:inline">Присоединяйтесь</span>{" "}
-                  <span className="block md:inline">к сообществу</span>{" "}
-                  <span className="block md:inline">FORMIKA</span>
-                </>
-              }
+              eyebrow={t("home.community.eyebrow")}
+              title={t("home.community.title")}
               titleClassName="text-[clamp(1.625rem,8vw,2.125rem)] leading-[1.1] md:text-[inherit] md:leading-[inherit]"
-              subtitle="Новые работы, идеи подарков и процесс создания — в наших социальных сетях."
+              subtitle={t("home.community.subtitle")}
             />
 
             <div className="mt-9 grid grid-cols-2 justify-center gap-3 sm:flex sm:flex-wrap md:gap-4">
@@ -86,11 +83,13 @@ export default function CommunityCTA() {
 
                 return (
                   <a
-                    key={social.label}
+                    key={social.labelKey}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Открыть ${social.label}`}
+                    aria-label={t("home.community.openSocialAria", {
+                      social: t(social.labelKey),
+                    })}
                     data-testid={social.testid}
                     className={`
                       group inline-flex min-h-12 items-center justify-center gap-2.5
@@ -113,15 +112,14 @@ export default function CommunityCTA() {
                       "
                     />
 
-                    <span>{social.label}</span>
+                    <span>{t(social.labelKey)}</span>
                   </a>
                 );
               })}
             </div>
 
             <p className="mx-auto mt-7 max-w-xl font-sans text-xs leading-relaxed text-white/35">
-              Подписывайтесь, чтобы видеть новые композиции, детали процесса и
-              свежие идеи для персональных подарков.
+              {t("home.community.description")}
             </p>
           </div>
         </motion.div>

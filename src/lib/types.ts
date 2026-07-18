@@ -109,6 +109,7 @@ import accessory38Img from "@/assets/accessories/accessory38.webp";
 import accessory39Img from "@/assets/accessories/accessory39.webp";
 import accessory40Img from "@/assets/accessories/accessory40.webp";
 import accessory41Img from "@/assets/accessories/accessory41.png";
+import i18n from "@/i18n";
 
 export type ProductType = "frame" | "keychain" | null;
 export type DeliveryMethod = "delivery" | "pickup";
@@ -146,16 +147,17 @@ export interface FrameOrderState {
   deliveryPrice: number;
   /** Saved preview positions for draggable frame elements, keyed by element id. */
   previewPositions?: PreviewPositions;
+  /** Saved rotations for rotatable preview elements, keyed by element instance id. */
+  previewRotations?: Record<string, number>;
 }
 
 export interface KeychainOrderState {
-  mode: "ready" | "custom";
+  mode: "choice" | "ready" | "custom";
   readyQuantities: Record<string, number>;
-  customCharacters: Character[];
+  characters: Character[];
   pets: string[];
   deliveryMethod: DeliveryMethod | null;
   deliveryPrice: number;
-  previewPositions?: PreviewPositions;
 }
 
 export interface PetItem {
@@ -210,6 +212,11 @@ function numberedAssetFromPath(path: string, prefix: string): number {
   return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
 }
 
+function numberedOptionLabel(id: string, idPrefix: string, labelPrefix: string): string {
+  const match = new RegExp(`^${idPrefix}(\\d+)$`, "i").exec(id);
+  return match ? `${labelPrefix} ${Number(match[1])}` : id;
+}
+
 function hairIdFromPath(path: string): string {
   return `hair${numberedAssetFromPath(path, "hair")}`;
 }
@@ -252,7 +259,7 @@ const HAIR_ITEMS: HairItem[] = Array.from(
   .map((id) => {
     const backImg = HAIR_BACK_BY_ID[id];
     const frontImg = HAIR_FRONT_BY_ID[id];
-    const label = id.replace("hair", "");
+    const label = numberedOptionLabel(id, "hair", "Hair");
     return {
       id,
       label,
@@ -283,39 +290,37 @@ export const PRICING = {
   delivery: 4.5,
 };
 
-export const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
-  delivery: "Доставка",
-  pickup: "Самовывоз",
-};
-
-export const PICKUP_NOTE =
-  "Самовывоз возможен в центре Риги, более точный адрес уточняется в личных сообщениях.";
-
 export function getDeliveryPrice(method: DeliveryMethod | null): number {
   return method === "delivery" ? PRICING.delivery : 0;
 }
 
 const PET_ITEMS: PetItem[] = [
-  { id: "cat1", label: "cat1", img: cat1Img },
-  { id: "cat2", label: "cat2", img: cat2Img },
-  { id: "cat3", label: "cat3", img: cat3Img },
-  { id: "cat4", label: "cat4", img: cat4Img },
-  { id: "cat5", label: "cat5", img: cat5Img },
-  { id: "cat6", label: "cat6", img: cat6Img },
-  { id: "cat7", label: "cat7", img: cat7Img },
-  { id: "cat8", label: "cat8", img: cat8Img },
-  { id: "dog1", label: "dog1", img: dog1Img },
-  { id: "dog2", label: "dog2", img: dog2Img },
-  { id: "dog3", label: "dog3", img: dog3Img },
-  { id: "dog4", label: "dog4", img: dog4Img },
-  { id: "dog5", label: "dog5", img: dog5Img },
-  { id: "dog6", label: "dog6", img: dog6Img },
-  { id: "dog7", label: "dog7", img: dog7Img },
-  { id: "dog8", label: "dog8", img: dog8Img },
-  { id: "dog9", label: "dog9", img: dog9Img },
-  { id: "dog10", label: "dog10", img: dog10Img },
-  { id: "dog11", label: "dog11", img: dog11Img },
-];
+  { id: "cat1", img: cat1Img },
+  { id: "cat2", img: cat2Img },
+  { id: "cat3", img: cat3Img },
+  { id: "cat4", img: cat4Img },
+  { id: "cat5", img: cat5Img },
+  { id: "cat6", img: cat6Img },
+  { id: "cat7", img: cat7Img },
+  { id: "cat8", img: cat8Img },
+  { id: "dog1", img: dog1Img },
+  { id: "dog2", img: dog2Img },
+  { id: "dog3", img: dog3Img },
+  { id: "dog4", img: dog4Img },
+  { id: "dog5", img: dog5Img },
+  { id: "dog6", img: dog6Img },
+  { id: "dog7", img: dog7Img },
+  { id: "dog8", img: dog8Img },
+  { id: "dog9", img: dog9Img },
+  { id: "dog10", img: dog10Img },
+  { id: "dog11", img: dog11Img },
+].map((pet) => {
+  const isCat = pet.id.startsWith("cat");
+  return {
+    ...pet,
+    label: numberedOptionLabel(pet.id, isCat ? "cat" : "dog", isCat ? "Cat" : "Dog"),
+  };
+});
 
 export const ITEMS = {
   face: FACE_ITEMS,
@@ -338,51 +343,54 @@ export const ITEMS = {
   ],
   pets: PET_ITEMS,
   accessories: [
-    { id: "accessory1", label: "accessory1", img: accessory1Img },
-    { id: "accessory2", label: "accessory2", img: accessory2Img },
-    { id: "accessory3", label: "accessory3", img: accessory3Img },
-    { id: "accessory4", label: "accessory4", img: accessory4Img },
-    { id: "accessory5", label: "accessory5", img: accessory5Img },
-    { id: "accessory6", label: "accessory6", img: accessory6Img },
-    { id: "accessory7", label: "accessory7", img: accessory7Img },
-    { id: "accessory8", label: "accessory8", img: accessory8Img },
-    { id: "accessory9", label: "accessory9", img: accessory9Img },
-    { id: "accessory10", label: "accessory10", img: accessory10Img },
-    { id: "accessory11", label: "accessory11", img: accessory11Img },
-    { id: "accessory12", label: "accessory12", img: accessory12Img },
-    { id: "accessory13", label: "accessory13", img: accessory13Img },
-    { id: "accessory14", label: "accessory14", img: accessory14Img },
-    { id: "accessory15", label: "accessory15", img: accessory15Img },
-    { id: "accessory16", label: "accessory16", img: accessory16Img },
-    { id: "accessory17", label: "accessory17", img: accessory17Img },
-    { id: "accessory18", label: "accessory18", img: accessory18Img },
-    { id: "accessory19", label: "accessory19", img: accessory19Img },
-    { id: "accessory20", label: "accessory20", img: accessory20Img },
-    { id: "accessory21", label: "accessory21", img: accessory21Img },
-    { id: "accessory22", label: "accessory22", img: accessory22Img },
-    { id: "accessory23", label: "accessory23", img: accessory23Img },
-    { id: "accessory24", label: "accessory24", img: accessory24Img },
-    { id: "accessory25", label: "accessory25", img: accessory25Img },
-    { id: "accessory26", label: "accessory26", img: accessory26Img },
-    { id: "accessory27", label: "accessory27", img: accessory27Img },
-    { id: "accessory28", label: "accessory28", img: accessory28Img },
-    { id: "accessory29", label: "accessory29", img: accessory29Img },
-    { id: "accessory30", label: "accessory30", img: accessory30Img },
-    { id: "accessory31", label: "accessory31", img: accessory31Img },
-    { id: "accessory32", label: "accessory32", img: accessory32Img },
-    { id: "accessory33", label: "accessory33", img: accessory33Img },
-    { id: "accessory34", label: "accessory34", img: accessory34Img },
-    { id: "accessory35", label: "accessory35", img: accessory35Img },
-    { id: "accessory36", label: "accessory36", img: accessory36Img },
-    { id: "accessory37", label: "accessory37", img: accessory37Img },
-    { id: "accessory38", label: "accessory38", img: accessory38Img },
-    { id: "accessory39", label: "accessory39", img: accessory39Img },
-    { id: "accessory40", label: "accessory40", img: accessory40Img },
-    { id: "accessory41", label: "Ребёнок", img: accessory41Img, price: 5 },
-  ],
+    { id: "accessory1", img: accessory1Img },
+    { id: "accessory2", img: accessory2Img },
+    { id: "accessory3", img: accessory3Img },
+    { id: "accessory4", img: accessory4Img },
+    { id: "accessory5", img: accessory5Img },
+    { id: "accessory6", img: accessory6Img },
+    { id: "accessory7", img: accessory7Img },
+    { id: "accessory8", img: accessory8Img },
+    { id: "accessory9", img: accessory9Img },
+    { id: "accessory10", img: accessory10Img },
+    { id: "accessory11", img: accessory11Img },
+    { id: "accessory12", img: accessory12Img },
+    { id: "accessory13", img: accessory13Img },
+    { id: "accessory14", img: accessory14Img },
+    { id: "accessory15", img: accessory15Img },
+    { id: "accessory16", img: accessory16Img },
+    { id: "accessory17", img: accessory17Img },
+    { id: "accessory18", img: accessory18Img },
+    { id: "accessory19", img: accessory19Img },
+    { id: "accessory20", img: accessory20Img },
+    { id: "accessory21", img: accessory21Img },
+    { id: "accessory22", img: accessory22Img },
+    { id: "accessory23", img: accessory23Img },
+    { id: "accessory24", img: accessory24Img },
+    { id: "accessory25", img: accessory25Img },
+    { id: "accessory26", img: accessory26Img },
+    { id: "accessory27", img: accessory27Img },
+    { id: "accessory28", img: accessory28Img },
+    { id: "accessory29", img: accessory29Img },
+    { id: "accessory30", img: accessory30Img },
+    { id: "accessory31", img: accessory31Img },
+    { id: "accessory32", img: accessory32Img },
+    { id: "accessory33", img: accessory33Img },
+    { id: "accessory34", img: accessory34Img },
+    { id: "accessory35", img: accessory35Img },
+    { id: "accessory36", img: accessory36Img },
+    { id: "accessory37", img: accessory37Img },
+    { id: "accessory38", img: accessory38Img },
+    { id: "accessory39", img: accessory39Img },
+    { id: "accessory40", img: accessory40Img },
+    { id: "accessory41", img: accessory41Img, price: 5 },
+  ].map((accessory) => ({
+    ...accessory,
+    label: numberedOptionLabel(accessory.id, "accessory", "Acc"),
+  })),
 };
 
-export const HEARTS: { id: string; img: string }[] = [
+export const HEARTS: { id: string; label: string; img: string }[] = [
   { id: "HEART-01", img: heartImg01 },
   { id: "HEART-02", img: heartImg02 },
   { id: "HEART-03", img: heartImg03 },
@@ -399,7 +407,89 @@ export const HEARTS: { id: string; img: string }[] = [
   { id: "HEART-14", img: heartImg14 },
   { id: "HEART-15", img: heartImg15 },
   { id: "HEART-16", img: heartImg16 },
-];
+].map((heart) => ({
+  ...heart,
+  label: numberedOptionLabel(heart.id, "HEART-", "Heart"),
+}));
+
+export function getCatalogOptionLabel(id: string): string {
+  if (id === DEFAULT_FACE_ID) return i18n.t("catalog.defaultFace");
+
+  const patterns: [RegExp, string, boolean?][] = [
+    [/^face(\d+)$/i, "catalog.faceOption"],
+    [/^hair(\d+)$/i, "catalog.hairOption"],
+    [/^TOP-(\d+)$/i, "catalog.topOption", true],
+    [/^BOTTOM-(\d+)$/i, "catalog.bottomOption", true],
+    [/^accessory(\d+)$/i, "catalog.accessoryOption"],
+    [/^cat(\d+)$/i, "catalog.catOption"],
+    [/^dog(\d+)$/i, "catalog.dogOption"],
+    [/^HEART-(\d+)$/i, "catalog.heartOption"],
+  ];
+
+  for (const [pattern, key, preserveLeadingZero] of patterns) {
+    const match = pattern.exec(id);
+
+    if (match) {
+      const number = preserveLeadingZero ? match[1] : String(Number(match[1]));
+      return i18n.t(key, { number });
+    }
+  }
+
+  return id;
+}
+
+export function getCharacterOptionLabel(item: { id: string; label?: string }): string {
+  const translated = getCatalogOptionLabel(item.id);
+  return translated === item.id ? item.label ?? item.id : translated;
+}
+
+function getItemLabel(items: readonly { id: string; label?: string }[], id: string): string {
+  const item = items.find((candidate) => candidate.id === id);
+  return item ? getCharacterOptionLabel(item) : getCatalogOptionLabel(id);
+}
+
+export function getHairLabel(id: string): string {
+  return getItemLabel(ITEMS.hair, id);
+}
+
+export function getPetLabel(id: string): string {
+  return getItemLabel(ITEMS.pets, id);
+}
+
+export function getAccessoryLabel(id: string): string {
+  return getItemLabel(ITEMS.accessories, id);
+}
+
+export function getHeartLabel(id: string): string {
+  return getItemLabel(HEARTS, id);
+}
+
+export function getFaceLabel(id: string): string {
+  return getCatalogOptionLabel(id);
+}
+
+export function getFrameColorLabel(color: FrameOrderState["color"]): string {
+  return color === "Чёрная"
+    ? i18n.t("frameBuilder.color.black")
+    : i18n.t("frameBuilder.color.white");
+}
+
+export function getLightingLabel(lighting: FrameOrderState["lighting"]): string {
+  const keys: Record<FrameOrderState["lighting"], string> = {
+    "Без подсветки": "frameBuilder.lighting.none",
+    "LED-гирлянда": "frameBuilder.lighting.garland",
+    "LED RGB": "frameBuilder.lighting.rgb",
+    "LED с облаками": "frameBuilder.lighting.clouds",
+  };
+
+  return i18n.t(keys[lighting]);
+}
+
+export function getDeliveryMethodLabel(method: DeliveryMethod | null): string {
+  if (method === "delivery") return i18n.t("common.delivery");
+  if (method === "pickup") return i18n.t("common.pickup");
+  return i18n.t("common.notSelected");
+}
 
 export const HEART_IMG: Record<string, string> = Object.fromEntries(HEARTS.map(h => [h.id, h.img]));
 
@@ -407,12 +497,17 @@ export function formatEuro(n: number): string {
   return Number.isInteger(n) ? `${n}€` : `${n.toFixed(2).replace(".", ",")}€`;
 }
 
-export const READY_KEYCHAINS = [
-  { id: "kb-black-batman", name: "Чёрный Бэтмен", price: 7, img: "optimized/ready-keychain-3.webp" },
-  { id: "kb-pink-batman", name: "Розовый Бэтмен", price: 7, img: "optimized/ready-keychain-4.webp" },
-  { id: "kb-blue-shark", name: "Синяя акула", price: 7, img: "optimized/ready-keychain-1.webp" },
-  { id: "kb-pink-shark", name: "Розовая акула", price: 7, img: "optimized/ready-keychain-2.webp" },
-];
+const READY_KEYCHAIN_NAME_KEYS: Record<string, string> = {
+  "kb-black-batman": "catalog.blackBatman",
+  "kb-pink-batman": "catalog.pinkBatman",
+  "kb-blue-shark": "catalog.blueShark",
+  "kb-pink-shark": "catalog.pinkShark",
+};
+
+export function getReadyKeychainName(id: string): string {
+  const key = READY_KEYCHAIN_NAME_KEYS[id];
+  return key ? i18n.t(key) : id;
+}
 
 export function makeCharacter(id?: string, defaults: Partial<Character> = {}): Character {
   return { id: id ?? Math.random().toString(36).slice(2), name: "", face: DEFAULT_FACE_ID, hair: null, top: null, bottom: null, accessories: [], ...defaults };

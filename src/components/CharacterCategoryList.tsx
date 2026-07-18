@@ -5,6 +5,7 @@ export interface CharacterCategoryItem<T extends string = string> {
   id: T;
   title: string;
   value: string;
+  invalid?: boolean;
   preview?: {
     src?: string;
     alt: string;
@@ -31,8 +32,11 @@ export default function CharacterCategoryList<T extends string = string>({
           onClick={() => onOpen(item.id)}
           className={cn(
             "w-full rounded-xl border border-border bg-background/45 p-3 text-left transition-all",
-            "hover:border-primary/60 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+            "hover:border-primary/60 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+            item.invalid &&
+              "border-destructive/80 bg-destructive/10 shadow-[0_0_0_1px_rgba(239,68,68,0.22)] hover:border-destructive",
           )}
+          aria-invalid={item.invalid || undefined}
           data-testid={item.testId}
         >
           <span className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import { ITEMS } from "@/lib/types";
+import { ITEMS, getPetLabel } from "@/lib/types";
 
 interface PetGlyphProps {
   id: string;
@@ -8,10 +8,9 @@ interface PetGlyphProps {
 
 export default function PetGlyph({ id, showLabel = true, labelFill = "#111111" }: PetGlyphProps) {
   const pet = ITEMS.pets.find((item) => item.id === id);
+  const label = getPetLabel(id);
 
   if (pet?.img) {
-    const label = pet.label ?? id;
-
     return (
       <g>
         <image
@@ -62,7 +61,7 @@ export default function PetGlyph({ id, showLabel = true, labelFill = "#111111" }
           fontWeight="bold"
           style={{ pointerEvents: "none", userSelect: "none" }}
         >
-          {id}
+          {label}
         </text>
       )}
     </g>

@@ -1,4 +1,5 @@
 import logoWordmark from "@assets/logo_wordmark.png";
+import { useTranslation } from "react-i18next";
 
 const logoPhotoSrc = `${import.meta.env.BASE_URL}images/formika-logo.jpg`;
 
@@ -20,6 +21,7 @@ const logoSizes = {
 };
 
 export default function BrandLogo({ variant = "header" }: BrandLogoProps) {
+  const { t } = useTranslation();
   const size = logoSizes[variant];
 
   return (
@@ -29,7 +31,7 @@ export default function BrandLogo({ variant = "header" }: BrandLogoProps) {
       >
         <img
           src={logoPhotoSrc}
-          alt="Formika logo"
+          alt={t("brand.logoAlt")}
           width={1024}
           height={1024}
           loading={size.loading}

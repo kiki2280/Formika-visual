@@ -5,6 +5,7 @@ import GalleryModal, {
   type GalleryModalData,
 } from "@/components/GalleryModal";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
 
@@ -27,84 +28,80 @@ const IMG = {
 };
 
 interface WorkItem {
-  title: string;
-  desc: string;
+  titleKey: string;
+  descriptionKey: string;
+  modalDescriptionKey: string;
   img: string;
   imagePosition?: string;
-  modal: GalleryModalData;
+  images: GalleryModalData["images"];
 }
 
 const WORKS: WorkItem[] = [
   {
-    title: "Персональные",
-    desc: "Уникальная композиция, созданная по вашей фотографии.",
+    titleKey: "home.works.personalTitle",
+    descriptionKey: "home.works.personalDescription",
+    modalDescriptionKey: "home.works.personalModalDescription",
     img: IMG.personal,
     imagePosition: "object-[center_70%]",
-    modal: {
-      title: "Персональные",
-      description:
-        "Композиции для одного человека, хобби, профессии или особенного образа. Можно добавить имя, дату, питомца, аксессуары и подсветку.",
-      images: [
+    images: [
         { src: IMG.personal },
         { src: IMG.personal2 },
         { src: IMG.personal3 },
-      ],
-    },
+    ],
   },
   {
-    title: "Для пары",
-    desc: "Ваша общая история, воплощённая в маленьких деталях.",
+    titleKey: "home.works.coupleTitle",
+    descriptionKey: "home.works.coupleDescription",
+    modalDescriptionKey: "home.works.coupleModalDescription",
     img: IMG.couple,
     imagePosition: "object-[center_70%]",
-    modal: {
-      title: "Для пары",
-      description:
-        "Подарок для годовщины, свадьбы, предложения или важного момента вдвоём. Можно добавить имена, дату, питомца и детали вашей истории.",
-      images: [
+    images: [
         { src: IMG.couple },
         { src: IMG.couple2 },
         { src: IMG.couple3 },
-      ],
-    },
+    ],
   },
   {
-    title: "Семейные",
-    desc: "Тёплый подарок для семьи, детей и самых близких.",
+    titleKey: "home.works.familyTitle",
+    descriptionKey: "home.works.familyDescription",
+    modalDescriptionKey: "home.works.familyModalDescription",
     img: IMG.family1,
     imagePosition: "object-[center_70%]",
-    modal: {
-      title: "Семейные",
-      description:
-        "Тёплая композиция для семьи, детей, родителей и домашних питомцев. Хорошо подходит для семейных праздников и памятных подарков.",
-      images: [
+    images: [
         { src: IMG.family1 },
         { src: IMG.family2 },
         { src: IMG.family3 },
-      ],
-    },
+    ],
   },
   {
-    title: "Свадебные композиции",
-    desc: "Памятная рамочка с вашей парой, датой и именами.",
+    titleKey: "home.works.weddingTitle",
+    descriptionKey: "home.works.weddingDescription",
+    modalDescriptionKey: "home.works.weddingModalDescription",
     img: IMG.wedding1,
     imagePosition: "object-[center_70%]",
-    modal: {
-      title: "Свадебные композиции",
-      description:
-        "Создаём нежные рамочки со свадебными фигурками — с вашей парой, датой, именами и важными деталями истории. Если хотите именно свадебные фигурки, напишите нам в Telegram: мы подскажем, какие варианты есть в наличии.",
-      images: [
+    images: [
         { src: IMG.wedding1 },
         { src: IMG.wedding2 },
         { src: IMG.wedding3 },
-      ],
-    },
+    ],
   },
 ];
 
 export default function WorksGallery() {
+  const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
   const closeGallery = useCallback(() => setActive(null), []);
+  const works = WORKS.map((work) => ({
+    ...work,
+    title: t(work.titleKey),
+    description: t(work.descriptionKey),
+    modal: {
+      title: t(work.titleKey),
+      description: t(work.modalDescriptionKey),
+      images: work.images,
+    },
+  }));
 
   return (
     <section
@@ -113,14 +110,14 @@ export default function WorksGallery() {
     >
       {/* Заголовок блока */}
       <SectionHeading
-        eyebrow="Примеры наших работ"
-        title="Наши работы"
-        subtitle="Персональные композиции, созданные по фотографиям и историям наших клиентов."
+        eyebrow={t("home.works.eyebrow")}
+        title={t("home.works.title")}
+        subtitle={t("home.works.subtitle")}
       />
 
       {/* Карточки работ */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {WORKS.map((work, index) => (
+        {works.map((work, index) => (
           <motion.div
             key={work.title}
             initial={{ opacity: 0, y: 28 }}
@@ -159,11 +156,11 @@ export default function WorksGallery() {
                 </h3>
 
                 <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm md:mt-1.5">
-                  {work.desc}
+                  {work.description}
                 </p>
 
                 <span className="mt-2 inline-flex max-w-full items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md md:mt-3 md:py-2 md:text-[10px] md:tracking-[0.08em]">
-                  Подробнее
+                  {t("common.details")}
 
                   <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </span>
@@ -190,11 +187,11 @@ export default function WorksGallery() {
 
             <div>
               <p className="font-sans text-lg font-semibold text-white sm:text-xl">
-                Больше работ — в нашем Instagram
+                {t("home.works.instagramTitle")}
               </p>
 
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Новые композиции, детали создания и идеи для подарков.
+                {t("home.works.instagramDescription")}
               </p>
             </div>
           </div>
@@ -205,7 +202,7 @@ export default function WorksGallery() {
             rel="noopener noreferrer"
             className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-primary px-6 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_10px_28px_rgba(255,106,0,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_14px_34px_rgba(255,106,0,0.35)]"
           >
-            Смотреть Instagram
+            {t("home.works.instagramButton")}
           </a>
         </div>
       </motion.div>
@@ -215,7 +212,7 @@ export default function WorksGallery() {
         onClose={closeGallery}
         returnFocusRef={activeTriggerRef}
         cta={{
-          label: "Заказать",
+          label: t("common.order"),
           href: "/order",
           testId: "btn-modal-order",
         }}

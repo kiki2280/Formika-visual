@@ -1,9 +1,11 @@
 import { Minus, Plus, RotateCcw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   type FrameOrderState,
   HEARTS,
   PRICING,
   formatEuro,
+  getHeartLabel,
 } from "@/lib/types";
 import CollapsibleOptionGrid from "@/components/CollapsibleOptionGrid";
 
@@ -12,14 +14,11 @@ interface StepProps {
   onChange: (state: FrameOrderState) => void;
 }
 
-function getHeartLabel(index: number) {
-  return `Сердечко ${index + 1}`;
-}
-
 export default function HeartsStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
   const setHeartQty = (
     id: string,
     quantity: number,
@@ -70,13 +69,13 @@ export default function HeartsStep({
       <div className="flex flex-col gap-4 rounded-[22px] border border-white/[0.09] bg-white/[0.025] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-sans text-sm font-medium text-white">
-            Добавьте сердечки на задний фон
+            {t("frameBuilder.hearts.instruction")}
           </p>
 
           <p className="mt-1 font-sans text-xs leading-relaxed text-white/[0.42]">
-            Стоимость одного сердечка —{" "}
-            {formatEuro(PRICING.heart)}. Можно
-            выбрать несколько вариантов.
+            {t("frameBuilder.hearts.pricingDescription", {
+              price: formatEuro(PRICING.heart),
+            })}
           </p>
         </div>
 
@@ -97,18 +96,20 @@ export default function HeartsStep({
               "
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              Очистить
+              {t("frameBuilder.hearts.clear")}
             </button>
           )}
 
           <div className="rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-2.5 text-right">
             <p className="font-sans text-[10px] font-bold uppercase tracking-[0.1em] text-white/35">
-              Выбрано
+              {t("common.selected")}
             </p>
 
             <p className="mt-0.5 font-sans text-sm font-semibold text-primary">
-              {selectedTotal} шт. ·{" "}
-              {formatEuro(totalPrice)}
+              {t("frameBuilder.hearts.selectionSummary", {
+                count: selectedTotal,
+                price: formatEuro(totalPrice),
+              })}
             </p>
           </div>
         </div>
@@ -121,16 +122,15 @@ export default function HeartsStep({
         expandedByDefault={
           hasSelectedHiddenHeart
         }
-        buttonLabel="Показать все сердечки"
+        buttonLabel={t("frameBuilder.hearts.showAll")}
         testId="hearts-show-all"
       >
-        {HEARTS.map((heart, index) => {
+        {HEARTS.map((heart) => {
           const quantity =
             state.hearts[heart.id] ?? 0;
 
           const isSelected = quantity > 0;
-          const heartLabel =
-            getHeartLabel(index);
+          const heartLabel = getHeartLabel(heart.id);
 
           return (
             <article
@@ -166,7 +166,9 @@ export default function HeartsStep({
                   )
                 }
                 className="relative flex h-[178px] w-full items-center justify-center overflow-hidden border-b border-white/[0.07] bg-[#141414]"
-                aria-label={`Добавить ${heartLabel}`}
+                aria-label={t("frameBuilder.hearts.addAria", {
+                  heart: heartLabel,
+                })}
                 data-testid={`heart-add-${heart.id}`}
               >
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_66%)]" />
@@ -208,7 +210,7 @@ export default function HeartsStep({
                     </h3>
 
                     <p className="mt-1 font-sans text-xs text-white/[0.38]">
-                      На задний фон
+                      {t("frameBuilder.hearts.backgroundLabel")}
                     </p>
                   </div>
 
@@ -250,7 +252,9 @@ export default function HeartsStep({
                       disabled:cursor-not-allowed
                       disabled:opacity-25
                     "
-                    aria-label={`Убрать ${heartLabel}`}
+                    aria-label={t("frameBuilder.hearts.removeAria", {
+                      heart: heartLabel,
+                    })}
                     data-testid={`heart-minus-${heart.id}`}
                   >
                     <Minus className="h-4 w-4" />
@@ -291,7 +295,9 @@ export default function HeartsStep({
                       hover:bg-primary
                       hover:text-white
                     "
-                    aria-label={`Добавить ${heartLabel}`}
+                    aria-label={t("frameBuilder.hearts.addAria", {
+                      heart: heartLabel,
+                    })}
                     data-testid={`heart-plus-${heart.id}`}
                   >
                     <Plus className="h-4 w-4" />

@@ -1,4 +1,5 @@
 import { formatEuro } from "@/lib/pricing";
+import { useTranslation } from "react-i18next";
 
 interface BuilderProgressProps {
   stepNumber: number;
@@ -13,8 +14,9 @@ export default function BuilderProgress({
   totalSteps,
   title,
   total,
-  totalLabel = "Текущая стоимость",
+  totalLabel,
 }: BuilderProgressProps) {
+  const { t } = useTranslation();
   const progress =
     (stepNumber / totalSteps) * 100;
 
@@ -24,7 +26,10 @@ export default function BuilderProgress({
         <div className="flex items-center justify-between gap-6">
           <div className="min-w-0">
             <p className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-white/[0.38]">
-              Шаг {stepNumber} из {totalSteps}
+              {t("builderProgress.stepOfTotal", {
+                step: stepNumber,
+                total: totalSteps,
+              })}
             </p>
 
             <p className="mt-1 truncate font-sans text-base font-medium tracking-normal text-white">
@@ -34,7 +39,7 @@ export default function BuilderProgress({
 
           <div className="shrink-0 text-right">
             <p className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-white/[0.38]">
-              {totalLabel}
+              {totalLabel ?? t("builderProgress.currentPrice")}
             </p>
 
             <p

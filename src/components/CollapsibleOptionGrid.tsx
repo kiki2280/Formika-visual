@@ -1,5 +1,6 @@
 import { Children, type ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface CollapsibleOptionGridProps {
   alwaysVisible?: ReactNode;
@@ -19,9 +20,10 @@ export default function CollapsibleOptionGrid({
   desktopInitialVisible,
   expandedByDefault = false,
   className,
-  buttonLabel = "Посмотреть всё",
+  buttonLabel,
   testId,
 }: CollapsibleOptionGridProps) {
+  const { t } = useTranslation();
   const [manuallyExpanded, setManuallyExpanded] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)").matches : false
@@ -55,7 +57,7 @@ export default function CollapsibleOptionGrid({
           className="col-span-full rounded-xl border border-primary/60 bg-primary/10 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           data-testid={testId}
         >
-          {buttonLabel}
+          {buttonLabel ?? t("common.showAll")}
         </button>
       )}
     </div>

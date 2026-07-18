@@ -11,6 +11,7 @@ import GalleryModal, {
   type GalleryModalData,
 } from "@/components/GalleryModal";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
 
@@ -26,51 +27,55 @@ const IMG = {
 };
 
 const PRODUCTS: {
-  title: string;
-  desc: string;
+  titleKey: string;
+  descriptionKey: string;
+  modalDescriptionKey: string;
   img: string;
   imagePosition?: string;
-  modal: GalleryModalData;
+  images: GalleryModalData["images"];
 }[] = [
   {
-    title: "Готовые брелочки",
-    desc: "Готовые модели, которые можно заказать сразу.",
+    titleKey: "home.otherProducts.readyTitle",
+    descriptionKey: "home.otherProducts.readyDescription",
+    modalDescriptionKey: "home.otherProducts.readyModalDescription",
     img: IMG.readyKeychain3,
     imagePosition: "object-[center_70%]",
-    modal: {
-      title: "Готовые брелочки",
-      description:
-        "Готовые модели FORMIKA, которые можно заказать сразу. Отличный небольшой подарок или дополнение к рамке.",
-      images: [
+    images: [
         { src: IMG.readyKeychain3 },
         { src: IMG.readyKeychain4 },
         { src: IMG.readyKeychain1 },
         { src: IMG.readyKeychain2 },
-      ],
-    },
+    ],
   },
   {
-    title: "Кастомные брелочки",
-    desc: "Брелок с человечком, которого можно собрать под себя.",
+    titleKey: "home.otherProducts.customTitle",
+    descriptionKey: "home.otherProducts.customDescription",
+    modalDescriptionKey: "home.otherProducts.customModalDescription",
     img: IMG.productKeychain1,
     imagePosition: "object-[center_60%]",
-    modal: {
-      title: "Кастомные брелочки",
-      description:
-        "Брелок с человечком, которого можно собрать под себя — лицо, причёска, одежда и аксессуары на ваш вкус.",
-      images: [
+    images: [
         { src: IMG.productKeychain1 },
         { src: IMG.productKeychain2 },
         { src: IMG.productKeychain3 },
-      ],
-    },
+    ],
   },
 ];
 
 export default function OtherProducts() {
+  const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
   const closeGallery = useCallback(() => setActive(null), []);
+  const products = PRODUCTS.map((product) => ({
+    ...product,
+    title: t(product.titleKey),
+    description: t(product.descriptionKey),
+    modal: {
+      title: t(product.titleKey),
+      description: t(product.modalDescriptionKey),
+      images: product.images,
+    },
+  }));
 
   const openGallery = (
     data: GalleryModalData,
@@ -83,12 +88,12 @@ export default function OtherProducts() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
       <SectionHeading
-        eyebrow="Больше идей для подарка"
-        title="Другие товары FORMIKA"
+        eyebrow={t("home.otherProducts.eyebrow")}
+        title={t("home.otherProducts.title")}
       />
 
       <div className="mx-auto grid max-w-5xl gap-5 sm:grid-cols-2">
-        {PRODUCTS.map((p, i) => (
+        {products.map((p, i) => (
           <motion.div
             key={p.title}
             initial={{ opacity: 0, y: 30 }}
@@ -115,7 +120,7 @@ export default function OtherProducts() {
             data-testid={`card-product-${i}`}
             role="button"
             tabIndex={0}
-            aria-label={`Открыть галерею ${p.title}`}
+            aria-label={t("home.otherProducts.openGalleryAria", { title: p.title })}
           >
             <img
               src={p.img}
@@ -135,7 +140,7 @@ export default function OtherProducts() {
               </h3>
 
               <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm">
-                {p.desc}
+                {p.description}
               </p>
 
               <button
@@ -147,7 +152,7 @@ export default function OtherProducts() {
                 className="mt-2 inline-flex max-w-full items-center justify-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md transition-colors hover:border-primary/60 hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:mt-3 md:py-2 md:text-[10px] md:tracking-[0.08em]"
                 data-testid={`btn-product-details-${i}`}
               >
-                Подробнее <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+                {t("common.details")} <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
               </button>
             </div>
           </motion.div>
@@ -159,7 +164,7 @@ export default function OtherProducts() {
         onClose={closeGallery}
         returnFocusRef={activeTriggerRef}
         cta={{
-          label: "Заказать",
+          label: t("common.order"),
           href: "/order",
           testId: "btn-modal-order",
         }}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "@/lib/motion";
 import { Quote, Star } from "lucide-react";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 interface Review {
   name: string;
@@ -9,53 +10,17 @@ interface Review {
   text: string;
 }
 
-const REVIEWS: Review[] = [
-  {
-    name: "Аня",
-    order: "Рамочка для пары",
-    text: "Заказывала подарок на годовщину. Получилось очень лично и красиво, все детали подобрали именно под нас.",
-  },
-  {
-    name: "Мария",
-    order: "Рамочка с LED-гирляндой",
-    text: "Очень аккуратная работа. Тёплая подсветка вечером выглядит невероятно уютно.",
-  },
-  {
-    name: "София",
-    order: "Семейная рамочка",
-    text: "Понравилось, что можно было добавить всех членов семьи, питомца и важную для нас дату.",
-  },
-  {
-    name: "Кристина",
-    order: "Рамочка с LED RGB",
-    text: "Подсветка имеет разные цвета и режимы. Подарок получился ярким и необычным.",
-  },
-  {
-    name: "Елена",
-    order: "Персональная рамочка",
-    text: "Быстро обсудили детали и сделали композицию именно по нашей фотографии.",
-  },
-  {
-    name: "Лиза",
-    order: "Кастомный брелок",
-    text: "Брелочек получился очень милым и похожим на человека, для которого я его заказывала.",
-  },
-  {
-    name: "Диана",
-    order: "Рамочка с облаками",
-    text: "Эффект облаков и цветная подсветка выглядят очень атмосферно. Вживую ещё красивее.",
-  },
-  {
-    name: "Ольга",
-    order: "Подарочная рамочка",
-    text: "Заказ пришёл аккуратно упакованным. Всё выглядело красиво и было готово вовремя.",
-  },
-  {
-    name: "Виктория",
-    order: "Рамочка для пары",
-    text: "Очень понравилась детализация фигурок и то, как внимательно отнеслись к нашим пожеланиям.",
-  },
-];
+const REVIEW_IDS = [
+  "anya",
+  "maria",
+  "sofia",
+  "kristina",
+  "elena",
+  "liza",
+  "diana",
+  "olga",
+  "victoria",
+] as const;
 
 interface ReviewCardProps {
   review: Review;
@@ -64,6 +29,7 @@ interface ReviewCardProps {
 }
 
 function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
+  const { t } = useTranslation();
   const initial = review.name.trim().charAt(0).toUpperCase();
 
   return (
@@ -100,7 +66,7 @@ function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
       <div className="relative flex items-center gap-3">
         <div
           className="flex items-center gap-1"
-          aria-label="Оценка: пять из пяти"
+          aria-label={t("home.reviews.ratingAria")}
         >
           {Array.from({ length: 5 }).map((_, starIndex) => (
             <Star
@@ -111,12 +77,12 @@ function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
           ))}
         </div>
 
-        <span className="text-xs font-semibold text-white/30">5.0</span>
+        <span className="text-xs font-semibold text-white/30">{t("home.reviews.ratingValue")}</span>
       </div>
 
       <blockquote className="relative mt-4 flex-1 md:mt-7">
         <p className="font-sans text-sm leading-relaxed text-white/75 md:text-[15px]">
-          «{review.text}»
+          {t("home.reviews.quote", { text: review.text })}
         </p>
       </blockquote>
 
@@ -129,7 +95,7 @@ function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
             shadow-[0_0_22px_rgba(255,106,0,0.08)]
           "
         >
-          {initial}
+          {t("home.reviews.customerInitial", { initial })}
         </span>
 
         <div className="min-w-0">
@@ -147,7 +113,13 @@ function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
 }
 
 export default function Reviews() {
+  const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
+  const reviews: Review[] = REVIEW_IDS.map((id) => ({
+    name: t(`home.reviews.${id}Name`),
+    order: t(`home.reviews.${id}Order`),
+    text: t(`home.reviews.${id}Text`),
+  }));
 
   return (
     <section
@@ -158,14 +130,14 @@ export default function Reviews() {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Истории наших клиентов"
-          title="Отзывы клиентов"
-          subtitle="Тёплые слова о персональных подарках, созданных в FORMIKA."
+          eyebrow={t("home.reviews.eyebrow")}
+          title={t("home.reviews.title")}
+          subtitle={t("home.reviews.subtitle")}
         />
 
         <div className="mt-10 grid gap-3 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
           <AnimatePresence initial={false}>
-            {REVIEWS.map((review, index) => (
+            {reviews.map((review, index) => (
               <ReviewCard
                 key={`${review.name}-${index}`}
                 review={review}
@@ -176,7 +148,7 @@ export default function Reviews() {
           </AnimatePresence>
         </div>
 
-        {REVIEWS.length > 3 && (
+        {reviews.length > 3 && (
           <div className="mt-6 flex justify-center md:hidden">
             <button
               type="button"
@@ -184,7 +156,7 @@ export default function Reviews() {
               className="inline-flex h-11 items-center justify-center rounded-full border border-primary/40 bg-primary/[0.06] px-5 font-sans text-xs font-bold uppercase tracking-[0.07em] text-primary transition-all duration-300 hover:border-primary/65 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               data-testid="button-toggle-reviews"
             >
-              {showAll ? "Скрыть" : "Посмотреть ещё"}
+              {showAll ? t("home.reviews.hide") : t("home.reviews.showMore")}
             </button>
           </div>
         )}

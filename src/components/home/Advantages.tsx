@@ -6,39 +6,38 @@ import {
   Truck,
 } from "lucide-react";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const ITEMS = [
   {
     icon: Camera,
     number: "01",
-    title: "По вашей фотографии",
-    description:
-      "Подбираем внешность, одежду и детали персонажей под вашу историю.",
+    titleKey: "home.advantages.photoTitle",
+    descriptionKey: "home.advantages.photoDescription",
   },
   {
     icon: MessagesSquare,
     number: "02",
-    title: "Согласование до сборки",
-    description:
-      "Заранее уточняем пожелания, стоимость, сроки и все важные детали.",
+    titleKey: "home.advantages.approvalTitle",
+    descriptionKey: "home.advantages.approvalDescription",
   },
   {
     icon: Clock3,
     number: "03",
-    title: "Изготовление 1–7 дней",
-    description:
-      "Срок зависит от сложности композиции и выбранного оформления.",
+    titleKey: "home.advantages.productionTitle",
+    descriptionKey: "home.advantages.productionDescription",
   },
   {
     icon: Truck,
     number: "04",
-    title: "Доставка по Европе",
-    description:
-      "Доставляем по Латвии и отправляем заказы в другие страны Европы.",
+    titleKey: "home.advantages.deliveryTitle",
+    descriptionKey: "home.advantages.deliveryDescription",
   },
 ];
 
 export default function Advantages() {
+  const { t } = useTranslation();
+
   return (
     <section
       id="advantages"
@@ -46,16 +45,9 @@ export default function Advantages() {
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Почему выбирают FORMIKA"
-title={
-  <>
-    <span>Наши</span>{" "}
-    <span className="block whitespace-nowrap text-[clamp(1.5rem,7vw,1.875rem)] md:inline md:text-[44px]">
-      преимущества
-    </span>
-  </>
-}
-subtitle="Простой и понятный процесс — от вашей идеи до готового подарка."
+          eyebrow={t("home.advantages.eyebrow")}
+          title={t("home.advantages.title")}
+          subtitle={t("home.advantages.subtitle")}
 />
 
         <motion.div
@@ -76,7 +68,7 @@ subtitle="Простой и понятный процесс — от вашей 
 
               return (
                 <article
-                  key={item.title}
+                  key={item.titleKey}
                   className={`
                     group relative min-h-0 p-4 md:min-h-[230px] md:p-7
                     transition-colors duration-300
@@ -109,11 +101,11 @@ subtitle="Простой и понятный процесс — от вашей 
                   </div>
 
                   <h3 className="mt-5 font-sans text-base font-semibold leading-snug text-white md:mt-8 md:text-lg">
-                    {item.title}
+                    {t(item.titleKey)}
                   </h3>
 
                   <p className="mt-2 font-sans text-[13px] leading-relaxed text-white/50 md:mt-3 md:text-sm">
-                    {item.description}
+                    {t(item.descriptionKey)}
                   </p>
                 </article>
               );

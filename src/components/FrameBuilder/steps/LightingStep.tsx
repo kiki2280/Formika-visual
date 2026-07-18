@@ -10,6 +10,7 @@ import {
   type FrameOrderState,
   PRICING,
 } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
 interface StepProps {
   state: FrameOrderState;
@@ -20,7 +21,8 @@ const base = import.meta.env.BASE_URL;
 
 type LightingOption = {
   id: FrameOrderState["lighting"];
-  subtitle: string;
+  labelKey: string;
+  subtitleKey: string;
   image?: string;
   imagePosition?: string;
   icon: LucideIcon;
@@ -29,26 +31,30 @@ type LightingOption = {
 const LIGHTING: LightingOption[] = [
   {
     id: "Без подсветки",
-    subtitle: "Классическая композиция без дополнительного света",
+    labelKey: "frameBuilder.lighting.none",
+    subtitleKey: "frameBuilder.lighting.noneDescription",
     icon: LightbulbOff,
   },
   {
     id: "LED-гирлянда",
-    subtitle: "Тёплый мягкий свет по периметру рамки",
+    labelKey: "frameBuilder.lighting.garland",
+    subtitleKey: "frameBuilder.lighting.garlandDescription",
     image: `${base}images/optimized/light-garland-card-2.webp`,
     imagePosition: "object-[center_52%]",
     icon: Sparkles,
   },
   {
     id: "LED RGB",
-    subtitle: "Многоцветная подсветка с пультом и режимами",
+    labelKey: "frameBuilder.lighting.rgb",
+    subtitleKey: "frameBuilder.lighting.rgbDescription",
     image: `${base}images/optimized/light-rgb-card1.webp`,
     imagePosition: "object-[center_48%]",
     icon: Palette,
   },
   {
     id: "LED с облаками",
-    subtitle: "Объёмный эффект неба и мягкий цветной свет",
+    labelKey: "frameBuilder.lighting.clouds",
+    subtitleKey: "frameBuilder.lighting.cloudsDescription",
     image: `${base}images/optimized/light-clouds-card1.webp`,
     imagePosition: "object-[center_50%]",
     icon: Cloud,
@@ -59,6 +65,8 @@ export default function LightingStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 md:gap-5">
       {LIGHTING.map((option) => {
@@ -97,7 +105,7 @@ export default function LightingStep({
                 <>
                   <img
                     src={option.image}
-                    alt={option.id}
+                    alt={t(option.labelKey)}
                     width={900}
                     height={700}
                     loading="lazy"
@@ -167,11 +175,11 @@ export default function LightingStep({
                       }
                     `}
                   >
-                    {option.id}
+                    {t(option.labelKey)}
                   </h3>
 
                   <p className="mt-1.5 font-sans text-[13px] leading-relaxed text-white/[0.43] md:mt-2 md:text-sm">
-                    {option.subtitle}
+                    {t(option.subtitleKey)}
                   </p>
                 </div>
 
@@ -188,7 +196,9 @@ export default function LightingStep({
                     }
                   `}
                 >
-                  {price > 0 ? `+${price} €` : "0 €"}
+                  {price > 0
+                    ? t("common.addedPrice", { price })
+                    : t("common.freePrice")}
                 </span>
               </div>
 
@@ -205,7 +215,9 @@ export default function LightingStep({
                     }
                   `}
                 >
-                  {isSelected ? "Выбрано" : "Выбрать вариант"}
+                  {isSelected
+                    ? t("common.selected")
+                    : t("common.chooseOption")}
                 </span>
               </div>
             </div>

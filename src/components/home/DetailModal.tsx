@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import GalleryModal from "@/components/GalleryModal";
+import { useTranslation } from "react-i18next";
 
 export interface DetailModalData {
   title: string;
@@ -13,6 +14,7 @@ interface DetailModalProps {
 }
 
 export default function DetailModal({ data, onClose }: DetailModalProps) {
+  const { t } = useTranslation();
   const returnFocusRef = useRef<HTMLElement>(null);
 
   return (
@@ -32,7 +34,7 @@ export default function DetailModal({ data, onClose }: DetailModalProps) {
       onClose={onClose}
       returnFocusRef={returnFocusRef}
       cta={{
-        label: "Заказать",
+        label: t("common.order"),
         href: "/order",
         testId: "btn-modal-order",
       }}

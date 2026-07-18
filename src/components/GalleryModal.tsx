@@ -5,6 +5,7 @@ import {
   type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { AnimatePresence, motion } from "@/lib/motion";
 import {
@@ -48,6 +49,7 @@ export default function GalleryModal({
   cta,
   initialImageIndex = 0,
 }: GalleryModalProps) {
+  const { t } = useTranslation();
   const [activeImage, setActiveImage] = useState(initialImageIndex);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -205,7 +207,7 @@ export default function GalleryModal({
             type="button"
             className="absolute inset-0 bg-black/80 backdrop-blur-sm md:bg-black/70 md:backdrop-blur-md"
             onClick={onClose}
-            aria-label="Закрыть галерею"
+            aria-label={t("galleryModal.closeGalleryAria")}
             data-testid="modal-backdrop"
           />
 
@@ -230,7 +232,7 @@ export default function GalleryModal({
               type="button"
               onClick={onClose}
               className="absolute right-3 top-3 z-30 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-black/70 text-white/70 shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:right-5 md:top-5 md:h-10 md:w-10 md:border-border md:bg-background/60 md:text-muted-foreground md:shadow-none md:backdrop-blur-none"
-              aria-label="Закрыть"
+              aria-label={t("common.close")}
               data-testid="btn-close-modal"
             >
               <X className="h-5 w-5" />
@@ -277,7 +279,13 @@ export default function GalleryModal({
                     >
                       <img
                         src={image.src}
-                        alt={image.alt || `${data.title} ${index + 1}`}
+                        alt={
+                          image.alt ||
+                          t("galleryModal.imageAlt", {
+                            title: data.title,
+                            number: index + 1,
+                          })
+                        }
                         loading={index === activeImage ? "eager" : "lazy"}
                         decoding="async"
                         className="h-full w-full object-contain md:scale-[1.03] md:object-cover md:transition-transform md:duration-[450ms] md:ease-out md:hover:scale-[1.08]"
@@ -293,7 +301,7 @@ export default function GalleryModal({
                       onClick={() => scrollToImage(activeImage - 1)}
                       disabled={activeImage === 0}
                       className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex md:hidden"
-                      aria-label="Предыдущее фото"
+                      aria-label={t("galleryModal.previousPhotoAria")}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
@@ -303,7 +311,7 @@ export default function GalleryModal({
                       onClick={() => scrollToImage(activeImage + 1)}
                       disabled={activeImage === data.images.length - 1}
                       className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex md:hidden"
-                      aria-label="Следующее фото"
+                      aria-label={t("galleryModal.nextPhotoAria")}
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
@@ -313,11 +321,14 @@ export default function GalleryModal({
 
               <div className="mt-4 flex min-h-9 items-center justify-between gap-4 md:hidden">
                 <p className="font-sans text-xs font-semibold tabular-nums text-white/55">
-                  {activeImage + 1} / {data.images.length}
+                  {t("galleryModal.counter", {
+                    current: activeImage + 1,
+                    total: data.images.length,
+                  })}
                 </p>
 
                 {data.images.length > 1 && (
-                  <div className="flex items-center gap-2" aria-label="Выбор фотографии">
+                  <div className="flex items-center gap-2" aria-label={t("galleryModal.photoSelectorAria")}>
                     {data.images.map((image, index) => (
                       <button
                         key={`${image.src}-${index}`}
@@ -328,7 +339,9 @@ export default function GalleryModal({
                             ? "w-6 bg-primary"
                             : "w-2 bg-white/20 hover:bg-white/40"
                         }`}
-                        aria-label={`Открыть фото ${index + 1}`}
+                        aria-label={t("galleryModal.openPhotoAria", {
+                          number: index + 1,
+                        })}
                         aria-current={activeImage === index ? "true" : undefined}
                       />
                     ))}

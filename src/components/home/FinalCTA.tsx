@@ -2,8 +2,11 @@
 import { motion } from "@/lib/motion";
 import { ArrowRight, Clock3, Send } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
+import { useTranslation } from "react-i18next";
 
 export default function FinalCTA() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative overflow-hidden py-20 md:py-28">
       {/* Мягкое фоновое свечение */}
@@ -36,10 +39,10 @@ export default function FinalCTA() {
 
           <div className="relative">
             <SectionHeading
-              eyebrow="Ваша история — в деталях"
-              title={"Создайте подарок,\nкоторый расскажет"}
-              accentTitle="вашу историю"
-              subtitle="Выберите детали композиции, а мы аккуратно создадим ваш персональный подарок."
+              eyebrow={t("home.finalCta.eyebrow")}
+              title={t("home.finalCta.title")}
+              accentTitle={t("home.finalCta.accent")}
+              subtitle={t("home.finalCta.subtitle")}
               size="wide"
               animated={false}
               className="mb-0"
@@ -60,7 +63,7 @@ export default function FinalCTA() {
                 "
                 data-testid="button-final-order"
               >
-                Создать свой подарок
+                {t("common.createYourGift")}
 
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
@@ -69,18 +72,18 @@ export default function FinalCTA() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-sans text-xs text-white/40">
               <span className="inline-flex items-center gap-1.5">
                 <Send className="h-3.5 w-3.5 text-primary" />
-                Заказ через Telegram
+                {t("common.orderViaTelegram")}
               </span>
 
               <span className="hidden h-1 w-1 rounded-full bg-primary/60 sm:block" />
 
-              <span>Без регистрации</span>
+              <span>{t("common.withoutRegistration")}</span>
 
               <span className="hidden h-1 w-1 rounded-full bg-primary/60 sm:block" />
 
               <span className="inline-flex items-center gap-1.5">
                 <Clock3 className="h-3.5 w-3.5 text-primary" />
-                Изготовление 1–7 дней
+                {t("common.productionTime")}
               </span>
             </div>
           </div>

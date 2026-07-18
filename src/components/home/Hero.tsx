@@ -9,6 +9,7 @@ import {
   Truck,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
 
@@ -40,23 +41,25 @@ const COLLAGE = [
 const TRUST_FEATURES = [
   {
     icon: Sparkles,
-    label: "Ручная сборка",
+    labelKey: "home.hero.handmadeBadge",
   },
   {
     icon: Camera,
-    label: "Персонализация по фото",
+    labelKey: "home.hero.photoPersonalizationBadge",
   },
   {
     icon: Truck,
-    label: "Доставка по Латвии и Европе",
+    labelKey: "home.hero.deliveryBadge",
   },
   {
     icon: MessagesSquare,
-    label: "Согласование перед изготовлением",
+    labelKey: "home.hero.approvalBadge",
   },
 ];
 
 export default function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section
       id="home"
@@ -66,10 +69,10 @@ export default function Hero() {
         {/* Левая часть */}
         <div className="relative z-20">
           <SectionHeading
-            eyebrow="Персонализированные LEGO-композиции"
-            title={"Подарок, который\nрассказывает"}
-            accentTitle="вашу историю"
-            subtitle="Создаём персональные рамки и брелоки по вашим фотографиям — с фигурками, аксессуарами, надписями и подсветкой."
+            eyebrow={t("home.hero.eyebrow")}
+            title={t("home.hero.title")}
+            accentTitle={t("home.hero.accent")}
+            subtitle={t("home.hero.subtitle")}
             align="left"
             as="h1"
             size="display"
@@ -93,7 +96,7 @@ export default function Hero() {
               "
               data-testid="button-hero-order"
             >
-              Создать подарок
+              {t("common.createGift")}
 
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
@@ -117,20 +120,20 @@ export default function Hero() {
               "
               data-testid="button-hero-works"
             >
-              Наши работы
+              {t("common.ourWorks")}
             </a>
           </div>
 
           {/* Короткая информация */}
           <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-white/40">
-            <span>Без регистрации</span>
+            <span>{t("common.withoutRegistration")}</span>
             <span className="h-1 w-1 rounded-full bg-primary/70" />
-            <span>Заказ через Telegram</span>
+            <span>{t("common.orderViaTelegram")}</span>
             <span className="h-1 w-1 rounded-full bg-primary/70" />
 
             <span className="inline-flex items-center gap-1.5">
               <Clock3 className="h-3.5 w-3.5 text-primary" />
-              Изготовление 1–7 дней
+              {t("common.productionTime")}
             </span>
           </div>
 
@@ -141,14 +144,14 @@ export default function Hero() {
 
               return (
                 <li
-                  key={feature.label}
+                  key={feature.labelKey}
                   className="flex items-center gap-3 text-sm text-muted-foreground"
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
                     <Icon className="h-4 w-4" strokeWidth={1.8} />
                   </span>
 
-                  <span>{feature.label}</span>
+                  <span>{t(feature.labelKey)}</span>
                 </li>
               );
             })}
@@ -161,7 +164,7 @@ export default function Hero() {
 
           <img
             src={`${base}images/optimized/hero5.webp`}
-            alt="Персональная LEGO-композиция FORMIKA"
+            alt={t("home.hero.mobileImageAlt")}
             width={1045}
             height={1400}
             loading="eager"
@@ -194,7 +197,7 @@ export default function Hero() {
             >
               <img
                 src={`${base}images/optimized/hero5.webp`}
-                alt="FORMIKA LEGO-композиция с подсветкой"
+                alt={t("home.hero.lightingImageAlt")}
                 width={1045}
                 height={1400}
                 loading="eager"
@@ -214,7 +217,7 @@ export default function Hero() {
             <img
               key={card.src}
               src={card.src}
-              alt="Пример персональной работы FORMIKA"
+              alt={t("home.hero.exampleImageAlt")}
               width={card.sourceWidth}
               height={card.sourceHeight}
               loading="lazy"

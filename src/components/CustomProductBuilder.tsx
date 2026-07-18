@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, Copy, Send } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
-  DELIVERY_LABELS,
-  PICKUP_NOTE,
   PRICING,
   READY_KEYCHAINS,
   formatEuro,
@@ -10,9 +9,22 @@ import {
   type DeliveryMethod,
 } from "@/lib/pricing";
 import {
+  getAccessoryLabel,
+  getCatalogOptionLabel,
+  getDeliveryMethodLabel,
+  getFaceLabel,
+  getHairLabel,
+  getPetLabel,
+  getReadyKeychainName,
   makeCharacter,
-  type Character,
+  type KeychainOrderState,
 } from "@/lib/types";
+import {
+  KEYCHAIN_BUILDER_STORAGE_KEY,
+  isKeychainOrderState,
+} from "@/lib/builderPersistence";
+import { validateCharactersFaces } from "@/lib/characterValidation";
+import { usePersistentBuilderState } from "@/hooks/use-persistent-builder-state";
 import { Button } from "@/components/ui/button";
 import DeliveryMethodSelector from "@/components/DeliveryMethodSelector";
 import SectionHeading from "@/components/SectionHeading";
@@ -20,34 +32,37 @@ import { useToast } from "@/hooks/use-toast";
 import { CONTACTS } from "@/lib/contacts";
 import CharacterBuilder from "./CharacterBuilder";
 import PetSelectionGrid from "./PetSelectionGrid";
+import ReturnToProductSelectionButton from "./ReturnToProductSelectionButton";
 
 type CustomProductType = "keychain";
-type Mode = "choice" | "ready" | "custom";
+type Mode = KeychainOrderState["mode"];
 
 type ReadyItem = {
   id: string;
-  name: string;
   price: number;
   img: string;
 };
 
 interface CustomProductBuilderProps {
   productType: CustomProductType;
-}
-
-interface CustomProductState {
-  mode: Mode;
-  readyQuantities: Record<string, number>;
-  characters: Character[];
-  pets: string[];
-  deliveryMethod: DeliveryMethod | null;
-  deliveryPrice: number;
+  onReturnToProductSelection: () => void;
 }
 
 const DEFAULT_CLOTHING = {
   top: "TOP-13",
   bottom: "BOTTOM-13",
 };
+
+function createInitialKeychainBuilderState(): KeychainOrderState {
+  return {
+    mode: "choice",
+    readyQuantities: {},
+    characters: [makeCharacter("1", DEFAULT_CLOTHING)],
+    pets: [],
+    deliveryMethod: null,
+    deliveryPrice: 0,
+  };
+}
 
 /**
  * Единый стиль всех заголовков внутри конструктора.
@@ -58,12 +73,12 @@ const HEADING_CLASS =
 
 const COPY = {
   keychain: {
-    customTitle: "Создать свой брелок",
-    customSubtitle: "Соберите человечка в общем редакторе",
-    customOrderName: "Кастомный брелок",
-    readyTitle: "Готовые брелки",
-    readySubtitle: "Выберите готовый брелок из каталога",
-    readyOrderName: "Готовые брелки",
+    customTitle: "keychainBuilder.customTitle",
+    customSubtitle: "keychainBuilder.customSubtitle",
+    customOrderName: "keychainBuilder.customOrderName",
+    readyTitle: "keychainBuilder.readyTitle",
+    readySubtitle: "keychainBuilder.readySubtitle",
+    readyOrderName: "keychainBuilder.readyOrderName",
     unitPrice: PRICING.customKeychainChar,
     readyItems: READY_KEYCHAINS as ReadyItem[],
     maxCharacters: 4,
@@ -89,17 +104,30 @@ const COPY = {
 
 export default function CustomProductBuilder({
   productType,
+  onReturnToProductSelection,
 }: CustomProductBuilderProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
-  const config = COPY[productType];
+  const copy = COPY[productType];
+  const config = {
+    ...copy,
+    customTitle: t(copy.customTitle),
+    customSubtitle: t(copy.customSubtitle),
+    customOrderName: t(copy.customOrderName),
+    readyTitle: t(copy.readyTitle),
+    readySubtitle: t(copy.readySubtitle),
+    readyOrderName: t(copy.readyOrderName),
+  };
 
-  const [state, setState] = useState<CustomProductState>({
-    mode: "choice",
-    readyQuantities: {},
-    characters: [makeCharacter("1", DEFAULT_CLOTHING)],
-    pets: [],
-    deliveryMethod: null,
-    deliveryPrice: 0,
+  const [state, setState] = usePersistentBuilderState(
+    KEYCHAIN_BUILDER_STORAGE_KEY,
+    createInitialKeychainBuilderState,
+    isKeychainOrderState,
+  );
+  const [faceValidationUi, setFaceValidationUi] = useState({
+    attempted: false,
+    focusCharacterId: null as string | null,
+    requestId: 0,
   });
 
   const readyTotal = useMemo(
@@ -119,6 +147,11 @@ export default function CustomProductBuilder({
 
   const petsPrice = state.pets.length * PRICING.pet;
   const customSelected = state.characters.length > 0;
+  const faceValidation = validateCharactersFaces(state.characters);
+  const invalidFaceIds =
+    state.mode === "custom" && faceValidationUi.attempted
+      ? faceValidation.invalidCharacterIds
+      : [];
 
   const customBaseTotal =
     state.characters.length * config.unitPrice;
@@ -185,9 +218,28 @@ export default function CustomProductBuilder({
     if (state.deliveryMethod) return true;
 
     toast({
-      title: "Выберите способ получения",
-      description:
-        "Перед отправкой заказа выберите доставку или самовывоз.",
+      title: t("keychainBuilder.deliveryRequiredTitle"),
+      description: t("keychainBuilder.deliveryRequiredDescription"),
+      variant: "destructive",
+    });
+
+    return false;
+  };
+
+  const requireSelectedFaces = () => {
+    if (state.mode !== "custom") return true;
+
+    const validation = validateCharactersFaces(state.characters);
+    if (validation.isValid) return true;
+
+    setFaceValidationUi((currentValidation) => ({
+      attempted: true,
+      focusCharacterId: validation.firstInvalidCharacterId,
+      requestId: currentValidation.requestId + 1,
+    }));
+
+    toast({
+      title: t("characterEditor.validationError"),
       variant: "destructive",
     });
 
@@ -204,9 +256,9 @@ export default function CustomProductBuilder({
 
   const getOrderText = () => {
     const lines = [
-      "Здравствуйте! Хочу заказать FORMIKA.",
+      t("orderMessage.greeting"),
       "",
-      "Тип товара:",
+      t("orderMessage.productTypeHeading"),
       state.mode === "ready"
         ? config.readyOrderName
         : config.customOrderName,
@@ -220,11 +272,12 @@ export default function CustomProductBuilder({
 
         if (quantity > 0) {
           lines.push(
-            `${item.name}: ${quantity} шт x ${formatEuro(
-              item.price,
-            )} = ${formatEuro(
-              quantity * item.price,
-            )}`,
+            t("orderMessage.readyItemLine", {
+              item: getReadyKeychainName(item.id),
+              quantity,
+              price: formatEuro(item.price),
+              total: formatEuro(quantity * item.price),
+            }),
           );
         }
       });
@@ -233,33 +286,51 @@ export default function CustomProductBuilder({
     } else {
       state.characters.forEach(
         (character, index) => {
-          lines.push(`Человечек ${index + 1}:`);
+          lines.push(t("orderMessage.characterHeading", {
+            number: index + 1,
+          }));
+          if (character.name.trim()) {
+            lines.push(t("orderMessage.nameLine", {
+              name: character.name.trim(),
+            }));
+          }
+          const notSelected = t("common.notSelectedNeuter");
           lines.push(
-            `Лицо: ${
-              character.face || "не выбрано"
-            }`,
+            t("orderMessage.faceLine", {
+              face: character.face
+                ? getFaceLabel(character.face)
+                : notSelected,
+            }),
           );
           lines.push(
-            `Волосы: ${
-              character.hair || "не выбрано"
-            }`,
+            t("orderMessage.hairLine", {
+              hair: character.hair
+                ? getHairLabel(character.hair)
+                : notSelected,
+            }),
           );
           lines.push(
-            `Верх: ${
-              character.top || "не выбрано"
-            }`,
+            t("orderMessage.topLine", {
+              top: character.top
+                ? getCatalogOptionLabel(character.top)
+                : notSelected,
+            }),
           );
           lines.push(
-            `Низ: ${
-              character.bottom || "не выбрано"
-            }`,
+            t("orderMessage.bottomLine", {
+              bottom: character.bottom
+                ? getCatalogOptionLabel(character.bottom)
+                : notSelected,
+            }),
           );
 
           if (character.accessories?.length) {
             lines.push(
-              `Аксессуары: ${character.accessories.join(
-                ", ",
-              )}`,
+              t("orderMessage.accessoriesLine", {
+                accessories: character.accessories
+                  .map(getAccessoryLabel)
+                  .join(", "),
+              }),
             );
           }
 
@@ -268,11 +339,13 @@ export default function CustomProductBuilder({
       );
 
       if (state.pets.length > 0) {
-        lines.push("Питомцы:");
+        lines.push(t("orderMessage.petsHeading"));
 
         state.pets.forEach((id) => {
           lines.push(
-            `${id} (+${formatEuro(PRICING.pet)})`,
+            `${getPetLabel(id)} (${t("common.addedPriceCompact", {
+              price: PRICING.pet,
+            })})`,
           );
         });
 
@@ -280,52 +353,39 @@ export default function CustomProductBuilder({
       }
     }
 
-    lines.push("Способ получения:");
-
-    lines.push(
-      state.deliveryMethod
-        ? DELIVERY_LABELS[state.deliveryMethod]
-        : "не выбран",
-    );
+    lines.push(t("orderMessage.deliveryMethodHeading"));
+    lines.push(getDeliveryMethodLabel(state.deliveryMethod));
 
     if (state.deliveryMethod === "pickup") {
-      lines.push(PICKUP_NOTE);
+      lines.push(t("orderMessage.pickupNote"));
     }
-
-    lines.push(
-      `deliveryMethod: ${
-        state.deliveryMethod ?? "not_selected"
-      }`,
-    );
-
-    lines.push(
-      `deliveryPrice: ${state.deliveryPrice}`,
-    );
 
     lines.push("");
 
     lines.push(
-      `Стоимость товара: ${formatEuro(
-        activeProductTotal,
-      )}`,
+      t("orderMessage.productPriceLine", {
+        price: formatEuro(activeProductTotal),
+      }),
     );
 
     lines.push(
-      `${
-        state.deliveryMethod === "pickup"
-          ? "Самовывоз"
-          : "Доставка"
-      }: ${formatEuro(state.deliveryPrice)}`,
+      t("orderMessage.deliveryPriceLine", {
+        method: getDeliveryMethodLabel(state.deliveryMethod),
+        price: formatEuro(state.deliveryPrice),
+      }),
     );
 
     lines.push(
-      `Итого: ${formatEuro(activeGrandTotal)}`,
+      t("orderMessage.totalLine", {
+        price: formatEuro(activeGrandTotal),
+      }),
     );
 
     return lines.join("\n");
   };
 
   const copyOrder = async () => {
+    if (!requireSelectedFaces()) return;
     if (!requireDelivery()) return;
 
     try {
@@ -334,21 +394,20 @@ export default function CustomProductBuilder({
       );
 
       toast({
-        title: "Скопировано",
-        description:
-          "Заказ скопирован в буфер",
+        title: t("keychainBuilder.copySuccessTitle"),
+        description: t("keychainBuilder.copySuccessDescription"),
       });
     } catch {
       toast({
-        title: "Не удалось скопировать",
-        description:
-          "Попробуйте скопировать заказ ещё раз.",
+        title: t("keychainBuilder.copyErrorTitle"),
+        description: t("keychainBuilder.copyErrorDescription"),
         variant: "destructive",
       });
     }
   };
 
   const openTelegram = () => {
+    if (!requireSelectedFaces()) return;
     if (!requireDelivery()) return;
 
     window.open(
@@ -370,7 +429,9 @@ export default function CustomProductBuilder({
       <div className="rounded-2xl border border-white/[0.09] bg-black/20 p-4">
         <div className="space-y-2.5">
           <div className="flex items-center justify-between font-sans text-sm">
-            <span className="text-white/45">Товар</span>
+            <span className="text-white/45">
+              {t("common.product")}
+            </span>
             <span className="font-medium text-white">
               {formatEuro(productTotal)}
             </span>
@@ -378,9 +439,7 @@ export default function CustomProductBuilder({
 
           <div className="flex items-center justify-between font-sans text-sm">
             <span className="text-white/45">
-              {state.deliveryMethod === "pickup"
-                ? "Самовывоз"
-                : "Доставка"}
+              {getDeliveryMethodLabel(state.deliveryMethod)}
             </span>
             <span className="font-medium text-white">
               {formatEuro(state.deliveryPrice)}
@@ -390,7 +449,7 @@ export default function CustomProductBuilder({
 
         <div className="mt-4 flex items-end justify-between border-t border-white/[0.09] pt-4">
           <span className="font-sans text-base font-semibold text-white">
-            Итого
+            {t("common.total")}
           </span>
           <span className="font-sans text-2xl font-semibold text-primary">
             {formatEuro(productTotal + state.deliveryPrice)}
@@ -414,7 +473,7 @@ export default function CustomProductBuilder({
           data-testid={`btn-open-telegram-${productType}`}
         >
           <Send className="mr-2 h-4 w-4" />
-          Открыть Telegram
+          {t("keychainBuilder.openTelegram")}
         </Button>
 
         <Button
@@ -425,13 +484,13 @@ export default function CustomProductBuilder({
           data-testid={`btn-copy-${productType}-order`}
         >
           <Copy className="mr-2 h-4 w-4" />
-          Скопировать заказ
+          {t("keychainBuilder.copyOrder")}
         </Button>
       </div>
 
       {(disabled || !state.deliveryMethod) && (
         <p className="mt-3 text-center font-sans text-xs leading-relaxed text-primary">
-          {disabled ? hint : "Выберите способ получения."}
+          {disabled ? hint : t("keychainBuilder.deliveryMissingHint")}
         </p>
       )}
     </div>
@@ -445,7 +504,7 @@ export default function CustomProductBuilder({
       data-testid={`btn-back-to-${productType}-choice`}
     >
       <ChevronLeft className="h-4 w-4" />
-      Назад к вариантам
+      {t("keychainBuilder.backToOptions")}
     </button>
   );
 
@@ -506,9 +565,9 @@ export default function CustomProductBuilder({
   const renderChoice = () => (
     <div className="space-y-4">
       <SectionHeading
-        eyebrow="Конструктор брелока"
-        title="Брелки"
-        subtitle="Выберите готовые брелки или кастомную сборку."
+        eyebrow={t("keychainBuilder.eyebrow")}
+        title={t("keychainBuilder.title")}
+        subtitle={t("keychainBuilder.subtitle")}
         size="compact"
         animated={false}
         className="mb-0"
@@ -547,7 +606,7 @@ export default function CustomProductBuilder({
               {config.readyTitle}
             </h3>
             <p className="mt-1 font-sans text-sm text-white/45">
-              Выберите модель и укажите количество.
+              {t("keychainBuilder.readyInstruction")}
             </p>
           </div>
 
@@ -557,6 +616,7 @@ export default function CustomProductBuilder({
       state.readyQuantities[item.id] ?? 0;
 
     const isSelected = quantity > 0;
+    const itemName = getReadyKeychainName(item.id);
 
     return (
       <div
@@ -577,7 +637,7 @@ export default function CustomProductBuilder({
         <div className="relative h-[280px] w-full overflow-hidden rounded-[18px] bg-black/25 sm:h-[310px]">
           <img
             src={`${import.meta.env.BASE_URL}images/${item.img}`}
-            alt={item.name}
+            alt={itemName}
             width={800}
             height={800}
             loading="lazy"
@@ -596,7 +656,7 @@ export default function CustomProductBuilder({
 
         <div className="flex flex-1 flex-col pt-4">
           <p className="font-sans text-base font-semibold leading-snug text-white">
-            {item.name}
+            {itemName}
           </p>
 
           <p className="mt-2 font-sans text-base font-semibold text-primary">
@@ -608,7 +668,9 @@ export default function CustomProductBuilder({
               type="button"
               onClick={() => decReady(item.id)}
               disabled={quantity <= 0}
-              aria-label={`Уменьшить количество ${item.name}`}
+              aria-label={t("keychainBuilder.decreaseQuantityAria", {
+                item: itemName,
+              })}
               className="
                 flex h-10 w-10 items-center justify-center
                 rounded-full border border-white/[0.12]
@@ -622,7 +684,7 @@ export default function CustomProductBuilder({
               "
               data-testid={`btn-decrease-${item.id}`}
             >
-              −
+              {t("keychainBuilder.decreaseSymbol")}
             </button>
 
             <span
@@ -639,7 +701,9 @@ export default function CustomProductBuilder({
             <button
               type="button"
               onClick={() => incReady(item.id)}
-              aria-label={`Увеличить количество ${item.name}`}
+              aria-label={t("keychainBuilder.increaseQuantityAria", {
+                item: itemName,
+              })}
               className="
                 flex h-10 w-10 items-center justify-center
                 rounded-full border border-primary/60
@@ -651,7 +715,7 @@ export default function CustomProductBuilder({
               "
               data-testid={`btn-increase-${item.id}`}
             >
-              +
+              {t("keychainBuilder.increaseSymbol")}
             </button>
           </div>
         </div>
@@ -664,17 +728,17 @@ export default function CustomProductBuilder({
         <aside className="rounded-[28px] border border-white/[0.09] bg-[#171717]/95 p-5 shadow-[0_22px_65px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-6 xl:sticky xl:top-24">
           <div className="border-b border-white/[0.09] pb-4">
             <h3 className={`text-xl ${HEADING_CLASS}`}>
-              Ваш заказ
+              {t("keychainBuilder.orderHeading")}
             </h3>
             <p className="mt-1 font-sans text-xs text-white/40">
-              Проверьте выбранные товары перед отправкой.
+              {t("keychainBuilder.orderDescription")}
             </p>
           </div>
 
           <div className="mt-4 space-y-3">
             <div className="rounded-2xl border border-white/[0.08] bg-black/15 p-4">
               <p className="font-sans text-xs text-white/38">
-                Тип товара
+                {t("keychainBuilder.productType")}
               </p>
               <p className="mt-1 font-sans text-sm font-semibold text-white">
                 {config.readyOrderName}
@@ -686,6 +750,7 @@ export default function CustomProductBuilder({
                 {config.readyItems.map((item) => {
                   const quantity =
                     state.readyQuantities[item.id] ?? 0;
+                  const itemName = getReadyKeychainName(item.id);
 
                   if (quantity <= 0) return null;
 
@@ -696,10 +761,13 @@ export default function CustomProductBuilder({
                     >
                       <div className="min-w-0">
                         <p className="truncate font-sans text-sm font-medium text-white">
-                          {item.name}
+                          {itemName}
                         </p>
                         <p className="mt-0.5 font-sans text-xs text-white/38">
-                          {quantity} × {formatEuro(item.price)}
+                          {t("keychainBuilder.quantityPrice", {
+                            quantity,
+                            price: formatEuro(item.price),
+                          })}
                         </p>
                       </div>
 
@@ -713,7 +781,7 @@ export default function CustomProductBuilder({
             ) : (
               <div className="rounded-2xl border border-dashed border-white/[0.1] px-4 py-5 text-center">
                 <p className="font-sans text-sm text-white/38">
-                  Пока ничего не выбрано
+                  {t("keychainBuilder.emptyOrder")}
                 </p>
               </div>
             )}
@@ -723,7 +791,7 @@ export default function CustomProductBuilder({
 
           {renderActions(
             !readySelected,
-            "Выберите хотя бы один брелок.",
+            t("keychainBuilder.chooseReadyError"),
           )}
         </aside>
       </div>
@@ -744,9 +812,9 @@ export default function CustomProductBuilder({
             </h3>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              Общий редактор персонажа ·{" "}
-              {formatEuro(config.unitPrice)} за
-              человечка
+              {t("keychainBuilder.editorPrice", {
+                price: formatEuro(config.unitPrice),
+              })}
             </p>
           </div>
 
@@ -760,10 +828,13 @@ export default function CustomProductBuilder({
             }
             maxCharacters={config.maxCharacters}
             extraCharacterPrice={config.unitPrice}
-            note="Один редактор персонажа используется для рамок и брелков."
-            addButtonLabel="Добавить человечка"
+            note={t("keychainBuilder.sharedEditorNote")}
+            addButtonLabel={t("characterEditor.addCharacter")}
             showName
             showAccessories
+            invalidFaceIds={invalidFaceIds}
+            focusInvalidCharacterId={faceValidationUi.focusCharacterId}
+            faceValidationRequestId={faceValidationUi.requestId}
           />
 
           <div className="mt-6 rounded-2xl border border-border bg-background/35 p-4 sm:p-5">
@@ -771,12 +842,11 @@ export default function CustomProductBuilder({
               <h4
                 className={`text-xl ${HEADING_CLASS}`}
               >
-                Питомцы
+                {t("keychainBuilder.petsTitle")}
               </h4>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                Выберите питомца для общей
-                композиции товара.
+                {t("keychainBuilder.petsDescription")}
               </p>
             </div>
 
@@ -793,13 +863,13 @@ export default function CustomProductBuilder({
             <h3
               className={`mb-4 border-b border-border pb-3 text-xl ${HEADING_CLASS}`}
             >
-              Ваш заказ
+              {t("keychainBuilder.orderHeading")}
             </h3>
 
             <div className="space-y-3">
               <div className="rounded-lg border border-border/50 bg-background/50 p-3">
                 <p className="text-sm text-muted-foreground">
-                  Тип товара
+                  {t("keychainBuilder.productType")}
                 </p>
 
                 <p className="font-semibold">
@@ -809,12 +879,14 @@ export default function CustomProductBuilder({
 
               <div className="rounded-lg border border-border/50 bg-background/50 p-3">
                 <p className="text-sm text-muted-foreground">
-                  Человечки
+                  {t("keychainBuilder.charactersSummary")}
                 </p>
 
                 <p className="font-semibold">
-                  {state.characters.length} x{" "}
-                  {formatEuro(config.unitPrice)}
+                  {t("keychainBuilder.quantityPrice", {
+                    quantity: state.characters.length,
+                    price: formatEuro(config.unitPrice),
+                  })}
                 </p>
               </div>
 
@@ -822,7 +894,7 @@ export default function CustomProductBuilder({
                 <div className="rounded-lg border border-border/50 bg-background/50 p-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">
-                      Питомцы
+                      {t("keychainBuilder.petsTitle")}
                     </span>
 
                     <span className="font-semibold text-primary">
@@ -837,7 +909,7 @@ export default function CustomProductBuilder({
 
             {renderActions(
               !customSelected,
-              "Соберите хотя бы одного человечка.",
+              t("keychainBuilder.buildCharacterError"),
             )}
           </div>
         </div>
@@ -847,6 +919,12 @@ export default function CustomProductBuilder({
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-start">
+        <ReturnToProductSelectionButton
+          onClick={onReturnToProductSelection}
+        />
+      </div>
+
       {state.mode === "choice" &&
         renderChoice()}
 

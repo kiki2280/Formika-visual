@@ -1,14 +1,25 @@
 ﻿import { useState } from "react";
 import { AnimatePresence, motion } from "@/lib/motion";
+import { useCallback, type Dispatch, type SetStateAction } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   type FrameOrderState,
   makeCharacter,
 } from "@/lib/types";
 import { computeFramePricing } from "@/lib/frameOrder";
+import {
+  validateCharactersFaces,
+} from "@/lib/characterValidation";
+import {
+  FRAME_BUILDER_STORAGE_KEY,
+  isFrameOrderState,
+} from "@/lib/builderPersistence";
+import { usePersistentBuilderState } from "@/hooks/use-persistent-builder-state";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import BuilderProgress from "@/components/BuilderProgress";
 import SectionHeading from "@/components/SectionHeading";
+import ReturnToProductSelectionButton from "@/components/ReturnToProductSelectionButton";
 import SizeStep from "./steps/SizeStep";
 import ColorStep from "./steps/ColorStep";
 import LightingStep from "./steps/LightingStep";
@@ -19,90 +30,160 @@ import HeartsStep from "./steps/HeartsStep";
 import BackgroundStep from "./steps/BackgroundStep";
 import PreviewStep from "./steps/PreviewStep";
 import ReviewStep from "./steps/ReviewStep";
+import { useTranslation } from "react-i18next";
 
 interface FrameBuilderProps {
-  onExit: () => void;
+  onReturnToProductSelection: () => void;
 }
 
 const STEPS = [
   {
     key: "size",
-    title: "Размер рамки",
-    subtitle: "Выберите подходящий формат композиции",
+    titleKey: "frameBuilder.steps.sizeTitle",
+    subtitleKey: "frameBuilder.steps.sizeSubtitle",
   },
   {
     key: "color",
-    title: "Цвет рамки",
-    subtitle: "Выберите чёрную или белую рамку",
+    titleKey: "frameBuilder.steps.colorTitle",
+    subtitleKey: "frameBuilder.steps.colorSubtitle",
   },
   {
     key: "lighting",
-    title: "Подсветка",
-    subtitle: "Добавьте подсветку к вашей композиции",
+    titleKey: "frameBuilder.steps.lightingTitle",
+    subtitleKey: "frameBuilder.steps.lightingSubtitle",
   },
   {
     key: "characters",
-    title: "Человечки",
-    subtitle: "Соберите персональные фигурки",
+    titleKey: "frameBuilder.steps.charactersTitle",
+    subtitleKey: "frameBuilder.steps.charactersSubtitle",
   },
   {
     key: "pets",
-    title: "Питомцы",
-    subtitle: "Добавьте питомцев в композицию",
+    titleKey: "frameBuilder.steps.petsTitle",
+    subtitleKey: "frameBuilder.steps.petsSubtitle",
   },
   {
     key: "accessories",
-    title: "Детали фона",
-    subtitle: "Выберите дополнительные элементы",
+    titleKey: "frameBuilder.steps.accessoriesTitle",
+    subtitleKey: "frameBuilder.steps.accessoriesSubtitle",
   },
   {
     key: "hearts",
-    title: "Сердечки на фон",
-    subtitle: "Дополните композицию сердечками",
+    titleKey: "frameBuilder.steps.heartsTitle",
+    subtitleKey: "frameBuilder.steps.heartsSubtitle",
   },
   {
     key: "background",
-    title: "Фон",
-    subtitle: "Выберите белый или индивидуальный фон",
+    titleKey: "frameBuilder.steps.backgroundTitle",
+    subtitleKey: "frameBuilder.steps.backgroundSubtitle",
   },
   {
     key: "preview",
-    title: "Соберите примерный макет",
-    subtitle:
-      "Расположите фигурки и детали внутри рамки",
+    titleKey: "frameBuilder.steps.previewTitle",
+    subtitleKey: "frameBuilder.steps.previewSubtitle",
   },
   {
     key: "review",
-    title: "Ваш заказ",
-    subtitle: "Проверьте состав перед оформлением",
+    titleKey: "frameBuilder.steps.reviewTitle",
+    subtitleKey: "frameBuilder.steps.reviewSubtitle",
   },
 ] as const;
 
 const TOTAL_WIZARD_STEPS = STEPS.length + 1;
+const CHARACTERS_STEP_INDEX = STEPS.findIndex(
+  (wizardStep) => wizardStep.key === "characters",
+);
+
+interface PersistedFrameBuilderState {
+  state: FrameOrderState;
+  step: number;
+}
+
+function createInitialFrameBuilderState(): PersistedFrameBuilderState {
+  return {
+    state: {
+      size: "17x22",
+      color: "Чёрная",
+      lighting: "Без подсветки",
+      characters: [
+        makeCharacter("1", {
+          top: "TOP-13",
+          bottom: "BOTTOM-13",
+        }),
+      ],
+      pets: [],
+      petNames: {},
+      accessories: [],
+      hearts: {},
+      customBg: false,
+      deliveryMethod: null,
+      deliveryPrice: 0,
+    },
+    step: 0,
+  };
+}
+
+function isPersistedFrameBuilderState(
+  value: unknown,
+): value is PersistedFrameBuilderState {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    Number.isInteger(candidate.step) &&
+    (candidate.step as number) >= 0 &&
+    (candidate.step as number) < STEPS.length &&
+    isFrameOrderState(candidate.state)
+  );
+}
 
 export default function FrameBuilder({
-  onExit,
+  onReturnToProductSelection,
 }: FrameBuilderProps) {
-  const [state, setState] = useState<FrameOrderState>({
-    size: "17x22",
-    color: "Чёрная",
-    lighting: "Без подсветки",
-    characters: [
-      makeCharacter("1", {
-        top: "TOP-13",
-        bottom: "BOTTOM-13",
-      }),
-    ],
-    pets: [],
-    petNames: {},
-    accessories: [],
-    hearts: {},
-    customBg: false,
-    deliveryMethod: null,
-    deliveryPrice: 0,
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const [persisted, setPersisted] = usePersistentBuilderState(
+    FRAME_BUILDER_STORAGE_KEY,
+    createInitialFrameBuilderState,
+    isPersistedFrameBuilderState,
+  );
+  const [faceValidationUi, setFaceValidationUi] = useState({
+    attempted: false,
+    focusCharacterId: null as string | null,
+    requestId: 0,
   });
 
-  const [step, setStep] = useState(0);
+  const state = persisted.state;
+  const step = persisted.step;
+
+  const setState: Dispatch<SetStateAction<FrameOrderState>> = useCallback(
+    (update) => {
+      setPersisted((current) => ({
+        ...current,
+        state:
+          typeof update === "function"
+            ? update(current.state)
+            : update,
+      }));
+    },
+    [setPersisted],
+  );
+
+  const setStep: Dispatch<SetStateAction<number>> = useCallback(
+    (update) => {
+      setPersisted((current) => ({
+        ...current,
+        step:
+          typeof update === "function"
+            ? update(current.step)
+            : update,
+      }));
+    },
+    [setPersisted],
+  );
 
   const { total } = computeFramePricing(state);
   const current = STEPS[step];
@@ -110,8 +191,49 @@ export default function FrameBuilder({
   const isLast = step === STEPS.length - 1;
   const isPreviewStep = current.key === "preview";
 
+  const faceValidation = validateCharactersFaces(state.characters);
+  const invalidFaceIds = faceValidationUi.attempted
+    ? faceValidation.invalidCharacterIds
+    : [];
+
+  const showFaceValidationError = (firstInvalidCharacterId: string) => {
+    setFaceValidationUi((currentValidation) => ({
+      attempted: true,
+      focusCharacterId: firstInvalidCharacterId,
+      requestId: currentValidation.requestId + 1,
+    }));
+
+    toast({
+      title: t("characterEditor.validationError"),
+      variant: "destructive",
+    });
+  };
+
+  const requireSelectedFaces = () => {
+    const validation = validateCharactersFaces(state.characters);
+    if (validation.isValid) return true;
+
+    showFaceValidationError(validation.firstInvalidCharacterId!);
+    return false;
+  };
+
   const goNext = () => {
     if (isLast) return;
+
+    if (
+      (current.key === "characters" || current.key === "preview") &&
+      !requireSelectedFaces()
+    ) {
+      if (current.key !== "characters") {
+        setStep(CHARACTERS_STEP_INDEX);
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      return;
+    }
 
     setStep((currentStep) => currentStep + 1);
 
@@ -122,10 +244,7 @@ export default function FrameBuilder({
   };
 
   const goBack = () => {
-    if (step === 0) {
-      onExit();
-      return;
-    }
+    if (step === 0) return;
 
     setStep((currentStep) => currentStep - 1);
 
@@ -166,6 +285,9 @@ export default function FrameBuilder({
           <CharactersStep
             state={state}
             onChange={setState}
+            invalidFaceIds={invalidFaceIds}
+            focusInvalidCharacterId={faceValidationUi.focusCharacterId}
+            faceValidationRequestId={faceValidationUi.requestId}
           />
         );
 
@@ -216,6 +338,15 @@ export default function FrameBuilder({
           <ReviewStep
             state={state}
             onChange={setState}
+            onInvalidCharacters={(firstInvalidCharacterId) => {
+              showFaceValidationError(firstInvalidCharacterId);
+              setStep(CHARACTERS_STEP_INDEX);
+
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }}
           />
         );
 
@@ -226,18 +357,24 @@ export default function FrameBuilder({
 
   return (
     <div className="mx-auto w-full max-w-4xl">
+      <div className="mb-4 flex justify-start">
+        <ReturnToProductSelectionButton
+          onClick={onReturnToProductSelection}
+        />
+      </div>
+
       <BuilderProgress
         stepNumber={step + 2}
         totalSteps={TOTAL_WIZARD_STEPS}
-        title={current.title}
+        title={t(current.titleKey)}
         total={total}
       />
 
       {!isPreviewStep && (
         <SectionHeading
-          eyebrow="Конструктор рамки"
-          title={current.title}
-          subtitle={current.subtitle}
+          eyebrow={t("frameBuilder.eyebrow")}
+          title={t(current.titleKey)}
+          subtitle={t(current.subtitleKey)}
           size="compact"
           animated={false}
           className={`mb-8 mt-7 ${
@@ -278,6 +415,12 @@ export default function FrameBuilder({
             type="button"
             variant="outline"
             onClick={goBack}
+            disabled={step === 0}
+            aria-label={
+              step === 0
+                ? t("frameBuilder.previousStepUnavailableAria")
+                : t("frameBuilder.previousStepAria")
+            }
             className="
               h-12 rounded-full
               border-white/[0.12]
@@ -289,11 +432,13 @@ export default function FrameBuilder({
               hover:border-primary/55
               hover:bg-primary/[0.06]
               hover:text-primary
+              disabled:cursor-not-allowed
+              disabled:opacity-35
             "
             data-testid="btn-wizard-back"
           >
             <ChevronLeft className="mr-1 h-5 w-5" />
-            Назад
+            {t("common.back")}
           </Button>
 
           {!isLast && (
@@ -313,7 +458,7 @@ export default function FrameBuilder({
               "
               data-testid="btn-wizard-next"
             >
-              Далее
+              {t("common.next")}
               <ChevronRight className="ml-1 h-5 w-5" />
             </Button>
           )}

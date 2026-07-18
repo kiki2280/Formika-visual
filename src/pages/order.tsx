@@ -1,22 +1,40 @@
 import { lazy, Suspense, useState } from "react";
-import { ChevronLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import PageBackground from "@/components/PageBackground";
 import ProductTypeSelector from "@/components/ProductTypeSelector";
 import SectionHeading from "@/components/home/SectionHeading";
 import type { ProductType } from "@/lib/types";
+import { useTranslation } from "react-i18next";
+import {
+  ORDER_PRODUCT_TYPE_STORAGE_KEY,
+  clearBuilderState,
+  isStoredProductType,
+  loadBuilderState,
+  saveBuilderState,
+} from "@/lib/builderPersistence";
 
 const FrameBuilder = lazy(() => import("@/components/FrameBuilder"));
 const KeychainBuilder = lazy(() => import("@/components/KeychainBuilder"));
 const Footer = lazy(() => import("@/components/Footer"));
 
 export default function Order() {
-  const [selected, setSelected] = useState<ProductType>(null);
-  const [confirmed, setConfirmed] = useState(false);
+  const { t } = useTranslation();
+  const [selected, setSelected] = useState<ProductType>(
+    () =>
+      loadBuilderState(
+        ORDER_PRODUCT_TYPE_STORAGE_KEY,
+        isStoredProductType,
+      ) ?? null,
+  );
+
+  const confirmed = selected !== null;
 
   const selectProduct = (type: ProductType) => {
     setSelected(type);
-    setConfirmed(Boolean(type));
+
+    if (type) {
+      saveBuilderState(ORDER_PRODUCT_TYPE_STORAGE_KEY, type);
+    }
 
     window.scrollTo({
       top: 0,
@@ -24,9 +42,9 @@ export default function Order() {
     });
   };
 
-  const backToProducts = () => {
-    setConfirmed(false);
+  const handleReturnToProductSelection = () => {
     setSelected(null);
+    clearBuilderState(ORDER_PRODUCT_TYPE_STORAGE_KEY);
 
     window.scrollTo({
       top: 0,
@@ -44,9 +62,9 @@ export default function Order() {
           <>
             <div className="mb-10 md:mb-12">
               <SectionHeading
-                eyebrow="Начните с формата"
-                title="Создайте свою уникальную композицию"
-                subtitle="Выберите тип товара — дальше мы проведём вас по всем шагам сборки."
+                eyebrow={t("orderSelection.eyebrow")}
+                title={t("orderSelection.title")}
+                subtitle={t("orderSelection.subtitle")}
               />
             </div>
 
@@ -57,34 +75,22 @@ export default function Order() {
           </>
         ) : (
           <>
-            {selected !== "frame" && (
-              <button
-                type="button"
-                onClick={backToProducts}
-                className="
-                  mb-6 inline-flex items-center gap-1.5
-                  font-sans text-sm font-semibold
-                  text-muted-foreground
-                  transition-colors duration-200
-                  hover:text-primary
-                "
-                data-testid="btn-back-to-products"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Назад к выбору товара
-              </button>
-            )}
-
             <Suspense
               fallback={
                 <div className="min-h-[420px] animate-pulse rounded-3xl border border-border bg-card/60" />
               }
             >
               {selected === "frame" && (
-                <FrameBuilder onExit={backToProducts} />
+                <FrameBuilder
+                  onReturnToProductSelection={handleReturnToProductSelection}
+                />
               )}
 
-              {selected === "keychain" && <KeychainBuilder />}
+              {selected === "keychain" && (
+                <KeychainBuilder
+                  onReturnToProductSelection={handleReturnToProductSelection}
+                />
+              )}
             </Suspense>
           </>
         )}

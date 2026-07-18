@@ -1,6 +1,18 @@
-import { DELIVERY_LABELS, PICKUP_NOTE, PRICING, formatEuro } from "./pricing";
+import i18n from "@/i18n";
+import { PRICING, formatEuro } from "./pricing";
 import { getAccessoryTotal } from "./accessoryPricing";
-import type { FrameOrderState } from "./types";
+import {
+  getAccessoryLabel,
+  getCatalogOptionLabel,
+  getDeliveryMethodLabel,
+  getFaceLabel,
+  getFrameColorLabel,
+  getHairLabel,
+  getHeartLabel,
+  getLightingLabel,
+  getPetLabel,
+  type FrameOrderState,
+} from "./types";
 
 export interface FramePricing {
   framePrice: number;
@@ -59,87 +71,108 @@ export function computeFramePricing(state: FrameOrderState): FramePricing {
 
 export function getFrameOrderText(state: FrameOrderState): string {
   const { heartsPrice, heartEntries, productTotal, deliveryPrice, total } = computeFramePricing(state);
-  const deliveryLabel = state.deliveryMethod ? DELIVERY_LABELS[state.deliveryMethod] : "не выбран";
+  const t = i18n.t.bind(i18n);
+  const deliveryLabel = getDeliveryMethodLabel(state.deliveryMethod);
 
   const lines: string[] = [
-    "Здравствуйте! Хочу заказать FORMIKA.",
+    t("orderMessage.greeting"),
     "",
-    "Тип товара:",
-    "Рамка",
+    t("orderMessage.productTypeHeading"),
+    t("orderMessage.frameProduct"),
     "",
-    "Размер:",
+    t("orderMessage.sizeHeading"),
     state.size,
     "",
-    "Цвет:",
-    state.color,
+    t("orderMessage.colorHeading"),
+    getFrameColorLabel(state.color),
     "",
-    "Подсветка:",
-    state.lighting,
+    t("orderMessage.lightingHeading"),
+    getLightingLabel(state.lighting),
     "",
   ];
 
   state.characters.forEach((char, i) => {
-    lines.push(`Человечек ${i + 1}:`);
-    if (char.name.trim()) lines.push(`Имя: ${char.name.trim()}`);
-    lines.push(`Лицо: ${char.face || "не выбрано"}`);
-    lines.push(`Волосы: ${char.hair || "не выбрано"}`);
-    lines.push(`Верх: ${char.top || "не выбрано"}`);
-    lines.push(`Низ: ${char.bottom || "не выбрано"}`);
+    lines.push(t("orderMessage.characterHeading", { number: i + 1 }));
+    if (char.name.trim()) {
+      lines.push(t("orderMessage.nameLine", { name: char.name.trim() }));
+    }
+    const notSelected = t("common.notSelectedNeuter");
+    lines.push(t("orderMessage.faceLine", {
+      face: char.face ? getFaceLabel(char.face) : notSelected,
+    }));
+    lines.push(t("orderMessage.hairLine", {
+      hair: char.hair ? getHairLabel(char.hair) : notSelected,
+    }));
+    lines.push(t("orderMessage.topLine", {
+      top: char.top ? getCatalogOptionLabel(char.top) : notSelected,
+    }));
+    lines.push(t("orderMessage.bottomLine", {
+      bottom: char.bottom ? getCatalogOptionLabel(char.bottom) : notSelected,
+    }));
     if (char.accessories.length > 0) {
-      lines.push(`Аксессуары в руки: ${char.accessories.join(", ")}`);
+      lines.push(t("orderMessage.handAccessoriesLine", {
+        accessories: char.accessories.map(getAccessoryLabel).join(", "),
+      }));
     }
     lines.push("");
   });
 
   if (state.pets.length > 0) {
-    lines.push("Питомцы:");
+    lines.push(t("orderMessage.petsHeading"));
     state.pets.forEach((id) => {
-      lines.push(id);
+      lines.push(getPetLabel(id));
       const name = state.petNames?.[id]?.trim();
-      if (name) lines.push(`Имя: ${name}`);
+      if (name) lines.push(t("orderMessage.nameLine", { name }));
     });
     lines.push("");
   }
 
   if (state.accessories.length > 0) {
-    lines.push("Детали фона:");
-    lines.push(state.accessories.join(", "));
+    lines.push(t("orderMessage.backgroundAccessoriesHeading"));
+    lines.push(state.accessories.map(getAccessoryLabel).join(", "));
     lines.push("");
   }
 
   if (heartEntries.length > 0) {
-    lines.push("Сердечки на фон:");
-    heartEntries.forEach(([code, qty]) => lines.push(`${code} x ${qty}`));
+    lines.push(t("orderMessage.heartsHeading"));
+    heartEntries.forEach(([code, qty]) => lines.push(t("orderMessage.heartQuantityLine", {
+      heart: getHeartLabel(code),
+      quantity: qty,
+    })));
     lines.push("");
-    lines.push("Стоимость сердечек:");
+    lines.push(t("orderMessage.heartsPriceHeading"));
     lines.push(formatEuro(heartsPrice));
     lines.push("");
   }
 
-  lines.push("Фон:");
+  lines.push(t("orderMessage.backgroundHeading"));
   if (state.customBg) {
-    lines.push(`Индивидуальный фон - от +${formatEuro(PRICING.customBg)}`);
-    lines.push("Цена может меняться в зависимости от сложности.");
+    lines.push(t("orderMessage.customBackgroundLine", {
+      price: formatEuro(PRICING.customBg),
+    }));
+    lines.push(t("orderMessage.customBackgroundDisclaimer"));
   } else {
-    lines.push("Белый фон - входит в стоимость");
+    lines.push(t("orderMessage.whiteBackgroundLine"));
   }
   lines.push("");
 
-  lines.push("Способ получения:");
+  lines.push(t("orderMessage.deliveryMethodHeading"));
   lines.push(deliveryLabel);
-  if (state.deliveryMethod === "pickup") lines.push(PICKUP_NOTE);
-  lines.push(`deliveryMethod: ${state.deliveryMethod ?? "not_selected"}`);
-  lines.push(`deliveryPrice: ${deliveryPrice}`);
+  if (state.deliveryMethod === "pickup") {
+    lines.push(t("orderMessage.pickupNote"));
+  }
   lines.push("");
 
-  lines.push("Стоимость товара:");
+  lines.push(t("orderMessage.productPriceHeading"));
   lines.push(formatEuro(productTotal));
-  lines.push(state.deliveryMethod === "pickup" ? "Самовывоз:" : "Доставка:");
+  lines.push(state.deliveryMethod === "pickup"
+    ? t("orderMessage.pickupPriceHeading")
+    : t("orderMessage.deliveryPriceHeading"));
   lines.push(formatEuro(deliveryPrice));
-  lines.push("Итого:");
+  lines.push(t("orderMessage.totalHeading"));
   lines.push(formatEuro(total));
   lines.push("");
-  lines.push("Комментарий:");
+  lines.push(t("orderMessage.commentHeading"));
 
   return lines.join("\n");
 }

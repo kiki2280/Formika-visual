@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import PageBackground from "@/components/PageBackground";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
+import { useTranslation } from "react-i18next";
 
 interface LegalPageProps {
   title: string;
@@ -15,6 +16,8 @@ interface LegalPageProps {
 }
 
 export default function LegalPage({ title, intro, sections }: LegalPageProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-x-clip">
       <PageBackground />
@@ -26,12 +29,12 @@ export default function LegalPage({ title, intro, sections }: LegalPageProps) {
             href="/"
             className="inline-flex text-sm font-semibold text-muted-foreground hover:text-primary transition-colors"
           >
-            Назад на главную
+            {t("legal.backHome")}
           </Link>
 
           <div className="mt-8 rounded-3xl border border-border bg-card/75 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-xl">
             <SectionHeading
-              eyebrow="FORMIKA"
+              eyebrow={t("brand.name")}
               title={title}
               subtitle={intro}
               align="left"

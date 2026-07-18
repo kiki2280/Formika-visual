@@ -1,4 +1,5 @@
-import { DELIVERY_LABELS, PICKUP_NOTE, PRICING, type DeliveryMethod } from "@/lib/pricing";
+import { PRICING, type DeliveryMethod } from "@/lib/pricing";
+import { useTranslation } from "react-i18next";
 
 interface DeliveryMethodSelectorProps {
   value: DeliveryMethod | null;
@@ -6,33 +7,33 @@ interface DeliveryMethodSelectorProps {
   showRequiredHint?: boolean;
 }
 
-const OPTIONS: { method: DeliveryMethod; title: string; price: number; description: string }[] = [
+const OPTIONS: { method: DeliveryMethod; titleKey: string; price: number; descriptionKey: string }[] = [
   {
     method: "delivery",
-    title: DELIVERY_LABELS.delivery,
+    titleKey: "common.delivery",
     price: PRICING.delivery,
-    description: "Добавим стоимость доставки к итоговой сумме.",
+    descriptionKey: "deliverySelector.deliveryDescription",
   },
   {
     method: "pickup",
-    title: "Забрать на месте",
+    titleKey: "deliverySelector.pickupTitle",
     price: 0,
-    description: PICKUP_NOTE,
+    descriptionKey: "deliverySelector.pickupDescription",
   },
 ];
-
-const formatDeliveryPrice = (price: number) => `€${price.toFixed(2)}`;
 
 export default function DeliveryMethodSelector({
   value,
   onChange,
   showRequiredHint = true,
 }: DeliveryMethodSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <section className="rounded-2xl border border-border bg-background/40 p-4 space-y-3" data-testid="delivery-method-selector">
       <div>
-        <h4 className="text-sm font-bold uppercase tracking-widest text-primary">Способ получения</h4>
-        <p className="text-xs text-muted-foreground mt-1">Выберите вариант перед отправкой заказа.</p>
+        <h4 className="text-sm font-bold uppercase tracking-widest text-primary">{t("deliverySelector.title")}</h4>
+        <p className="text-xs text-muted-foreground mt-1">{t("deliverySelector.instruction")}</p>
       </div>
 
       <div className="grid gap-3 lg:grid-cols-2">
@@ -51,16 +52,18 @@ export default function DeliveryMethodSelector({
               data-testid={`delivery-method-${option.method}`}
             >
               <div className="flex flex-col items-start gap-1">
-                <span className="text-sm font-semibold leading-snug text-foreground">{option.title}</span>
+                <span className="text-sm font-semibold leading-snug text-foreground">{t(option.titleKey)}</span>
                 <span
                   className={`inline-flex max-w-full rounded-full px-2.5 py-1 text-xs font-bold leading-none ${
                     selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {formatDeliveryPrice(option.price)}
+                  {t("deliverySelector.price", {
+                    price: option.price.toFixed(2),
+                  })}
                 </span>
               </div>
-              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{option.description}</p>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{t(option.descriptionKey)}</p>
             </button>
           );
         })}
@@ -68,7 +71,7 @@ export default function DeliveryMethodSelector({
 
       {showRequiredHint && !value && (
         <p className="text-xs text-primary font-semibold" data-testid="delivery-required-hint">
-          Выберите доставку или самовывоз, чтобы оформить заказ.
+          {t("deliverySelector.requiredHint")}
         </p>
       )}
     </section>

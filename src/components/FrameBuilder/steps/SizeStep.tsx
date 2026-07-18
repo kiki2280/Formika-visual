@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import type { FrameOrderState } from "@/lib/types";
 import { PRICING } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
 interface StepProps {
   state: FrameOrderState;
@@ -9,21 +10,21 @@ interface StepProps {
 
 const SIZES: {
   id: FrameOrderState["size"];
-  subtitle: string;
-  badge?: string;
+  subtitleKey: string;
+  badgeKey?: string;
 }[] = [
   {
     id: "10x15",
-    subtitle: "Компактная вертикальная рамка",
+    subtitleKey: "frameBuilder.size.compactVertical",
   },
   {
     id: "17x22",
-    subtitle: "Классический вертикальный формат",
-    badge: "Популярный",
+    subtitleKey: "frameBuilder.size.classicVertical",
+    badgeKey: "frameBuilder.size.popular",
   },
   {
     id: "22x17",
-    subtitle: "Горизонтальный формат",
+    subtitleKey: "frameBuilder.size.horizontal",
   },
 ];
 
@@ -31,6 +32,8 @@ export default function SizeStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {SIZES.map((size) => {
@@ -63,14 +66,17 @@ export default function SizeStep({
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                {size.badge && (
+                {size.badgeKey && (
                   <span className="mb-3 inline-flex rounded-full border border-primary/25 bg-primary/[0.08] px-2.5 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.1em] text-primary">
-                    {size.badge}
+                    {t(size.badgeKey)}
                   </span>
                 )}
 
                 <h3 className="font-sans text-xl font-semibold tracking-[-0.025em] text-white">
-                  {size.id.replace("x", " × ")}
+                  {t("frameBuilder.size.dimension", {
+                    width: size.id.split("x")[0],
+                    height: size.id.split("x")[1],
+                  })}
                 </h3>
               </div>
 
@@ -91,12 +97,14 @@ export default function SizeStep({
             </div>
 
             <p className="mt-2 font-sans text-sm leading-relaxed text-white/[0.44]">
-              {size.subtitle}
+              {t(size.subtitleKey)}
             </p>
 
             <div className="mt-auto pt-5">
               <span className="font-sans text-lg font-semibold text-primary">
-                {PRICING.frame[size.id]} €
+                {t("frameBuilder.size.price", {
+                  price: PRICING.frame[size.id],
+                })}
               </span>
             </div>
           </button>

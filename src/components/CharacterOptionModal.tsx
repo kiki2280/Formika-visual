@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CollapsibleOptionGrid from "./CollapsibleOptionGrid";
+import { useTranslation } from "react-i18next";
 
 export interface CharacterChoiceOption {
   id: string;
@@ -31,6 +32,7 @@ export default function CharacterOptionModal({
   collapseOptions = false,
   children,
 }: CharacterOptionModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -123,7 +125,7 @@ export default function CharacterOptionModal({
         type="button"
         className="absolute inset-0 bg-black/70 backdrop-blur-md"
         onClick={onClose}
-        aria-label="Закрыть выбор"
+        aria-label={t("characterEditor.closeSelectionAria")}
         data-testid="character-option-modal-backdrop"
       />
 
@@ -139,7 +141,7 @@ export default function CharacterOptionModal({
             <h3 className="font-sans text-xl font-bold sm:text-2xl">{title}</h3>
             {options && (
               <p className="mt-1 text-xs text-muted-foreground">
-                Выберите вариант из списка
+                {t("characterEditor.chooseFromList")}
               </p>
             )}
           </div>
@@ -147,7 +149,7 @@ export default function CharacterOptionModal({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-background/60 text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary"
-            aria-label="Закрыть"
+            aria-label={t("common.close")}
             data-testid="btn-close-character-option-modal"
           >
             <X className="h-5 w-5" />

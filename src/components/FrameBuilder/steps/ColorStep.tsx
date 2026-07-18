@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import type { FrameOrderState } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
 interface StepProps {
   state: FrameOrderState;
@@ -8,15 +9,18 @@ interface StepProps {
 
 const COLORS: {
   id: FrameOrderState["color"];
-  subtitle: string;
+  labelKey: string;
+  subtitleKey: string;
 }[] = [
   {
     id: "Чёрная",
-    subtitle: "Глубокий матовый профиль",
+    labelKey: "frameBuilder.color.black",
+    subtitleKey: "frameBuilder.color.blackDescription",
   },
   {
     id: "Белая",
-    subtitle: "Чистый светлый профиль",
+    labelKey: "frameBuilder.color.white",
+    subtitleKey: "frameBuilder.color.whiteDescription",
   },
 ];
 
@@ -24,6 +28,8 @@ export default function ColorStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-5 sm:grid-cols-2">
       {COLORS.map((color) => {
@@ -125,11 +131,11 @@ export default function ColorStep({
                   }
                 `}
               >
-                {color.id}
+                {t(color.labelKey)}
               </h3>
 
               <p className="mt-1.5 font-sans text-sm leading-relaxed text-white/[0.43]">
-                {color.subtitle}
+              {t(color.subtitleKey)}
               </p>
 
               <span
@@ -146,7 +152,7 @@ export default function ColorStep({
                   }
                 `}
               >
-                Входит в стоимость
+                {t("frameBuilder.color.included")}
               </span>
             </div>
           </button>

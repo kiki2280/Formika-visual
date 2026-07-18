@@ -1,5 +1,6 @@
 import type { ProductType } from "@/lib/types";
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ProductTypeSelectorProps {
   selected: ProductType;
@@ -10,8 +11,8 @@ const base = import.meta.env.BASE_URL;
 
 type ProductOption = {
   id: Exclude<ProductType, null>;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   image: string;
   imagePosition?: string;
 };
@@ -19,17 +20,15 @@ type ProductOption = {
 const PRODUCTS: ProductOption[] = [
   {
     id: "frame",
-    title: "Рамка",
-    subtitle:
-      "Персональная композиция с фигурками, надписью, фоном и подсветкой.",
+    titleKey: "orderSelection.frameTitle",
+    subtitleKey: "orderSelection.frameDescription",
     image: `${base}images/optimized/work-family-1.webp`,
     imagePosition: "object-[center_52%]",
   },
   {
     id: "keychain",
-    title: "Брелок",
-    subtitle:
-      "Готовая модель или персональный персонаж, созданный специально для вас.",
+    titleKey: "orderSelection.keychainTitle",
+    subtitleKey: "orderSelection.keychainDescription",
     image: `${base}images/optimized/ready-keychain-3.webp`,
     imagePosition: "object-[center_80%]",
   },
@@ -39,6 +38,8 @@ export default function ProductTypeSelector({
   selected,
   onSelect,
 }: ProductTypeSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
       {PRODUCTS.map((product, index) => {
@@ -69,7 +70,7 @@ export default function ProductTypeSelector({
             <div className="relative h-[290px] w-full overflow-hidden sm:h-[320px]">
               <img
                 src={product.image}
-                alt={product.title}
+                alt={t(product.titleKey)}
                 width={800}
                 height={640}
                 loading="eager"
@@ -109,16 +110,16 @@ export default function ProductTypeSelector({
             {/* Текст находится отдельно и не закрывает фотографию */}
             <div className="flex min-h-[135px] w-full flex-col justify-center border-t border-white/[0.08] px-6 py-5">
               <h3 className="font-sans text-xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-2xl">
-                {product.title}
+                {t(product.titleKey)}
               </h3>
 
               <p className="mt-2 max-w-md font-sans text-sm leading-relaxed text-white/50">
-                {product.subtitle}
+                {t(product.subtitleKey)}
               </p>
 
               {isSelected && (
                 <span className="mt-3 font-sans text-xs font-bold uppercase tracking-[0.1em] text-primary">
-                  Выбрано
+                  {t("common.selected")}
                 </span>
               )}
             </div>

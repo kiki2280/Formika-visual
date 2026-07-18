@@ -11,6 +11,7 @@ import GalleryModal, {
   type GalleryModalData,
 } from "@/components/GalleryModal";
 import SectionHeading from "./SectionHeading";
+import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
 
@@ -29,62 +30,62 @@ const IMG = {
 };
 
 const OPTIONS: {
-  title: string;
-  desc: string;
+  titleKey: string;
+  descriptionKey: string;
+  modalDescriptionKey: string;
   img: string;
-  modal: GalleryModalData;
+  images: GalleryModalData["images"];
 }[] = [
   {
-    title: "LED-гирлянда",
-    desc: "Тёплый уютный свет от гирлянды",
+    titleKey: "home.lighting.garlandTitle",
+    descriptionKey: "home.lighting.garlandDescription",
+    modalDescriptionKey: "home.lighting.garlandModalDescription",
     img: IMG.garland1,
-    modal: {
-      title: "LED-гирлянда",
-      description:
-        "Тёплый уютный свет с одним режимом свечения. Подходит для мягкой домашней атмосферы.",
-      images: [
+    images: [
         { src: IMG.garland1 },
         { src: IMG.garland2 },
         { src: IMG.garland3 },
-      ],
-    },
+    ],
   },
   {
-    title: "LED RGB",
-    desc: "Подсветка с разными цветами и режимами",
+    titleKey: "home.lighting.rgbTitle",
+    descriptionKey: "home.lighting.rgbDescription",
+    modalDescriptionKey: "home.lighting.rgbModalDescription",
     img: IMG.rgb1,
-    modal: {
-      title: "LED RGB",
-      description:
-        "Яркая цветная подсветка. Подходит, если хочется более заметный эффект и возможность разных оттенков.",
-      images: [
+    images: [
         { src: IMG.rgb1 },
         { src: IMG.rgb2 },
         { src: IMG.rgb3 },
-      ],
-    },
+    ],
   },
   {
-    title: "LED с облаками",
-    desc: "Объёмный эффект облаков и мягкое рассеянное свечение",
+    titleKey: "home.lighting.cloudsTitle",
+    descriptionKey: "home.lighting.cloudsDescription",
+    modalDescriptionKey: "home.lighting.cloudsModalDescription",
     img: IMG.clouds1,
-    modal: {
-      title: "LED с облаками",
-      description:
-        "Объёмный декоративный эффект с мягким рассеиванием света. Выглядит более необычно и ярко.",
-      images: [
+    images: [
         { src: IMG.clouds1 },
         { src: IMG.clouds2 },
         { src: IMG.clouds3 },
-      ],
-    },
+    ],
   },
 ];
 
 export default function LightingOptions() {
+  const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
   const closeGallery = useCallback(() => setActive(null), []);
+  const options = OPTIONS.map((option) => ({
+    ...option,
+    title: t(option.titleKey),
+    description: t(option.descriptionKey),
+    modal: {
+      title: t(option.titleKey),
+      description: t(option.modalDescriptionKey),
+      images: option.images,
+    },
+  }));
 
   const openGallery = (
     data: GalleryModalData,
@@ -97,13 +98,13 @@ export default function LightingOptions() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
       <SectionHeading
-        eyebrow="Атмосфера в деталях"
-        title="Варианты подсветки"
-        subtitle="Выберите атмосферу вашей композиции"
+        eyebrow={t("home.lighting.eyebrow")}
+        title={t("home.lighting.title")}
+        subtitle={t("home.lighting.subtitle")}
       />
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {OPTIONS.map((o, i) => (
+        {options.map((o, i) => (
           <motion.div
             key={o.title}
             initial={{ opacity: 0, y: 30 }}
@@ -123,7 +124,7 @@ export default function LightingOptions() {
             data-testid={`card-lighting-${i}`}
             role="button"
             tabIndex={0}
-            aria-label={`Открыть галерею ${o.title}`}
+            aria-label={t("home.lighting.openGalleryAria", { title: o.title })}
           >
             <div className="relative h-80 overflow-hidden">
               <img
@@ -139,7 +140,7 @@ export default function LightingOptions() {
             </div>
             <div className="absolute inset-x-0 bottom-0 p-6">
               <h3 className="font-sans text-lg font-semibold uppercase tracking-normal text-white md:text-xl">{o.title}</h3>
-              <p className="mt-1 text-sm text-gray-300">{o.desc}</p>
+              <p className="mt-1 text-sm text-gray-300">{o.description}</p>
               <button
                 type="button"
                 onClick={(event) => {
@@ -149,7 +150,7 @@ export default function LightingOptions() {
                 className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary hover:gap-2.5 transition-all"
                 data-testid={`btn-lighting-details-${i}`}
               >
-                Подробнее <ArrowRight className="w-3.5 h-3.5" />
+                {t("common.details")} <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </motion.div>
@@ -161,7 +162,7 @@ export default function LightingOptions() {
         onClose={closeGallery}
         returnFocusRef={activeTriggerRef}
         cta={{
-          label: "Заказать",
+          label: t("common.order"),
           href: "/order",
           testId: "btn-modal-order",
         }}

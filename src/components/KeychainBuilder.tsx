@@ -1,5 +1,16 @@
 import CustomProductBuilder from "./CustomProductBuilder";
 
-export default function KeychainBuilder() {
-  return <CustomProductBuilder productType="keychain" />;
+interface KeychainBuilderProps {
+  onReturnToProductSelection: () => void;
+}
+
+export default function KeychainBuilder({
+  onReturnToProductSelection,
+}: KeychainBuilderProps) {
+  return (
+    <CustomProductBuilder
+      productType="keychain"
+      onReturnToProductSelection={onReturnToProductSelection}
+    />
+  );
 }

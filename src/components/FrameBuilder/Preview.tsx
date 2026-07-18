@@ -1,5 +1,6 @@
 ﻿import { useRef, useState, useCallback, useEffect, type Dispatch, type SetStateAction } from "react";
 import { FrameOrderState, HEART_IMG } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 import { getAccessoryDisplay } from "@/lib/accessoryDisplay";
 import { getPetDisplayScale } from "@/lib/petDisplay";
 import { motion } from "@/lib/motion";
@@ -80,6 +81,23 @@ const PET_BASE_SCALE = 0.9;
 // fixed, while translate keeps changing from drag.
 const ARRANGE_CHARACTER_SCALE = 1.1;
 
+/*
+ * Сердечко раньше было нарисовано со смещением относительно точки вращения:
+ * картинка занимала x=[-20; 40] и y=[-20; 40], а вращалась вокруг (0, 0).
+ * Поэтому при повороте оно визуально "ездило" по окружности.
+ *
+ * Оставляем прежнее положение на макете, но переносим геометрический центр
+ * сердечка в точку вращения.
+ */
+const HEART_RENDER_SIZE = 60;
+const HEART_RENDER_HALF = HEART_RENDER_SIZE / 2;
+const HEART_CENTER_OFFSET = 10;
+
+/* Большой и понятный контрол поворота — удобен мышью и пальцем. */
+const HEART_ROTATE_HANDLE_Y = -53;
+const HEART_ROTATE_HANDLE_RADIUS = 9.5;
+const HEART_ROTATE_TOUCH_RADIUS = 18;
+
 // Character drag-clamp margins follow the rendered scale (scaled bounding box).
 function charMargins(scale: number): Margins {
   return {
@@ -123,6 +141,7 @@ function getLightingFilter(lighting: FrameOrderState["lighting"]) {
 }
 
 export default function Preview({ state, onChange }: PreviewProps) {
+  const { t } = useTranslation();
   const { w, h } = getFrameDims(state.size);
   const BORDER = 18;
   const innerW = w - BORDER * 2;
@@ -146,7 +165,7 @@ export default function Preview({ state, onChange }: PreviewProps) {
   const allIds   = [...charIds, ...petIds, ...accIds, ...heartIds];
 
   const positions = state.previewPositions ?? {};
-  const [rotations, setRotations] = useState<Record<string, number>>({});
+  const rotations = state.previewRotations ?? {};
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const dragRef   = useRef<DragState | null>(null);
   const rotateRef = useRef<{ id: string } | null>(null);
@@ -247,10 +266,23 @@ export default function Preview({ state, onChange }: PreviewProps) {
     if (rotateRef.current) {
       if (e.cancelable) e.preventDefault();
       const { id } = rotateRef.current;
-      const center = getPos(id, heartIds);
-      const deg = Math.atan2(svgPos.y - center.y, svgPos.x - center.x) * (180 / Math.PI) + 90;
+      const storedPos = getPos(id, heartIds);
+      const center = {
+        x: storedPos.x + HEART_CENTER_OFFSET,
+        y: storedPos.y + HEART_CENTER_OFFSET,
+      };
+      const deg =
+        Math.atan2(svgPos.y - center.y, svgPos.x - center.x) *
+          (180 / Math.PI) +
+        90;
       const norm = ((deg % 360) + 360) % 360;
-      setRotations(prev => ({ ...prev, [id]: norm }));
+      onChange((current) => ({
+        ...current,
+        previewRotations: {
+          ...(current.previewRotations ?? {}),
+          [id]: norm,
+        },
+      }));
       return;
     }
     if (dragRef.current) {
@@ -296,10 +328,10 @@ export default function Preview({ state, onChange }: PreviewProps) {
   return (
     <div className="bg-card border border-border rounded-3xl h-full min-h-[500px] lg:min-h-[620px] xl:min-h-[680px] flex flex-col items-center justify-center p-2 sm:p-3 relative overflow-hidden select-none">
       <div className="absolute top-4 left-4 text-xs font-bold tracking-widest text-muted-foreground uppercase">
-        Превью
+        {t("frameBuilder.preview.label")}
       </div>
       <div className="absolute top-4 right-4 text-[10px] text-muted-foreground/60 font-medium">
-        Перетащите элементы
+        {t("frameBuilder.preview.dragHint")}
       </div>
 
       <motion.div
@@ -350,53 +382,140 @@ export default function Preview({ state, onChange }: PreviewProps) {
               const dragging = isDragging(id);
               const selected = selectedId === id;
               const rot = rotations[id] ?? 0;
+              const centerX = p.x + HEART_CENTER_OFFSET;
+              const centerY = p.y + HEART_CENTER_OFFSET;
+
               return (
-                <g key={id} transform={`translate(${p.x}, ${p.y}) rotate(${rot})`}
-                  filter={selected ? "url(#formika-glow)" : undefined}
+                <g
+                  key={id}
+                  transform={`translate(${centerX}, ${centerY}) rotate(${rot})`}
                   style={{ cursor: dragging ? "grabbing" : "grab" }}
                   onMouseDown={(e) => startDrag(id, e)}
                   onTouchStart={(e) => startDrag(id, e)}
                 >
-                  {/* Transparent hit area so the whole heart (incl. margins) can be grabbed */}
-                 <rect
-                  x="-24"
-                  y="-24"
-                  width="60"
-                  height="60"
-                  fill="transparent"
-                  style={{ pointerEvents: "all" }}
-                />
-
-                {src && (
-                  <image
-                    href={src}
-                    x="-20"
-                    y="-20"
-                    width="60"
-                    height="60"
-                    preserveAspectRatio="xMidYMid meet"
+                  {/*
+                   * Увеличенная зона захвата сердечка.
+                   * Само изображение теперь центрировано относительно (0, 0),
+                   * поэтому при повороте оно не смещается по кругу.
+                   */}
+                  <rect
+                    x={-HEART_RENDER_HALF - 6}
+                    y={-HEART_RENDER_HALF - 6}
+                    width={HEART_RENDER_SIZE + 12}
+                    height={HEART_RENDER_SIZE + 12}
+                    rx="12"
+                    fill="transparent"
                     style={{ pointerEvents: "all" }}
                   />
-                )}
-                  {/* Small rotate handle near the selected heart */}
+
+                  {src && (
+                    <g filter={selected ? "url(#formika-glow)" : undefined}>
+                      <image
+                        href={src}
+                        x={-HEART_RENDER_HALF}
+                        y={-HEART_RENDER_HALF}
+                        width={HEART_RENDER_SIZE}
+                        height={HEART_RENDER_SIZE}
+                        preserveAspectRatio="xMidYMid meet"
+                        style={{ pointerEvents: "all" }}
+                      />
+                    </g>
+                  )}
+
                   {selected && (
                     <g>
-                      <line
-                        x1="0"
-                        y1="-7"
-                        x2="0"
-                        y2="-3"
-                        stroke="#FF6A00"
-                        strokeWidth="1.3"
+                      {/* Спокойная рамка без сильного свечения. */}
+                      <rect
+                        x={-HEART_RENDER_HALF - 3}
+                        y={-HEART_RENDER_HALF - 3}
+                        width={HEART_RENDER_SIZE + 6}
+                        height={HEART_RENDER_SIZE + 6}
+                        rx="11"
+                        fill="none"
+                        stroke="rgba(255,106,0,0.72)"
+                        strokeWidth="1.05"
+                        strokeDasharray="3.5 3.5"
+                        style={{ pointerEvents: "none" }}
                       />
 
+                      {/* Тонкая соединительная линия. */}
+                      <line
+                        x1="0"
+                        y1={-HEART_RENDER_HALF - 3}
+                        x2="0"
+                        y2={HEART_ROTATE_HANDLE_Y + HEART_ROTATE_HANDLE_RADIUS - 1}
+                        stroke="rgba(255,106,0,0.72)"
+                        strokeWidth="1.15"
+                        strokeLinecap="round"
+                        style={{ pointerEvents: "none" }}
+                      />
+
+                      {/*
+                       * Чистая кнопка поворота без размытого ореола.
+                       * Иконка легче и визуально ближе к интерфейсу редактора.
+                       */}
+                      <g
+                        transform={`translate(0 ${HEART_ROTATE_HANDLE_Y})`}
+                        style={{ pointerEvents: "none" }}
+                      >
+                        <circle
+                          r={HEART_ROTATE_HANDLE_RADIUS}
+                          fill="rgba(24,18,14,0.96)"
+                          stroke="rgba(255,106,0,0.88)"
+                          strokeWidth="1.25"
+                        />
+
+                        <circle
+                          r={HEART_ROTATE_HANDLE_RADIUS - 2.2}
+                          fill="none"
+                          stroke="rgba(255,255,255,0.07)"
+                          strokeWidth="0.7"
+                        />
+
+                        <path
+                          d="M -3.4 -3.1 A 4.8 4.8 0 1 1 -4.0 2.5"
+                          fill="none"
+                          stroke="#FF8A32"
+                          strokeWidth="1.45"
+                          strokeLinecap="round"
+                        />
+
+                        <path
+                          d="M -5.55 0.95 L -3.85 2.95 L -1.55 2.15"
+                          fill="none"
+                          stroke="#FF8A32"
+                          strokeWidth="1.45"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r="1.15"
+                          fill="rgba(255,138,50,0.32)"
+                        />
+                      </g>
+
+                      {/*
+                       * Большая невидимая зона — особенно важна на телефоне.
+                       * Палец может начать вращение не попадая точно в иконку.
+                       */}
                       <circle
                         cx="0"
-                        cy="-3"
-                        r="3.6"
-                        style={{ cursor: "grab", pointerEvents: "all" }}
+                        cy={HEART_ROTATE_HANDLE_Y}
+                        r={HEART_ROTATE_TOUCH_RADIUS}
+                        fill="transparent"
+                        style={{
+                          cursor: rotateRef.current?.id === id
+                            ? "grabbing"
+                            : "grab",
+                          pointerEvents: "all",
+                          touchAction: "none",
+                        }}
                         onMouseDown={(e) => startRotate(id, e)}
-                        onTouchStart={(e) => startRotate(id, e)} />
+                        onTouchStart={(e) => startRotate(id, e)}
+                      />
                     </g>
                   )}
                 </g>
@@ -491,7 +610,7 @@ export default function Preview({ state, onChange }: PreviewProps) {
           {allIds.length === 0 && (
             <text x={w / 2} y={h / 2} textAnchor="middle"
               fontSize="11" fill="rgba(255,255,255,0.18)" fontFamily="serif">
-              Добавьте элементы
+              {t("frameBuilder.preview.emptyHint")}
             </text>
           )}
         </svg>

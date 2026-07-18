@@ -1,7 +1,8 @@
 import { Check, PawPrint } from "lucide-react";
-import { ITEMS } from "@/lib/types";
-import { PRICING, formatEuro } from "@/lib/pricing";
+import { ITEMS, getPetLabel } from "@/lib/types";
+import { PRICING } from "@/lib/pricing";
 import CollapsibleOptionGrid from "@/components/CollapsibleOptionGrid";
+import { useTranslation } from "react-i18next";
 
 interface PetSelectionGridProps {
   selectedPets: string[];
@@ -13,30 +14,13 @@ interface PetSelectionGridProps {
   testIdPrefix?: string;
 }
 
-type PetOption = (typeof ITEMS.pets)[number];
-
-function getPetLabel(pet: PetOption) {
-  const catMatch = /^cat(\d+)$/i.exec(pet.id);
-
-  if (catMatch) {
-    return `Котик ${catMatch[1]}`;
-  }
-
-  const dogMatch = /^dog(\d+)$/i.exec(pet.id);
-
-  if (dogMatch) {
-    return `Собачка ${dogMatch[1]}`;
-  }
-
-  return pet.label ?? pet.id;
-}
-
 export default function PetSelectionGrid({
   selectedPets,
   onSelectionChange,
-  noneSubtitle = "Композиция без животных",
+  noneSubtitle,
   testIdPrefix = "pet",
 }: PetSelectionGridProps) {
+  const { t } = useTranslation();
   const visiblePets = ITEMS.pets.filter(
     (pet) => pet.img,
   );
@@ -125,11 +109,11 @@ export default function PetSelectionGrid({
                 }
               `}
             >
-              Без питомца
+              {t("petsSelector.noPet")}
             </h3>
 
             <p className="mt-1.5 font-sans text-xs leading-relaxed text-white/40">
-              {noneSubtitle}
+              {noneSubtitle ?? t("petsSelector.noAnimalsDescription")}
             </p>
 
             <span
@@ -144,7 +128,7 @@ export default function PetSelectionGrid({
                 }
               `}
             >
-              0 €
+              {t("common.freePrice")}
             </span>
           </div>
         </button>
@@ -184,7 +168,7 @@ export default function PetSelectionGrid({
 
               <img
                 src={pet.img}
-                alt={getPetLabel(pet)}
+                alt={getPetLabel(pet.id)}
                 width={420}
                 height={420}
                 loading="lazy"
@@ -234,11 +218,11 @@ export default function PetSelectionGrid({
                   }
                 `}
               >
-                {getPetLabel(pet)}
+                {getPetLabel(pet.id)}
               </h3>
 
               <p className="mt-1.5 font-sans text-xs text-white/40">
-                Питомец для композиции
+                {t("petsSelector.petDescription")}
               </p>
 
               <span
@@ -253,7 +237,7 @@ export default function PetSelectionGrid({
                   }
                 `}
               >
-                +{formatEuro(PRICING.pet)}
+                {t("common.addedPriceCompact", { price: PRICING.pet })}
               </span>
             </div>
           </button>

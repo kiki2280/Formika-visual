@@ -1,11 +1,12 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Layers3 } from "lucide-react";
 import {
   type FrameOrderState,
   ITEMS,
+  getAccessoryLabel,
 } from "@/lib/types";
 import { getAccessoryPrice } from "@/lib/accessoryPricing";
-import { formatEuro } from "@/lib/pricing";
 import CollapsibleOptionGrid from "@/components/CollapsibleOptionGrid";
 
 interface StepProps {
@@ -43,6 +44,7 @@ export default function AccessoriesStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
   const visibleAccessories = useMemo(
     () =>
       ITEMS.accessories.filter(
@@ -116,7 +118,7 @@ export default function AccessoriesStep({
       expandedByDefault={
         hasSelectedHiddenAccessory
       }
-      buttonLabel="Показать все детали"
+      buttonLabel={t("frameBuilder.accessories.showAll")}
       testId="background-accessories-show-all"
       alwaysVisible={
         <button
@@ -179,12 +181,11 @@ export default function AccessoriesStep({
                 }
               `}
             >
-              Без деталей
+              {t("frameBuilder.accessories.none")}
             </h3>
 
             <p className="mt-1.5 font-sans text-xs leading-relaxed text-white/40">
-              Чистый фон без дополнительных
-              элементов
+              {t("frameBuilder.accessories.noneDescription")}
             </p>
 
             <span
@@ -199,14 +200,14 @@ export default function AccessoriesStep({
                 }
               `}
             >
-              0 €
+              {t("common.freePrice")}
             </span>
           </div>
         </button>
       }
     >
-      {visibleAccessories.map((accessory, index) => {
-      const accessoryLabel = `Аксессуар ${index + 1}`;
+      {visibleAccessories.map((accessory) => {
+        const accessoryLabel = getAccessoryLabel(accessory.id);
         const isSelected =
           selectedAccessories.includes(
             accessory.id,
@@ -295,7 +296,7 @@ export default function AccessoriesStep({
               </h3>
 
               <p className="mt-1.5 font-sans text-xs text-white/40">
-                Дополнительная деталь фона
+                {t("frameBuilder.accessories.itemDescription")}
               </p>
 
               <div className="mt-auto pt-4">
@@ -312,7 +313,9 @@ export default function AccessoriesStep({
                     }
                   `}
                 >
-                  +{formatEuro(price)}
+                  {t("common.addedPrice", {
+                    price,
+                  })}
                 </span>
               </div>
             </div>

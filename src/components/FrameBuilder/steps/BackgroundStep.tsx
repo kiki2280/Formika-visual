@@ -4,6 +4,7 @@ import {
   Info,
   Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   type FrameOrderState,
   PRICING,
@@ -18,13 +19,13 @@ export default function BackgroundStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
   const options = [
     {
       id: "white",
-      title: "Белый фон",
-      subtitle:
-        "Чистый светлый фон для аккуратной классической композиции.",
-      price: "Входит в стоимость",
+      title: t("frameBuilder.background.whiteTitle"),
+      subtitle: t("frameBuilder.background.whiteDescription"),
+      price: t("frameBuilder.lighting.included"),
       selected: !state.customBg,
       onSelect: () =>
         onChange({
@@ -34,10 +35,11 @@ export default function BackgroundStep({
     },
     {
       id: "custom",
-      title: "Индивидуальный фон",
-      subtitle:
-        "Ваш рисунок, фотография или персональное оформление.",
-      price: `От +${PRICING.customBg} €`,
+      title: t("frameBuilder.background.customTitle"),
+      subtitle: t("frameBuilder.background.customDescription"),
+      price: t("frameBuilder.background.customPrice", {
+        price: PRICING.customBg,
+      }),
       selected: state.customBg,
       onSelect: () =>
         onChange({
@@ -199,13 +201,11 @@ export default function BackgroundStep({
 
           <div>
             <p className="font-sans text-sm font-medium text-white">
-              Стоимость индивидуального фона
+              {t("frameBuilder.background.priceHeading")}
             </p>
 
             <p className="mt-1 font-sans text-xs leading-relaxed text-white/42">
-              Финальная цена зависит от сложности
-              изображения и согласовывается перед
-              изготовлением.
+              {t("frameBuilder.background.priceDisclaimer")}
             </p>
           </div>
         </div>

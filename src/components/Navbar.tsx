@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import BrandLogo from "./BrandLogo";
+import {
+  SUPPORTED_LANGUAGES,
+  type FormikaLanguage,
+} from "@/i18n";
 
 type NavSectionId =
   | "home"
@@ -10,41 +15,39 @@ type NavSectionId =
   | "reviews"
   | "community";
 
-type LanguageCode = "RU" | "LV" | "EN";
-
 interface BodyStyleSnapshot {
   styleAttribute: string | null;
 }
 
 const NAV_ITEMS: {
-  label: string;
+  labelKey: string;
   section: NavSectionId;
   home?: boolean;
   testid: string;
 }[] = [
   {
-    label: "Главная",
+    labelKey: "header.home",
     section: "home",
     home: true,
     testid: "link-nav-home",
   },
   {
-    label: "Наши работы",
+    labelKey: "header.works",
     section: "works",
     testid: "link-nav-works",
   },
   {
-    label: "Преимущества",
+    labelKey: "header.advantages",
     section: "advantages",
     testid: "link-nav-benefits",
   },
   {
-    label: "Отзывы",
+    labelKey: "header.reviews",
     section: "reviews",
     testid: "link-nav-reviews",
   },
   {
-    label: "Соцсети",
+    labelKey: "header.socials",
     section: "community",
     testid: "link-nav-social",
   },
@@ -52,17 +55,19 @@ const NAV_ITEMS: {
 
 const NAV_SECTION_IDS = NAV_ITEMS.map((item) => item.section);
 
-const LANGUAGES: LanguageCode[] = ["RU", "LV", "EN"];
-
-/*
- * Сейчас активным показан русский язык.
- * Когда будет подключена система переводов, эту константу
- * нужно заменить текущим языком из i18n.
- */
-const ACTIVE_LANGUAGE: LanguageCode = "RU";
+const LANGUAGE_OPTIONS: {
+  code: FormikaLanguage;
+  labelKey: string;
+}[] = SUPPORTED_LANGUAGES.map((code) => ({
+  code,
+  labelKey: `header.language${code[0].toUpperCase()}${code.slice(1)}`,
+}));
 
 export default function Navbar() {
+  const { t, i18n } = useTranslation();
   const [location, setLocation] = useLocation();
+  const activeLanguage = (i18n.resolvedLanguage ?? i18n.language)
+    .split("-")[0] as FormikaLanguage;
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
@@ -506,7 +511,7 @@ export default function Navbar() {
               hover:opacity-90
             "
             data-testid="link-logo"
-            aria-label="FORMIKA — на главную"
+            aria-label={t("header.homeAria")}
           >
             <BrandLogo variant="header" />
           </Link>
@@ -521,7 +526,7 @@ export default function Navbar() {
 
                 return (
                   <button
-                    key={item.label}
+                    key={item.section}
                     type="button"
                     onClick={() =>
                       item.home
@@ -544,7 +549,7 @@ export default function Navbar() {
                       isActive ? "location" : undefined
                     }
                   >
-                    {item.label}
+                    {t(item.labelKey)}
 
                     <span
                       aria-hidden="true"
@@ -578,17 +583,18 @@ export default function Navbar() {
                 bg-white/[0.025] p-1
                 lg:flex
               "
-              aria-label="Выбор языка"
+              aria-label={t("header.languageSelectorAria")}
             >
-              {LANGUAGES.map((language) => {
-                const isActive =
-                  language === ACTIVE_LANGUAGE;
+              {LANGUAGE_OPTIONS.map((language) => {
+                const isActive = language.code === activeLanguage;
 
                 return (
                   <button
-                    key={language}
+                    key={language.code}
                     type="button"
+                    onClick={() => void i18n.changeLanguage(language.code)}
                     aria-pressed={isActive}
+                    aria-label={t(language.labelKey)}
                     className={`
                       min-w-9 rounded-full px-2 py-1.5
                       font-sans text-[10px] font-bold
@@ -601,9 +607,9 @@ export default function Navbar() {
                           : "text-white/35 hover:bg-white/[0.04] hover:text-white/70"
                       }
                     `}
-                    data-testid={`btn-lang-${language.toLowerCase()}`}
+                    data-testid={`btn-lang-${language.code}`}
                   >
-                    {language}
+                    {t(language.labelKey)}
                   </button>
                 );
               })}
@@ -626,7 +632,7 @@ export default function Navbar() {
               "
               data-testid="button-nav-order"
             >
-              Заказать
+              {t("common.order")}
 
               <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
             </Link>
@@ -647,8 +653,8 @@ export default function Navbar() {
               "
               aria-label={
                 isMobileMenuOpen
-                  ? "Закрыть меню"
-                  : "Открыть меню"
+                  ? t("header.closeMenuAria")
+                  : t("header.openMenuAria")
               }
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-nav-menu"
@@ -699,7 +705,7 @@ export default function Navbar() {
             : "pointer-events-none opacity-0"
         }
       `}
-      aria-label="Закрыть мобильное меню"
+      aria-label={t("header.closeMobileMenuAria")}
       onClick={closeMobileMenu}
       data-testid="mobile-menu-backdrop"
     />
@@ -731,7 +737,7 @@ export default function Navbar() {
       {/* Заголовок */}
       <div className="mb-2 flex items-center justify-between px-2 py-1">
         <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">
-          Навигация
+          {t("header.navigationHeading")}
         </p>
 
         <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(255,106,0,0.65)]" />
@@ -746,7 +752,7 @@ export default function Navbar() {
 
           return (
             <button
-              key={item.label}
+              key={item.section}
               type="button"
               onClick={() =>
                 item.home
@@ -771,7 +777,7 @@ export default function Navbar() {
                 isActive ? "location" : undefined
               }
             >
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
 
               <span
                 className={`
@@ -793,19 +799,20 @@ export default function Navbar() {
       {/* Языки */}
       <div className="mt-3 rounded-2xl border border-white/[0.08] bg-black/25 p-2.5">
         <p className="px-1 font-sans text-[9px] font-bold uppercase tracking-[0.18em] text-white/28">
-          Язык
+          {t("header.languageHeading")}
         </p>
 
         <div className="mt-2 grid grid-cols-3 gap-2">
-          {LANGUAGES.map((language) => {
-            const isActive =
-              language === ACTIVE_LANGUAGE;
+          {LANGUAGE_OPTIONS.map((language) => {
+            const isActive = language.code === activeLanguage;
 
             return (
               <button
-                key={language}
+                key={language.code}
                 type="button"
+                onClick={() => void i18n.changeLanguage(language.code)}
                 aria-pressed={isActive}
+                aria-label={t(language.labelKey)}
                 className={`
                   h-9 rounded-xl border
                   px-3 font-sans text-xs font-bold
@@ -817,9 +824,9 @@ export default function Navbar() {
                       : "border-white/[0.09] bg-white/[0.015] text-white/38 hover:border-primary/35 hover:text-white/75"
                   }
                 `}
-                data-testid={`mobile-btn-lang-${language.toLowerCase()}`}
+                data-testid={`mobile-btn-lang-${language.code}`}
               >
-                {language}
+                {t(language.labelKey)}
               </button>
             );
           })}
@@ -847,7 +854,7 @@ export default function Navbar() {
         "
         data-testid="mobile-button-nav-order"
       >
-        Создать подарок
+        {t("common.createGift")}
 
         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
       </Link>

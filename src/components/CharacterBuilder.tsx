@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Character, makeCharacter } from "@/lib/types";
 import { isFixedAccessory } from "@/lib/accessoryDisplay";
+import { useTranslation } from "react-i18next";
 import CharacterEditor from "./CharacterEditor";
 import CharacterBody from "./FrameBuilder/CharacterBody";
 
@@ -15,6 +16,9 @@ interface CharacterBuilderProps {
   addButtonLabel?: string;
   showAccessories?: boolean;
   showName?: boolean;
+  invalidFaceIds?: readonly string[];
+  focusInvalidCharacterId?: string | null;
+  faceValidationRequestId?: number;
 }
 
 const DEFAULT_CLOTHING = { top: "TOP-13", bottom: "BOTTOM-13" };
@@ -33,6 +37,7 @@ function InteractiveFigure({
   onChange: (c: Character) => void;
   showName: boolean;
 }) {
+  const { t } = useTranslation();
   const svgRef = useRef<SVGSVGElement>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const dragRef = useRef<string | null>(null);
@@ -124,7 +129,7 @@ function InteractiveFigure({
       </svg>
       {hasDraggableAccessories && (
         <p className="text-[11px] text-muted-foreground mt-2 text-center">
-          Перетащите аксессуар, чтобы разместить его в руке
+          {t("characterEditor.dragAccessoryHint")}
         </p>
       )}
     </div>
@@ -138,16 +143,43 @@ export default function CharacterBuilder({
   minCharacters = 1,
   extraCharacterPrice,
   note,
-  addButtonLabel = "Добавить человечка",
+  addButtonLabel,
   showAccessories = true,
   showName = true,
+  invalidFaceIds = [],
+  focusInvalidCharacterId = null,
+  faceValidationRequestId = 0,
 }: CharacterBuilderProps) {
+  const { t } = useTranslation();
+  const resolvedAddButtonLabel =
+    addButtonLabel ?? t("characterEditor.addCharacter");
   const [active, setActive] = useState(0);
+  const characterTabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const activeIndex = Math.min(active, characters.length - 1);
+  const characterIdsSignature = characters.map((character) => character.id).join("|");
 
   useEffect(() => {
     setActive((current) => Math.max(0, Math.min(current, characters.length - 1)));
   }, [characters.length]);
+
+  useEffect(() => {
+    if (!focusInvalidCharacterId || faceValidationRequestId <= 0) return;
+
+    const invalidIndex = characters.findIndex(
+      (character) => character.id === focusInvalidCharacterId,
+    );
+    if (invalidIndex < 0) return;
+
+    setActive(invalidIndex);
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      const target = characterTabRefs.current[focusInvalidCharacterId];
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [characterIdsSignature, faceValidationRequestId, focusInvalidCharacterId]);
 
   const addCharacter = () => {
     if (characters.length >= maxCharacters) return;
@@ -172,24 +204,36 @@ export default function CharacterBuilder({
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-2">
-        {characters.map((char, i) => (
-          <button
-            key={char.id}
-            type="button"
-            onClick={() => setActive(i)}
-            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-              i === activeIndex
-                ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_2px_rgba(255,106,0,0.8)]"
-                : "border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
-            }`}
-            data-testid={`character-tab-${i}`}
-          >
-            Человечек {i + 1}
-            {i > 0 && extraCharacterPrice !== undefined && (
-              <span className="ml-1.5 text-xs opacity-80">+{extraCharacterPrice} €</span>
-            )}
-          </button>
-        ))}
+        {characters.map((char, i) => {
+          const faceInvalid = invalidFaceIds.includes(char.id);
+
+          return (
+            <button
+              key={char.id}
+              ref={(node) => {
+                characterTabRefs.current[char.id] = node;
+              }}
+              type="button"
+              onClick={() => setActive(i)}
+              className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
+                faceInvalid
+                  ? "border-destructive bg-destructive/10 text-destructive shadow-[0_0_0_2px_rgba(239,68,68,0.22)]"
+                  : i === activeIndex
+                    ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_2px_rgba(255,106,0,0.8)]"
+                    : "border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
+              }`}
+              aria-invalid={faceInvalid || undefined}
+              data-testid={`character-tab-${i}`}
+            >
+              {t("characterEditor.characterNumber", { number: i + 1 })}
+              {i > 0 && extraCharacterPrice !== undefined && (
+                <span className="ml-1.5 text-xs opacity-80">
+                  {t("common.addedPrice", { price: extraCharacterPrice })}
+                </span>
+              )}
+            </button>
+          );
+        })}
         {characters.length < maxCharacters && (
           <button
             type="button"
@@ -198,7 +242,7 @@ export default function CharacterBuilder({
             data-testid="btn-add-character"
           >
             <Plus className="w-4 h-4" />
-            {addButtonLabel}
+          {resolvedAddButtonLabel}
           </button>
         )}
       </div>
@@ -223,6 +267,7 @@ export default function CharacterBuilder({
             onRemove={characters.length > minCharacters ? () => removeCharacter(activeIndex) : undefined}
             showName={showName}
             showAccessories={showAccessories}
+            faceInvalid={invalidFaceIds.includes(characters[activeIndex].id)}
           />
         </div>
       </div>

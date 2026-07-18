@@ -1,8 +1,10 @@
 import { PawPrint } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import PetSelectionGrid from "@/components/PetSelectionGrid";
 import {
   type FrameOrderState,
   ITEMS,
+  getPetLabel,
 } from "@/lib/types";
 
 interface StepProps {
@@ -12,30 +14,11 @@ interface StepProps {
   ) => void;
 }
 
-function getPetLabel(id: string) {
-  const catMatch = /^cat(\d+)$/i.exec(id);
-
-  if (catMatch) {
-    return `Котик ${catMatch[1]}`;
-  }
-
-  const dogMatch = /^dog(\d+)$/i.exec(id);
-
-  if (dogMatch) {
-    return `Собачка ${dogMatch[1]}`;
-  }
-
-  const pet = ITEMS.pets.find(
-    (item) => item.id === id,
-  );
-
-  return pet?.label ?? id;
-}
-
 export default function PetsStep({
   state,
   onChange,
 }: StepProps) {
+  const { t } = useTranslation();
   const removePetPositions = (
     ids: string[],
   ) => {
@@ -101,12 +84,11 @@ export default function PetsStep({
 
             <div>
               <h3 className="font-sans text-base font-semibold text-white">
-                Имена питомцев
+                {t("frameBuilder.pets.namesTitle")}
               </h3>
 
               <p className="mt-1 font-sans text-xs leading-relaxed text-white/40">
-                Поле необязательное. Имя можно
-                добавить для персонализации заказа.
+                {t("frameBuilder.pets.namesDescription")}
               </p>
             </div>
           </div>
@@ -144,7 +126,7 @@ export default function PetsStep({
                       </p>
 
                       <p className="mt-0.5 font-sans text-xs text-white/35">
-                        Имя питомца
+                        {t("frameBuilder.pets.nameLabel")}
                       </p>
                     </div>
                   </div>
@@ -160,7 +142,7 @@ export default function PetsStep({
                         event.target.value,
                       )
                     }
-                    placeholder="Введите имя"
+                    placeholder={t("frameBuilder.pets.namePlaceholder")}
                     className="
                       mt-3 h-11 w-full rounded-xl
                       border border-white/[0.10]

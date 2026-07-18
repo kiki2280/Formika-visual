@@ -7,36 +7,39 @@ import {
   Send,
   Truck,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import LegalPage from "@/components/LegalPage";
 import { CONTACTS } from "@/lib/contacts";
 
 export default function Delivery() {
+  const { t } = useTranslation();
+
   return (
     <LegalPage
-      title="Доставка и оплата"
-      intro="Все детали заказа согласовываются лично в Telegram. Перед изготовлением мы подтверждаем комплектацию, стоимость и сроки."
+      title={t("legal.delivery.title")}
+      intro={t("legal.delivery.intro")}
       sections={[
         {
-          title: "Как проходит оформление",
+          title: t("legal.delivery.processTitle"),
           content: (
             <div className="grid gap-3 sm:grid-cols-3">
               {[
                 {
                   number: "01",
-                  title: "Заявка",
-                  text: "Вы собираете композицию на сайте и отправляете заказ.",
+                  title: t("legal.delivery.applicationTitle"),
+                  text: t("legal.delivery.applicationText"),
                   icon: PackageCheck,
                 },
                 {
                   number: "02",
-                  title: "Согласование",
-                  text: "Мы уточняем детали, наличие элементов и финальную стоимость.",
+                  title: t("legal.delivery.approvalTitle"),
+                  text: t("legal.delivery.approvalText"),
                   icon: MessageCircle,
                 },
                 {
                   number: "03",
-                  title: "Изготовление",
-                  text: "После подтверждения начинаем создавать ваш заказ.",
+                  title: t("legal.delivery.productionTitle"),
+                  text: t("legal.delivery.productionText"),
                   icon: Check,
                 },
               ].map((item) => {
@@ -77,7 +80,7 @@ export default function Delivery() {
           ),
         },
         {
-          title: "Доставка",
+          title: t("legal.delivery.deliveryTitle"),
           content: (
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -88,23 +91,22 @@ export default function Delivery() {
 
                   <div>
                     <h3 className="font-sans text-base font-semibold text-white">
-                      Доставка по Латвии
+                      {t("legal.delivery.latviaTitle")}
                     </h3>
 
                     <p className="mt-1 max-w-lg font-sans text-sm leading-relaxed text-white/[0.45]">
-                      Способ получения и данные доставки подтверждаются
-                      при согласовании заказа в Telegram.
+                      {t("legal.delivery.latviaText")}
                     </p>
                   </div>
                 </div>
 
                 <div className="shrink-0 rounded-2xl border border-primary/25 bg-primary/[0.06] px-5 py-3 text-center">
                   <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.1em] text-white/[0.35]">
-                    Стоимость
+                    {t("legal.delivery.costLabel")}
                   </p>
 
                   <p className="mt-1 font-sans text-2xl font-semibold text-primary">
-                    4,50 €
+                    {t("legal.delivery.costValue")}
                   </p>
                 </div>
               </div>
@@ -112,7 +114,7 @@ export default function Delivery() {
           ),
         },
         {
-          title: "Оплата",
+          title: t("legal.delivery.paymentTitle"),
           content: (
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
@@ -123,18 +125,17 @@ export default function Delivery() {
 
                   <div>
                     <p className="font-sans text-xl font-semibold text-primary">
-                      50%
+                      {t("legal.delivery.halfPayment")}
                     </p>
 
                     <p className="font-sans text-sm font-semibold text-white">
-                      Перед началом работы
+                      {t("legal.delivery.beforeWorkTitle")}
                     </p>
                   </div>
                 </div>
 
                 <p className="mt-3 font-sans text-sm leading-relaxed text-white/[0.43]">
-                  Первая часть оплаты вносится после подтверждения
-                  деталей и стоимости заказа.
+                  {t("legal.delivery.beforeWorkText")}
                 </p>
               </div>
 
@@ -146,25 +147,24 @@ export default function Delivery() {
 
                   <div>
                     <p className="font-sans text-xl font-semibold text-primary">
-                      50%
+                      {t("legal.delivery.halfPayment")}
                     </p>
 
                     <p className="font-sans text-sm font-semibold text-white">
-                      После готовности
+                      {t("legal.delivery.afterReadyTitle")}
                     </p>
                   </div>
                 </div>
 
                 <p className="mt-3 font-sans text-sm leading-relaxed text-white/[0.43]">
-                  Оставшаяся часть оплачивается после завершения
-                  изготовления заказа.
+                  {t("legal.delivery.afterReadyText")}
                 </p>
               </div>
             </div>
           ),
         },
         {
-          title: "Срок изготовления",
+          title: t("legal.delivery.productionTimeTitle"),
           content: (
             <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-5">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -175,12 +175,11 @@ export default function Delivery() {
 
                   <div>
                     <h3 className="font-sans text-base font-semibold text-white">
-                      Обычно от 1 до 7 дней
+                      {t("legal.delivery.productionTimeValue")}
                     </h3>
 
                     <p className="mt-1 max-w-lg font-sans text-sm leading-relaxed text-white/[0.45]">
-                      Точный срок зависит от сложности композиции,
-                      количества фигурок и наличия выбранных деталей.
+                      {t("legal.delivery.productionTimeText")}
                     </p>
                   </div>
                 </div>
@@ -199,7 +198,7 @@ export default function Delivery() {
                   "
                 >
                   <Send className="mr-2 h-4 w-4" />
-                  Оформить заказ
+                  {t("legal.delivery.orderButton")}
                 </a>
               </div>
             </div>

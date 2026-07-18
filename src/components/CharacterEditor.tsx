@@ -1,9 +1,16 @@
 import { useMemo, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { Character, DEFAULT_FACE_ID, DEFAULT_FACE_ITEM, ITEMS } from "@/lib/types";
+import {
+  Character,
+  DEFAULT_FACE_ID,
+  ITEMS,
+  getCharacterOptionLabel,
+} from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import CharacterCategoryList, { type CharacterCategoryItem } from "./CharacterCategoryList";
 import CharacterOptionModal, { type CharacterChoiceOption } from "./CharacterOptionModal";
+import { useTranslation } from "react-i18next";
 
 interface CharacterEditorProps {
   index: number;
@@ -12,6 +19,7 @@ interface CharacterEditorProps {
   onRemove?: () => void;
   showAccessories?: boolean;
   showName?: boolean;
+  faceInvalid?: boolean;
 }
 
 type SingleSection = "face" | "hair" | "top" | "bottom";
@@ -19,13 +27,13 @@ type Section = "name" | SingleSection | "accessories";
 type EditorItem = { id: string; label?: string; img?: string };
 const NO_HAIR_ID = "__no_hair__";
 
-const SECTION_LABELS: Record<Section, string> = {
-  name: "Имя",
-  face: "Лицо",
-  hair: "Волосы",
-  top: "Верх одежды",
-  bottom: "Низ одежды",
-  accessories: "Аксессуары",
+const SECTION_LABEL_KEYS: Record<Section, string> = {
+  name: "characterEditor.nameCategory",
+  face: "characterEditor.faceCategory",
+  hair: "characterEditor.hairCategory",
+  top: "characterEditor.topCategory",
+  bottom: "characterEditor.bottomCategory",
+  accessories: "characterEditor.accessoriesCategory",
 };
 
 const SINGLE_ITEMS: Record<SingleSection, EditorItem[]> = {
@@ -36,7 +44,7 @@ const SINGLE_ITEMS: Record<SingleSection, EditorItem[]> = {
 };
 
 function itemLabel(item?: { id: string; label?: string }) {
-  return item?.label ?? item?.id ?? "Не выбрано";
+  return item ? getCharacterOptionLabel(item) : "";
 }
 
 export default function CharacterEditor({
@@ -46,7 +54,9 @@ export default function CharacterEditor({
   onRemove,
   showAccessories = false,
   showName = false,
+  faceInvalid = false,
 }: CharacterEditorProps) {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<Section | null>(null);
 
   const visibleAccessories = useMemo(
@@ -74,7 +84,7 @@ export default function CharacterEditor({
 
   const selectedSingleItem = (section: SingleSection) => {
     const selectedId = section === "face" ? character.face ?? DEFAULT_FACE_ID : character[section];
-    if (section === "face" && selectedId === DEFAULT_FACE_ID) return DEFAULT_FACE_ITEM;
+    if (section === "face" && selectedId === DEFAULT_FACE_ID) return undefined;
     return SINGLE_ITEMS[section].find((item) => item.id === selectedId);
   };
 
@@ -88,9 +98,12 @@ export default function CharacterEditor({
     if (showName) {
       items.push({
         id: "name",
-        title: SECTION_LABELS.name,
-        value: character.name?.trim() ? character.name : "Не указано",
-        preview: { alt: SECTION_LABELS.name, label: "Aa" },
+        title: t(SECTION_LABEL_KEYS.name),
+        value: character.name?.trim() ? character.name : t("characterEditor.notSpecified"),
+        preview: {
+          alt: t(SECTION_LABEL_KEYS.name),
+          label: t("characterEditor.namePreview"),
+        },
         testId: `btn-open-name-${index}`,
       });
     }
@@ -99,11 +112,17 @@ export default function CharacterEditor({
       const selected = selectedSingleItem(section);
       items.push({
         id: section,
-        title: SECTION_LABELS[section],
-        value: selected ? `Выбрано: ${itemLabel(selected)}` : "Не выбрано",
+        title: t(SECTION_LABEL_KEYS[section]),
+        value: selected
+          ? t("characterEditor.selectedValue", { item: itemLabel(selected) })
+          : t("characterEditor.notSelected"),
+        invalid: section === "face" && faceInvalid,
         preview: selected?.img
           ? { src: selected.img, alt: itemLabel(selected) }
-          : { alt: SECTION_LABELS[section], label: selected?.id ?? "—" },
+          : {
+              alt: t(SECTION_LABEL_KEYS[section]),
+              label: selected?.id ?? t("characterEditor.emptyPreview"),
+            },
         testId: `btn-open-${section}-${index}`,
       });
     });
@@ -111,16 +130,21 @@ export default function CharacterEditor({
     if (showAccessories) {
       items.push({
         id: "accessories",
-        title: SECTION_LABELS.accessories,
+        title: t(SECTION_LABEL_KEYS.accessories),
         value:
           selectedAccessoryItems.length === 0
-            ? "Без аксессуара"
+            ? t("characterEditor.noAccessory")
             : selectedAccessoryItems.length === 1
               ? itemLabel(selectedAccessoryItems[0])
-              : `${selectedAccessoryItems.length} выбрано`,
+              : t("characterEditor.selectedCount", {
+                  count: selectedAccessoryItems.length,
+                }),
         preview: selectedAccessoryItems[0]?.img
           ? { src: selectedAccessoryItems[0].img, alt: itemLabel(selectedAccessoryItems[0]) }
-          : { alt: SECTION_LABELS.accessories, label: "—" },
+          : {
+              alt: t(SECTION_LABEL_KEYS.accessories),
+              label: t("characterEditor.emptyPreview"),
+            },
         testId: `btn-open-accessories-${index}`,
       });
     }
@@ -131,13 +155,15 @@ export default function CharacterEditor({
     index,
     selectedAccessoryItems,
     showAccessories,
+    faceInvalid,
     showName,
+    t,
   ]);
 
   const singleOptions = (section: SingleSection): CharacterChoiceOption[] => {
     const options = SINGLE_ITEMS[section].map((item) => ({
       id: item.id,
-      label: item.label ?? item.id,
+      label: itemLabel(item),
       img: item.img,
       selected: (section === "face" ? character.face ?? DEFAULT_FACE_ID : character[section]) === item.id,
       testId: `item-${item.id}-char-${index}`,
@@ -150,7 +176,7 @@ export default function CharacterEditor({
     return [
       {
         id: NO_HAIR_ID,
-        label: "Без волос",
+        label: t("characterEditor.noHair"),
         selected: !selectedHairExists,
         testId: `item-no-hair-char-${index}`,
       },
@@ -161,13 +187,13 @@ export default function CharacterEditor({
   const accessoryOptions: CharacterChoiceOption[] = [
     {
       id: "__none__",
-      label: "Без аксессуара",
+      label: t("characterEditor.noAccessory"),
       selected: (character.accessories ?? []).length === 0,
       testId: `item-none-acc-char-${index}`,
     },
     ...visibleAccessories.map((item) => ({
       id: item.id,
-      label: item.label ?? item.id,
+      label: itemLabel(item),
       img: item.img,
       selected: (character.accessories ?? []).includes(item.id),
       testId: `item-${item.id}-acc-char-${index}`,
@@ -180,18 +206,18 @@ export default function CharacterEditor({
     if (activeSection === "name") {
       return (
         <CharacterOptionModal
-          title={SECTION_LABELS.name}
+          title={t(SECTION_LABEL_KEYS.name)}
           onClose={() => setActiveSection(null)}
         >
           <div className="space-y-4">
             <label className="block text-sm font-semibold uppercase tracking-widest text-primary">
-              Имя человечка
+              {t("characterEditor.characterNameLabel")}
             </label>
             <input
               type="text"
               value={character.name ?? ""}
               onChange={(event) => onChange({ ...character, name: event.target.value })}
-              placeholder="Введите имя"
+              placeholder={t("characterEditor.namePlaceholder")}
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/70"
               data-testid={`input-character-name-${index}`}
               autoFocus
@@ -203,7 +229,7 @@ export default function CharacterEditor({
                 className="bg-primary text-primary-foreground"
                 data-testid={`btn-save-character-name-${index}`}
               >
-                Готово
+                {t("characterEditor.done")}
               </Button>
             </div>
           </div>
@@ -214,7 +240,7 @@ export default function CharacterEditor({
     if (activeSection === "accessories") {
       return (
         <CharacterOptionModal
-          title={SECTION_LABELS.accessories}
+          title={t(SECTION_LABEL_KEYS.accessories)}
           options={accessoryOptions}
           onClose={() => setActiveSection(null)}
           collapseOptions
@@ -231,7 +257,7 @@ export default function CharacterEditor({
 
     return (
       <CharacterOptionModal
-        title={SECTION_LABELS[activeSection]}
+        title={t(SECTION_LABEL_KEYS[activeSection])}
         options={singleOptions(activeSection)}
         onClose={() => setActiveSection(null)}
         onSelect={(id) => setSingle(activeSection, id)}
@@ -241,9 +267,19 @@ export default function CharacterEditor({
   };
 
   return (
-    <div className="relative mt-4 rounded-xl border border-border bg-card p-4">
+    <div
+      className={cn(
+        "relative mt-4 rounded-xl border border-border bg-card p-4 transition-colors",
+        faceInvalid &&
+          "border-destructive/80 shadow-[0_0_0_2px_rgba(239,68,68,0.18)]",
+      )}
+      aria-invalid={faceInvalid || undefined}
+      data-testid={`character-editor-${index}`}
+    >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h4 className="font-sans text-lg font-semibold">Человечек {index + 1}</h4>
+        <h4 className="font-sans text-lg font-semibold">
+          {t("characterEditor.characterNumber", { number: index + 1 })}
+        </h4>
         {onRemove && (
           <Button
             variant="ghost"
@@ -253,10 +289,16 @@ export default function CharacterEditor({
             data-testid={`btn-remove-character-${index}`}
           >
             <Trash2 className="mr-1 h-4 w-4" />
-            Удалить
+            {t("characterEditor.delete")}
           </Button>
         )}
       </div>
+
+      {faceInvalid && (
+        <p className="mb-3 text-sm font-medium text-destructive" role="alert">
+          {t("characterEditor.faceNotSelected")}
+        </p>
+      )}
 
       <CharacterCategoryList items={categories} onOpen={setActiveSection} />
       {renderModal()}
