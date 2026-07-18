@@ -56,36 +56,30 @@ const OPTIONS = [
 ];
 
 const DESKTOP_OFFSETS = [
-  "md:pt-6",
-  "md:pt-1",
   "md:pt-8",
-  "md:pt-2",
+  "md:pt-0",
   "md:pt-8",
-  "md:pt-2",
-  "md:pt-6",
-  "md:pt-1",
+  "md:pt-0",
+  "md:pt-8",
+  "md:pt-0",
+  "md:pt-8",
+  "md:pt-0",
 ];
 
 const MOBILE_PATH =
   "M30 50 C30 83 42 117 42 150 C42 183 30 217 30 250 C30 283 42 317 42 350 C42 383 30 417 30 450 C30 483 42 517 42 550 C42 583 30 617 30 650 C30 683 42 717 42 750";
 
 const DESKTOP_PATH =
-  "M50 60 C85 60 115 40 150 40 C185 40 215 68 250 68 C285 68 315 44 350 44 C385 44 415 68 450 68 C485 68 515 44 550 44 C585 44 615 60 650 60 C685 60 715 40 750 40";
+  "M50 68 C85 68 115 36 150 36 C185 36 215 68 250 68 C285 68 315 36 350 36 C385 36 415 68 450 68 C485 68 515 36 550 36 C585 36 615 68 650 68 C685 68 715 36 750 36";
+
+const LINE_DRAW_LENGTH = 900;
 
 const LINE_VARIANTS = {
-  hidden: { pathLength: 0, opacity: 0 },
+  hidden: { strokeDashoffset: LINE_DRAW_LENGTH, opacity: 0 },
   visible: {
-    pathLength: 1,
+    strokeDashoffset: 0,
     opacity: 1,
     transition: { duration: 0.72, delay: 0.06, ease: "easeOut" },
-  },
-};
-
-const DOT_VARIANTS = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.3, delay: 0.64 },
   },
 };
 
@@ -119,10 +113,9 @@ interface TimelineLineProps {
   path: string;
   viewBox: string;
   className: string;
-  dots: Array<[number, number]>;
 }
 
-function TimelineLine({ path, viewBox, className, dots }: TimelineLineProps) {
+function TimelineLine({ path, viewBox, className }: TimelineLineProps) {
   return (
     <svg
       aria-hidden="true"
@@ -134,27 +127,17 @@ function TimelineLine({ path, viewBox, className, dots }: TimelineLineProps) {
       <motion.path
         d={path}
         variants={LINE_VARIANTS}
+        strokeDasharray={`${LINE_DRAW_LENGTH} ${LINE_DRAW_LENGTH}`}
         className="personalization-line-glow"
         vectorEffect="non-scaling-stroke"
       />
       <motion.path
         d={path}
         variants={LINE_VARIANTS}
+        strokeDasharray={`${LINE_DRAW_LENGTH} ${LINE_DRAW_LENGTH}`}
         className="personalization-line-core"
         vectorEffect="non-scaling-stroke"
       />
-      <motion.g variants={DOT_VARIANTS}>
-        {dots.map(([cx, cy], index) => (
-          <circle
-            key={`${cx}-${cy}-${index}`}
-            cx={cx}
-            cy={cy}
-            r="1.8"
-            className="personalization-line-dot"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </motion.g>
     </svg>
   );
 }
@@ -165,7 +148,7 @@ export default function Personalization() {
   return (
     <section
       id="personalization"
-      className="relative overflow-hidden py-20 md:py-24"
+      className="relative overflow-hidden pb-14 pt-20 md:pb-16 md:pt-24"
     >
       {/* Мягкое фоновое свечение */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.025] blur-[120px]" />
@@ -175,46 +158,30 @@ export default function Personalization() {
           eyebrow="Кастомизация без границ"
           title="Что можно"
           accentTitle="Персонализировать"
-          accentTitleClassName="whitespace-nowrap text-[clamp(1.125rem,5.6vw,1.5rem)] md:text-[inherit]"
+          accentTitleClassName="whitespace-nowrap text-[clamp(1.125rem,5.6vw,1.5rem)] md:text-[2.875rem] lg:text-[3.25rem] xl:text-[3.65rem]"
           subtitle="Каждую композицию можно настроить под вашу историю — от внешности персонажей до фона, надписи и подсветки."
           size="wide"
+          className="mb-10 md:mb-8"
+          titleClassName="personalization-heading-title"
         />
 
         <motion.div
           initial={shouldReduceMotion ? false : "hidden"}
           whileInView={shouldReduceMotion ? undefined : "visible"}
           viewport={shouldReduceMotion ? undefined : { once: true, margin: "-70px" }}
-          className="personalization-timeline relative mx-auto max-w-[1376px] md:pb-10"
+          className="personalization-timeline relative mx-auto max-w-[1376px]"
           data-testid="personalization-timeline"
         >
           <TimelineLine
             path={MOBILE_PATH}
             viewBox="0 0 72 800"
             className="inset-y-0 left-0 h-full w-[72px] md:hidden"
-            dots={[
-              [36, 100],
-              [36, 200],
-              [36, 300],
-              [36, 400],
-              [36, 500],
-              [36, 600],
-              [36, 700],
-            ]}
           />
 
           <TimelineLine
             path={DESKTOP_PATH}
             viewBox="0 0 800 100"
             className="left-0 top-0 hidden h-[100px] w-full md:block"
-            dots={[
-              [100, 50],
-              [200, 54],
-              [300, 56],
-              [400, 56],
-              [500, 56],
-              [600, 52],
-              [700, 50],
-            ]}
           />
 
           <ol className="relative z-10 grid grid-cols-1 grid-rows-[repeat(8,minmax(112px,1fr))] md:grid-cols-8 md:grid-rows-none md:gap-0">
@@ -261,13 +228,13 @@ export default function Personalization() {
                   <motion.div
                     custom={index}
                     variants={TEXT_VARIANTS}
-                    className="min-w-0 pr-1 text-left md:mx-auto md:mt-7 md:max-w-[156px] md:px-0 md:pr-0 md:text-center"
+                    className="min-w-0 pr-1 text-left md:mx-auto md:mt-7 md:w-full md:max-w-[142px] md:px-0 md:pr-0 md:text-center"
                   >
-                    <h3 className="font-sans text-sm font-semibold leading-tight tracking-normal text-white md:text-xs lg:text-[13px] xl:text-sm">
+                    <h3 className="font-sans text-sm font-semibold leading-tight tracking-normal text-white md:flex md:min-h-[32px] md:items-start md:justify-center md:text-xs lg:text-[13px] xl:min-h-[36px] xl:text-sm">
                       {option.title}
                     </h3>
 
-                    <p className="mt-1.5 font-sans text-[12px] font-normal leading-[1.5] text-white/58 md:mt-2 md:text-[11px] md:leading-[1.45] xl:text-xs">
+                    <p className="mt-1.5 font-sans text-[12px] font-normal leading-[1.5] text-white/58 md:mx-auto md:mt-2 md:max-w-[140px] md:text-[11px] md:leading-[1.45] xl:text-xs">
                       {option.description}
                     </p>
                   </motion.div>
