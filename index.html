@@ -11,14 +11,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600&display=swap"
-      rel="stylesheet"
+      media="(max-width: 767px)"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <link
+      rel="stylesheet"
+      media="(min-width: 768px)"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600&display=swap"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600&display=swap"
+      />
+    </noscript>
     <link rel="icon" type="image/jpeg" href="%BASE_URL%images/formika-logo.jpg" />
     <link
       rel="preload"
       as="image"
-      href="%BASE_URL%images/optimized/light-clouds-card.jpg"
+      href="%BASE_URL%images/optimized/hero5-720.webp"
+      imagesrcset="%BASE_URL%images/optimized/hero5-480.webp 480w, %BASE_URL%images/optimized/hero5-720.webp 720w, %BASE_URL%images/optimized/hero5.webp 1045w"
+      imagesizes="(max-width: 767px) 240px, (max-width: 1023px) 225px, 270px"
       fetchpriority="high"
     />
   </head>

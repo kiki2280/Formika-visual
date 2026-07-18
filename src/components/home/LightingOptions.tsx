@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useCallback,
   useRef,
   useState,
@@ -7,24 +9,26 @@ import {
 } from "react";
 import { motion } from "@/lib/motion";
 import { ArrowRight } from "lucide-react";
-import GalleryModal, {
-  type GalleryModalData,
-} from "@/components/GalleryModal";
+import type { GalleryModalData } from "@/components/GalleryModal";
 import SectionHeading from "./SectionHeading";
 import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
+const GalleryModal = lazy(() => import("@/components/GalleryModal"));
 
 const IMG = {
   clouds1: `${base}images/optimized/light-clouds-card1.webp`,
+  clouds1Card: `${base}images/optimized/light-clouds-card1-thumb.webp`,
   clouds2: `${base}images/optimized/light-clouds-card2.webp`,
   clouds3: `${base}images/optimized/light-clouds-card3.webp`,
 
   garland1: `${base}images/optimized/light-garland-card-1.webp`,
+  garland1Card: `${base}images/optimized/light-garland-card-1-thumb.webp`,
   garland2: `${base}images/optimized/light-garland-card-2.webp`,
   garland3: `${base}images/optimized/light-garland-card-3.webp`,
 
   rgb1: `${base}images/optimized/light-rgb-card1.webp`,
+  rgb1Card: `${base}images/optimized/light-rgb-card1-thumb.webp`,
   rgb2: `${base}images/optimized/light-rgb-card2.webp`,
   rgb3: `${base}images/optimized/light-rgb-card3.webp`,
 };
@@ -40,7 +44,7 @@ const OPTIONS: {
     titleKey: "home.lighting.garlandTitle",
     descriptionKey: "home.lighting.garlandDescription",
     modalDescriptionKey: "home.lighting.garlandModalDescription",
-    img: IMG.garland1,
+    img: IMG.garland1Card,
     images: [
         { src: IMG.garland1 },
         { src: IMG.garland2 },
@@ -51,7 +55,7 @@ const OPTIONS: {
     titleKey: "home.lighting.rgbTitle",
     descriptionKey: "home.lighting.rgbDescription",
     modalDescriptionKey: "home.lighting.rgbModalDescription",
-    img: IMG.rgb1,
+    img: IMG.rgb1Card,
     images: [
         { src: IMG.rgb1 },
         { src: IMG.rgb2 },
@@ -62,7 +66,7 @@ const OPTIONS: {
     titleKey: "home.lighting.cloudsTitle",
     descriptionKey: "home.lighting.cloudsDescription",
     modalDescriptionKey: "home.lighting.cloudsModalDescription",
-    img: IMG.clouds1,
+    img: IMG.clouds1Card,
     images: [
         { src: IMG.clouds1 },
         { src: IMG.clouds2 },
@@ -130,8 +134,8 @@ export default function LightingOptions() {
               <img
                 src={o.img}
                 alt={o.title}
-                width={560}
-                height={800}
+                width={640}
+                height={855}
                 loading="lazy"
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -141,32 +145,31 @@ export default function LightingOptions() {
             <div className="absolute inset-x-0 bottom-0 p-6">
               <h3 className="font-sans text-lg font-semibold uppercase tracking-normal text-white md:text-xl">{o.title}</h3>
               <p className="mt-1 text-sm text-gray-300">{o.description}</p>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  openGallery(o.modal, event.currentTarget);
-                }}
+              <span
                 className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary hover:gap-2.5 transition-all"
                 data-testid={`btn-lighting-details-${i}`}
               >
                 {t("common.details")} <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              </span>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <GalleryModal
-        data={active}
-        onClose={closeGallery}
-        returnFocusRef={activeTriggerRef}
-        cta={{
-          label: t("common.order"),
-          href: "/order",
-          testId: "btn-modal-order",
-        }}
-      />
+      {active && (
+        <Suspense fallback={null}>
+          <GalleryModal
+            data={active}
+            onClose={closeGallery}
+            returnFocusRef={activeTriggerRef}
+            cta={{
+              label: t("common.order"),
+              href: "/order",
+              testId: "btn-modal-order",
+            }}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }

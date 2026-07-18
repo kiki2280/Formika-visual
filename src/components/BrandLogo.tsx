@@ -1,7 +1,8 @@
-import logoWordmark from "@assets/logo_wordmark.png";
 import { useTranslation } from "react-i18next";
 
-const logoPhotoSrc = `${import.meta.env.BASE_URL}images/formika-logo.jpg`;
+const base = import.meta.env.BASE_URL;
+const logoPhotoSrc = `${base}images/optimized/formika-logo-96.jpg`;
+const logoWordmarkSrc = `${base}images/optimized/logo-wordmark-300.png`;
 
 type BrandLogoProps = {
   variant?: "header" | "footer";
@@ -32,8 +33,8 @@ export default function BrandLogo({ variant = "header" }: BrandLogoProps) {
         <img
           src={logoPhotoSrc}
           alt={t("brand.logoAlt")}
-          width={1024}
-          height={1024}
+          width={96}
+          height={96}
           loading={size.loading}
           decoding="async"
           className="block h-full w-full rounded-full object-contain object-center select-none"
@@ -41,11 +42,11 @@ export default function BrandLogo({ variant = "header" }: BrandLogoProps) {
         />
       </span>
       <img
-        src={logoWordmark}
+        src={logoWordmarkSrc}
         alt=""
         aria-hidden="true"
-        width={602}
-        height={86}
+        width={300}
+        height={43}
         decoding="async"
         className={`block shrink-0 select-none ${size.wordmark}`}
         draggable={false}

@@ -6,11 +6,12 @@ import {
 } from "wouter";
 import { lazy, Suspense, useEffect, useState } from "react";
 import Home from "@/pages/index";
-import Order from "@/pages/order";
-import Delivery from "@/pages/delivery";
-import NotFound from "@/pages/not-found";
-import PrivacyPolicy from "@/pages/privacy-policy";
-import Terms from "@/pages/terms";
+
+const Order = lazy(() => import("@/pages/order"));
+const Delivery = lazy(() => import("@/pages/delivery"));
+const NotFound = lazy(() => import("@/pages/not-found"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
+const Terms = lazy(() => import("@/pages/terms"));
 
 const Toaster = lazy(() =>
   import("@/components/ui/toaster").then((mod) => ({
@@ -20,14 +21,24 @@ const Toaster = lazy(() =>
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/order" component={Order} />
-      <Route path="/privacy-policy" component={PrivacyPolicy} />
-      <Route path="/delivery" component={Delivery} />
-      <Route path="/terms" component={Terms} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen bg-background"
+          aria-busy="true"
+          aria-live="polite"
+        />
+      }
+    >
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/order" component={Order} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/delivery" component={Delivery} />
+        <Route path="/terms" component={Terms} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 

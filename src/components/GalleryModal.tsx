@@ -20,11 +20,23 @@ export interface GalleryModalImage {
   alt?: string;
 }
 
+export type GalleryModalType =
+  | "personal"
+  | "couple"
+  | "family"
+  | "wedding"
+  | "lighting-garland"
+  | "lighting-rgb"
+  | "lighting-clouds"
+  | "ready-keychains"
+  | "custom-keychains";
+
 export interface GalleryModalData {
   title: string;
   description: string;
   images: GalleryModalImage[];
   price?: string;
+  galleryType?: GalleryModalType;
 }
 
 export interface GalleryModalCta {
@@ -190,10 +202,77 @@ export default function GalleryModal({
     onClose();
   };
 
-  const hasFourImages = data?.images.length === 4;
-  const ctaClassName =
-    "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_rgba(255,106,0,0.30)] transition-colors hover:bg-primary/90 md:h-auto md:px-8 md:py-3 md:tracking-wide md:shadow-[0_8px_30px_rgba(255,106,0,0.35)]";
+ const hasFourImages = data?.images.length === 4;
 
+const mobileFigureClassName = (() => {
+  switch (data?.galleryType) {
+    case "personal":
+      return "h-[min(52dvh,520px)] w-[88%]";
+
+    case "couple":
+      return "h-[min(52dvh,520px)] w-[88%]";
+
+    case "lighting-garland":
+    case "lighting-rgb":
+    case "lighting-clouds":
+      return "h-[min(52dvh,520px)] w-[88%]";
+
+    case "ready-keychains":
+    case "custom-keychains":
+      return "h-[min(52dvh,520px)] w-[88%]";
+
+    case "family":
+    case "wedding":
+    default:
+      return "h-[min(52dvh,520px)] w-[88%]";
+  }
+})();
+
+const mobileImageClassName = (() => {
+  switch (data?.galleryType) {
+    // Персональные рамочки
+    case "personal":
+      return "scale-[1.5]";
+
+    // Рамочки для пары
+    case "couple":
+      return "scale-[1.08]";
+
+    // Семейные рамочки
+    case "family":
+      return "scale-[1.08]";
+
+    // Свадебные композиции
+    case "wedding":
+      return "scale-[1.08]";
+
+    // LED-гирлянда
+    case "lighting-garland":
+      return "scale-[1.12]";
+
+    // LED RGB
+    case "lighting-rgb":
+      return "scale-[1.16]";
+
+    // LED с облаками
+    case "lighting-clouds":
+      return "scale-[1.14]";
+
+    // Готовые брелочки
+    case "ready-keychains":
+      return "scale-[1.14]";
+
+    // Кастомные брелочки
+    case "custom-keychains":
+      return "scale-[1.14]";
+
+    default:
+      return "scale-[1.12]";
+  }
+})();
+
+const ctaClassName =
+  "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_rgba(255,106,0,0.30)] transition-colors hover:bg-primary/90 md:h-auto md:px-8 md:py-3 md:tracking-wide md:shadow-[0_8px_30px_rgba(255,106,0,0.35)]";
   return createPortal(
     <AnimatePresence>
       {data && (
@@ -205,14 +284,14 @@ export default function GalleryModal({
         >
           <button
             type="button"
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm md:bg-black/70 md:backdrop-blur-md"
+            className="absolute inset-0 bg-black/80 backdrop-blur-none md:bg-black/70 md:backdrop-blur-md"
             onClick={onClose}
             aria-label={t("galleryModal.closeGalleryAria")}
             data-testid="modal-backdrop"
           />
 
           <motion.div
-            className={`relative z-10 flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-white/10 bg-[#151515] shadow-[0_28px_90px_rgba(0,0,0,0.72),0_0_45px_rgba(255,106,0,0.10)] md:block md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:overscroll-contain md:rounded-3xl md:border-border md:bg-card md:shadow-[0_0_60px_rgba(255,106,0,0.15)] md:scrollbar-hide ${
+            className={` formika-gallery-scroll relative z-10 flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-white/10 bg-[#151515] shadow-[0_28px_90px_rgba(0,0,0,0.72),0_0_45px_rgba(255,106,0,0.10)] md:block md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:overscroll-contain md:rounded-3xl md:border-border md:bg-card md:shadow-[0_0_60px_rgba(255,106,0,0.15)] md:scrollbar-hide ${
               hasFourImages
                 ? "md:max-w-[1360px] lg:w-[92%]"
                 : "md:max-w-[1120px] lg:w-[84%]"
@@ -238,7 +317,7 @@ export default function GalleryModal({
               <X className="h-5 w-5" />
             </button>
 
-            <div className="overflow-y-auto overscroll-contain p-4 md:overflow-visible md:p-7 lg:p-8">
+            <div className="formika-gallery-scroll overflow-y-auto overscroll-contain p-4 md:overflow-visible md:p-7 lg:p-8">
               <div className="pr-12 md:pr-14">
                 <h2
                   id="gallery-modal-title"
@@ -265,7 +344,7 @@ export default function GalleryModal({
                 <div
                   ref={galleryRef}
                   onScroll={handleGalleryScroll}
-                  className={`flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:snap-none md:overflow-visible md:overscroll-auto md:gap-[14px] ${
+                  className={`flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth formika-gallery-scroll md:grid md:snap-none md:overflow-visible md:overscroll-auto md:gap-[14px] ${
                     hasFourImages
                       ? "md:grid-cols-2 lg:grid-cols-4 lg:gap-3"
                       : "md:grid-cols-3"
@@ -273,10 +352,10 @@ export default function GalleryModal({
                 >
                   {data.images.map((image, index) => (
                     <figure
-                      key={`${image.src}-${index}`}
-                      className="h-[min(52dvh,520px)] w-[88%] shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] md:h-auto md:w-auto md:aspect-[3/4] md:snap-none md:rounded-[24px] md:border-border md:bg-[#111]"
-                      data-testid={`modal-example-${index}`}
-                    >
+                        key={`${image.src}-${index}`}
+                        className={`${mobileFigureClassName} shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] md:h-auto md:w-auto md:aspect-[3/4] md:snap-none md:rounded-[24px] md:border-border md:bg-[#111]`}
+                        data-testid={`modal-example-${index}`}
+                      >
                       <img
                         src={image.src}
                         alt={
@@ -288,7 +367,7 @@ export default function GalleryModal({
                         }
                         loading={index === activeImage ? "eager" : "lazy"}
                         decoding="async"
-                        className="h-full w-full object-contain md:scale-[1.03] md:object-cover md:transition-transform md:duration-[450ms] md:ease-out md:hover:scale-[1.08]"
+                       className={`${mobileImageClassName} h-full w-full object-contain transition-transform duration-[450ms] ease-out md:scale-[1.03] md:object-cover md:hover:scale-[1.08]`}
                       />
                     </figure>
                   ))}
@@ -328,7 +407,11 @@ export default function GalleryModal({
                 </p>
 
                 {data.images.length > 1 && (
-                  <div className="flex items-center gap-2" aria-label={t("galleryModal.photoSelectorAria")}>
+                  <div
+                    className="flex items-center gap-2"
+                    role="group"
+                    aria-label={t("galleryModal.photoSelectorAria")}
+                  >
                     {data.images.map((image, index) => (
                       <button
                         key={`${image.src}-${index}`}

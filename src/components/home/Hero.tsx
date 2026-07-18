@@ -98,7 +98,7 @@ export default function Hero() {
             >
               {t("common.createGift")}
 
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
 
             <a
@@ -125,14 +125,14 @@ export default function Hero() {
           </div>
 
           {/* Короткая информация */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-white/40">
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-white/60">
             <span>{t("common.withoutRegistration")}</span>
             <span className="h-1 w-1 rounded-full bg-primary/70" />
             <span>{t("common.orderViaTelegram")}</span>
             <span className="h-1 w-1 rounded-full bg-primary/70" />
 
             <span className="inline-flex items-center gap-1.5">
-              <Clock3 className="h-3.5 w-3.5 text-primary" />
+              <Clock3 aria-hidden="true" className="h-3.5 w-3.5 text-primary" />
               {t("common.productionTime")}
             </span>
           </div>
@@ -148,7 +148,7 @@ export default function Hero() {
                   className="flex items-center gap-3 text-sm text-muted-foreground"
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-                    <Icon className="h-4 w-4" strokeWidth={1.8} />
+                    <Icon aria-hidden="true" className="h-4 w-4" strokeWidth={1.8} />
                   </span>
 
                   <span>{t(feature.labelKey)}</span>
@@ -160,13 +160,15 @@ export default function Hero() {
 
         {/* Фотография для телефона */}
         <div className="relative mx-auto block w-full max-w-[240px] md:hidden">
-          <div className="absolute inset-8 rounded-full bg-primary/15 blur-[70px]" />
+          <div className="absolute inset-8 rounded-full bg-primary/15 blur-[42px]" />
 
           <img
-            src={`${base}images/optimized/hero5.webp`}
+            src={`${base}images/optimized/hero5-720.webp`}
+            srcSet={`${base}images/optimized/hero5-480.webp 480w, ${base}images/optimized/hero5-720.webp 720w, ${base}images/optimized/hero5.webp 1045w`}
+            sizes="(max-width: 767px) 240px, (max-width: 1023px) 225px, 270px"
             alt={t("home.hero.mobileImageAlt")}
-            width={1045}
-            height={1400}
+            width={720}
+            height={965}
             loading="eager"
             decoding="async"
             fetchPriority="high"
@@ -196,13 +198,14 @@ export default function Hero() {
               }
             >
               <img
-                src={`${base}images/optimized/hero5.webp`}
+                src={`${base}images/optimized/hero5-720.webp`}
+                srcSet={`${base}images/optimized/hero5-480.webp 480w, ${base}images/optimized/hero5-720.webp 720w, ${base}images/optimized/hero5.webp 1045w`}
+                sizes="(max-width: 767px) 240px, (max-width: 1023px) 225px, 270px"
                 alt={t("home.hero.lightingImageAlt")}
-                width={1045}
-                height={1400}
+                width={720}
+                height={965}
                 loading="eager"
                 decoding="async"
-                fetchPriority="high"
                 className="
                   w-[225px] rounded-3xl border border-white/10
                   shadow-[0_32px_80px_rgba(0,0,0,0.58)]

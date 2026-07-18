@@ -18,8 +18,25 @@ export default function Home() {
   const [showDeferred, setShowDeferred] = useState(false);
 
   useEffect(() => {
-    const id = window.setTimeout(() => setShowDeferred(true), 900);
-    return () => window.clearTimeout(id);
+    const revealDeferredContent = () => setShowDeferred(true);
+    const id = window.setTimeout(revealDeferredContent, 2500);
+
+    window.addEventListener("scroll", revealDeferredContent, {
+      once: true,
+      passive: true,
+    });
+    window.addEventListener("pointerdown", revealDeferredContent, {
+      once: true,
+      passive: true,
+    });
+    window.addEventListener("keydown", revealDeferredContent, { once: true });
+
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("scroll", revealDeferredContent);
+      window.removeEventListener("pointerdown", revealDeferredContent);
+      window.removeEventListener("keydown", revealDeferredContent);
+    };
   }, []);
 
   return (

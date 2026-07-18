@@ -66,6 +66,7 @@ function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
       <div className="relative flex items-center gap-3">
         <div
           className="flex items-center gap-1"
+          role="img"
           aria-label={t("home.reviews.ratingAria")}
         >
           {Array.from({ length: 5 }).map((_, starIndex) => (
@@ -73,11 +74,12 @@ function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
               key={starIndex}
               className="h-4 w-4 fill-primary text-primary"
               strokeWidth={1.5}
+              aria-hidden="true"
             />
           ))}
         </div>
 
-        <span className="text-xs font-semibold text-white/30">{t("home.reviews.ratingValue")}</span>
+        <span className="text-xs font-semibold text-white/60">{t("home.reviews.ratingValue")}</span>
       </div>
 
       <blockquote className="relative mt-4 flex-1 md:mt-7">

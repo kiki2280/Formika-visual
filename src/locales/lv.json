@@ -116,9 +116,11 @@
       "instagramButton": "Skatīt Instagram"
     },
     "advantages": {
-      "eyebrow": "Kāpēc izvēlas FORMIKA",
-      "title": "Mūsu priekšrocības",
-      "subtitle": "Vienkāršs un saprotams process — no jūsu idejas līdz gatavai dāvanai.",
+    "eyebrow": "Kāpēc izvēlas FORMIKA",
+    "title": "Mūsu priekšrocības",
+    "titleStart": "Mūsu",
+    "titleEnd": "priekšrocības",
+    "subtitle": "Vienkāršs un saprotams process — no jūsu idejas līdz gatavai dāvanai.",
       "photoTitle": "Pēc jūsu fotogrāfijas",
       "photoDescription": "Pielāgojam tēlu, apģērbu un personāžu detaļas jūsu stāstam.",
       "approvalTitle": "Saskaņošana pirms izgatavošanas",

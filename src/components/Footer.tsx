@@ -20,7 +20,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-primary mb-4">{t("footer.navigationHeading")}</h4>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-4">{t("footer.navigationHeading")}</p>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-primary transition-colors">{t("footer.works")}</Link></li>
               <li><Link href="/" className="hover:text-primary transition-colors">{t("footer.advantages")}</Link></li>
@@ -30,7 +30,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-primary mb-4">{t("footer.socialsHeading")}</h4>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-4">{t("footer.socialsHeading")}</p>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li><a href={CONTACTS.telegram.href} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{t("contacts.telegram")}</a></li>
               <li><a href={CONTACTS.instagram.href} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{t("contacts.instagram")}</a></li>
@@ -40,7 +40,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-primary mb-4">{t("footer.informationHeading")}</h4>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-4">{t("footer.informationHeading")}</p>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li><Link href="/privacy-policy" className="hover:text-primary transition-colors">{t("footer.privacy")}</Link></li>
               <li><Link href="/delivery" className="hover:text-primary transition-colors">{t("footer.deliveryAndPayment")}</Link></li>

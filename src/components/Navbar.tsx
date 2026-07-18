@@ -4,6 +4,7 @@ import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import BrandLogo from "./BrandLogo";
 import {
+  changeFormikaLanguage,
   SUPPORTED_LANGUAGES,
   type FormikaLanguage,
 } from "@/i18n";
@@ -583,6 +584,7 @@ export default function Navbar() {
                 bg-white/[0.025] p-1
                 lg:flex
               "
+              role="group"
               aria-label={t("header.languageSelectorAria")}
             >
               {LANGUAGE_OPTIONS.map((language) => {
@@ -592,7 +594,7 @@ export default function Navbar() {
                   <button
                     key={language.code}
                     type="button"
-                    onClick={() => void i18n.changeLanguage(language.code)}
+                    onClick={() => void changeFormikaLanguage(language.code)}
                     aria-pressed={isActive}
                     aria-label={t(language.labelKey)}
                     className={`
@@ -604,7 +606,7 @@ export default function Navbar() {
                       ${
                         isActive
                           ? "bg-white/10 text-white shadow-sm"
-                          : "text-white/35 hover:bg-white/[0.04] hover:text-white/70"
+                          : "text-white/60 hover:bg-white/[0.04] hover:text-white/80"
                       }
                     `}
                     data-testid={`btn-lang-${language.code}`}
@@ -736,7 +738,7 @@ export default function Navbar() {
     >
       {/* Заголовок */}
       <div className="mb-2 flex items-center justify-between px-2 py-1">
-        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">
+        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
           {t("header.navigationHeading")}
         </p>
 
@@ -798,7 +800,7 @@ export default function Navbar() {
 
       {/* Языки */}
       <div className="mt-3 rounded-2xl border border-white/[0.08] bg-black/25 p-2.5">
-        <p className="px-1 font-sans text-[9px] font-bold uppercase tracking-[0.18em] text-white/28">
+        <p className="px-1 font-sans text-[9px] font-bold uppercase tracking-[0.18em] text-white/60">
           {t("header.languageHeading")}
         </p>
 
@@ -810,7 +812,7 @@ export default function Navbar() {
               <button
                 key={language.code}
                 type="button"
-                onClick={() => void i18n.changeLanguage(language.code)}
+                onClick={() => void changeFormikaLanguage(language.code)}
                 aria-pressed={isActive}
                 aria-label={t(language.labelKey)}
                 className={`
@@ -821,7 +823,7 @@ export default function Navbar() {
                   ${
                     isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-[0_7px_18px_rgba(255,106,0,0.18)]"
-                      : "border-white/[0.09] bg-white/[0.015] text-white/38 hover:border-primary/35 hover:text-white/75"
+                      : "border-white/[0.09] bg-white/[0.015] text-white/60 hover:border-primary/35 hover:text-white/80"
                   }
                 `}
                 data-testid={`mobile-btn-lang-${language.code}`}

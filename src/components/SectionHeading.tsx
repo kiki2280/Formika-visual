@@ -1,6 +1,10 @@
-import { motion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 export interface SectionHeadingProps {
   eyebrow: string;
@@ -46,16 +50,42 @@ export default function SectionHeading({
 }: SectionHeadingProps) {
   const Heading = as;
   const isCentered = align === "center";
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(!animated);
+
+  useEffect(() => {
+    if (!animated) {
+      setIsVisible(true);
+      return;
+    }
+
+    const element = wrapperRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        setIsVisible(true);
+        observer.disconnect();
+      },
+      { rootMargin: "0px 0px -80px 0px" },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [animated]);
 
   return (
-    <motion.div
-      initial={animated ? { opacity: 0, y: 24 } : false}
-      whileInView={animated ? { opacity: 1, y: 0 } : undefined}
-      viewport={animated ? { once: true, margin: "-80px" } : undefined}
-      transition={animated ? { duration: 0.6 } : undefined}
+    <div
+      ref={wrapperRef}
       className={cn(
         "mb-12 md:mb-14",
         isCentered ? "text-center" : "text-left",
+        animated &&
+          "transition-[opacity,transform] duration-[600ms] ease-out motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none",
+        animated &&
+          (isVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"),
         className,
       )}
     >
@@ -104,6 +134,6 @@ export default function SectionHeading({
           {subtitle}
         </p>
       )}
-    </motion.div>
+    </div>
   );
 }

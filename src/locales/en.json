@@ -116,9 +116,11 @@
       "instagramButton": "View Instagram"
     },
     "advantages": {
-      "eyebrow": "Why people choose FORMIKA",
-      "title": "Our benefits",
-      "subtitle": "A simple, clear process — from your idea to the finished gift.",
+        "eyebrow": "Why customers choose FORMIKA",
+    "title": "Our advantages",
+    "titleStart": "Our",
+    "titleEnd": "advantages",
+    "subtitle": "A simple and clear process — from your idea to the finished gift.",
       "photoTitle": "Based on your photo",
       "photoDescription": "We match each character’s appearance, clothing, and details to your story.",
       "approvalTitle": "Approval before assembly",

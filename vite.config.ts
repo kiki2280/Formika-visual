@@ -20,4 +20,20 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 4173,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        onlyExplicitManualChunks: true,
+        manualChunks(id) {
+          if (
+            id.includes("/framer-motion/") ||
+            id.includes("/motion-dom/") ||
+            id.includes("/motion-utils/")
+          ) {
+            return "motion";
+          }
+        },
+      },
+    },
+  },
 });

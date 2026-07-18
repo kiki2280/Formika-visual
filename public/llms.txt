@@ -1,0 +1,41 @@
+# FORMIKA
+
+> FORMIKA is a Latvia-based studio creating personalized LEGO-style gifts and decorative compositions from customer photos and ideas.
+
+The website is available in Russian, Latvian, and English. Visitors can view examples of completed work, explore available products, and submit an order request.
+
+## Main pages
+
+- [FORMIKA home page](/): Main information about the studio, products, examples, and ordering process.
+- [Create an order](/order): Submit an order request for a personalized product.
+- [Our work](/#works): Examples of personalized frames, couple compositions, family compositions, and wedding compositions.
+- [Our advantages](/#advantages): Information about the production and ordering process.
+- [FORMIKA on Instagram](https://www.instagram.com/f0rmika.studio/): Portfolio, new work, and studio updates.
+
+## Products and services
+
+FORMIKA creates:
+
+- Personalized LEGO-style frames
+- Compositions for couples
+- Family compositions
+- Wedding compositions
+- LED lighting decorations
+- Ready-made keychains
+- Personalized keychains
+
+## Languages
+
+The website content is available in:
+
+- Russian
+- Latvian
+- English
+
+## Contact
+
+For orders and questions, use the order page or contact FORMIKA through Instagram.
+
+## Important information
+
+Product appearance, price, production time, and delivery details may depend on the selected design and order requirements. Confirm current details when placing an order.

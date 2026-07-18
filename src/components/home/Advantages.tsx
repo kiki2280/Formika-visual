@@ -46,9 +46,16 @@ export default function Advantages() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow={t("home.advantages.eyebrow")}
-          title={t("home.advantages.title")}
+          title={
+            <>
+              <span>{t("home.advantages.titleStart")}</span>{" "}
+              <span className="block whitespace-nowrap text-[clamp(1.3rem,6.4vw,1.7rem)] md:inline md:text-[44px]">
+                {t("home.advantages.titleEnd")}
+              </span>
+            </>
+          }
           subtitle={t("home.advantages.subtitle")}
-/>
+        />
 
         <motion.div
           initial={{ opacity: 0, y: 26 }}
@@ -92,7 +99,10 @@ export default function Advantages() {
                         group-hover:shadow-[0_0_26px_rgba(255,106,0,0.15)]
                       "
                     >
-                      <Icon className="h-[18px] w-[18px] md:h-5 md:w-5" strokeWidth={1.8} />
+                      <Icon
+                        className="h-[18px] w-[18px] md:h-5 md:w-5"
+                        strokeWidth={1.8}
+                      />
                     </span>
 
                     <span className="text-xs font-bold tracking-[0.12em] text-white/15">

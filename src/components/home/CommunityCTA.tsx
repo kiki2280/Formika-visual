@@ -105,6 +105,9 @@ export default function CommunityCTA() {
                     `}
                   >
                     <Icon
+                      aria-hidden="true"
+                      focusable="false"
+                      role={undefined}
                       className="
                         h-4 w-4 shrink-0
                         transition-transform duration-300

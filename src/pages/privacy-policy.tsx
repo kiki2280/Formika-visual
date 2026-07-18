@@ -26,20 +26,23 @@ const CONTACT_LINKS = [
 ];
 
 export default function PrivacyPolicy() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const isRussian = i18n.resolvedLanguage?.startsWith("ru");
 
   return (
     <LegalPage
       title={t("legal.privacy.title")}
       intro={t("legal.privacy.intro")}
+      titleClassName={
+        isRussian ? "max-md:[&_h1]:!text-[20px]" : undefined
+      }
       sections={[
         {
           title: t("legal.privacy.dataTitle"),
           content: (
             <div className="space-y-4">
-              <p>
-                {t("legal.privacy.dataText")}
-              </p>
+              <p>{t("legal.privacy.dataText")}</p>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
@@ -80,9 +83,7 @@ export default function PrivacyPolicy() {
               <div className="flex items-start gap-3">
                 <Share2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
-                <p>
-                  {t("legal.privacy.sharingText")}
-                </p>
+                <p>{t("legal.privacy.sharingText")}</p>
               </div>
             </div>
           ),
@@ -94,9 +95,7 @@ export default function PrivacyPolicy() {
               <div className="flex items-start gap-3">
                 <Image className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
-                <p>
-                  {t("legal.privacy.finishedPhotosText")}
-                </p>
+                <p>{t("legal.privacy.finishedPhotosText")}</p>
               </div>
             </div>
           ),
@@ -108,9 +107,7 @@ export default function PrivacyPolicy() {
               <div className="flex items-start gap-3">
                 <Trash2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
-                <p>
-                  {t("legal.privacy.changeDeleteText")}
-                </p>
+                <p>{t("legal.privacy.changeDeleteText")}</p>
               </div>
             </div>
           ),

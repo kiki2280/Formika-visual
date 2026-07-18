@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import brick1 from "@assets/image_18_1781690507676.png";
 import brick2 from "@assets/image_22_1781690507676.png";
 import brick3 from "@assets/image_23_1781690507677.png";
@@ -26,13 +27,113 @@ const BRICKS = [
   { src: brick3, top: "93%", left: "82%",  size: 86,  rotate: -14, floatX: -16, floatY: 22, duration: 14, delay: 1.6 },
 ];
 
+function MobileBricksCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || window.innerWidth >= 768) return;
+
+    let cancelled = false;
+    const images = new Map<string, HTMLImageElement>();
+
+    const draw = () => {
+      if (cancelled || window.innerWidth >= 768) return;
+
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+
+      const context = canvas.getContext("2d");
+      if (!context) return;
+
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      context.clearRect(0, 0, width, height);
+
+      BRICKS.forEach((brick) => {
+        const image = images.get(brick.src);
+        if (!image) return;
+
+        const x = (Number.parseFloat(brick.left) / 100) * width;
+        const y = (Number.parseFloat(brick.top) / 100) * height;
+        const scale = Math.min(
+          brick.size / image.naturalWidth,
+          brick.size / image.naturalHeight,
+        );
+        const renderedWidth = image.naturalWidth * scale;
+        const renderedHeight = image.naturalHeight * scale;
+
+        context.save();
+        context.translate(x + brick.size / 2, y + brick.size / 2);
+        context.rotate((brick.rotate * Math.PI) / 180);
+        context.globalAlpha = 0.55;
+        context.shadowColor = "rgba(255, 106, 0, 0.34)";
+        context.shadowBlur = 12;
+        context.shadowOffsetY = 4;
+        context.drawImage(
+          image,
+          -renderedWidth / 2,
+          -renderedHeight / 2,
+          renderedWidth,
+          renderedHeight,
+        );
+        context.restore();
+      });
+    };
+
+    const loadImages = async () => {
+      const sources = Array.from(new Set(BRICKS.map((brick) => brick.src)));
+
+      await Promise.all(
+        sources.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              const image = new Image();
+              image.decoding = "async";
+              image.fetchPriority = "low";
+              image.onload = () => {
+                images.set(src, image);
+                resolve();
+              };
+              image.onerror = () => resolve();
+              image.src = src;
+            }),
+        ),
+      );
+
+      draw();
+    };
+
+    void loadImages();
+    window.addEventListener("resize", draw, { passive: true });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("resize", draw);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 h-full w-full md:hidden"
+      aria-hidden="true"
+    />
+  );
+}
+
 export default function FloatingBricks() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+      <MobileBricksCanvas />
+
       {BRICKS.map((brick, i) => (
         <div
           key={i}
-          className="absolute"
+          className="absolute hidden md:block"
           style={{
             top: brick.top,
             left: brick.left,

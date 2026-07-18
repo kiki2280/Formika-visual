@@ -1,33 +1,44 @@
-import { useCallback, useRef, useState } from "react";
-import { motion } from "@/lib/motion";
-import { ArrowRight, Instagram } from "lucide-react";
-import GalleryModal, {
-  type GalleryModalData,
-} from "@/components/GalleryModal";
-import SectionHeading from "./SectionHeading";
+﻿import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { lazy, Suspense } from "react";
+import { ArrowRight, Instagram } from "lucide-react";
+
+import type {
+  GalleryModalData,
+  GalleryModalType,
+} from "@/components/GalleryModal";
+import { motion } from "@/lib/motion";
+import SectionHeading from "./SectionHeading";
 
 const base = import.meta.env.BASE_URL;
+const GalleryModal = lazy(() => import("@/components/GalleryModal"));
 
 const IMG = {
-  personal: `${base}images/optimized/works-personal-1.webp`,
+  personal1: `${base}images/optimized/works-personal-1.webp`,
+  personal1Card: `${base}images/optimized/works-personal-1-card.webp`,
   personal2: `${base}images/optimized/works-personal-2.webp`,
   personal3: `${base}images/optimized/works-personal-3.webp`,
 
-  couple: `${base}images/optimized/works-couples-1.webp`,
+  couple1: `${base}images/optimized/works-couples-1.webp`,
+  couple1Card: `${base}images/optimized/works-couples-1-card.webp`,
   couple2: `${base}images/optimized/works-couples-2.webp`,
   couple3: `${base}images/optimized/works-couples-3.webp`,
 
   family1: `${base}images/optimized/work-family-1.webp`,
+  family1Card: `${base}images/optimized/work-family-1-card.webp`,
   family2: `${base}images/optimized/work-family-2.webp`,
   family3: `${base}images/optimized/work-family-3.webp`,
 
+  // В проекте эти файлы сейчас называются "wrdding".
+  // Оставляем реальные имена, чтобы изображения не пропали.
   wedding1: `${base}images/optimized/work-wrdding-1.webp`,
+  wedding1Card: `${base}images/optimized/work-wrdding-1-card.webp`,
   wedding2: `${base}images/optimized/work-wrdding-2.webp`,
   wedding3: `${base}images/optimized/work-wrdding-3.webp`,
 };
 
 interface WorkItem {
+  galleryType: GalleryModalType;
   titleKey: string;
   descriptionKey: string;
   modalDescriptionKey: string;
@@ -38,51 +49,55 @@ interface WorkItem {
 
 const WORKS: WorkItem[] = [
   {
+    galleryType: "personal",
     titleKey: "home.works.personalTitle",
     descriptionKey: "home.works.personalDescription",
     modalDescriptionKey: "home.works.personalModalDescription",
-    img: IMG.personal,
+    img: IMG.personal1Card,
     imagePosition: "object-[center_70%]",
     images: [
-        { src: IMG.personal },
-        { src: IMG.personal2 },
-        { src: IMG.personal3 },
+      { src: IMG.personal1 },
+      { src: IMG.personal2 },
+      { src: IMG.personal3 },
     ],
   },
   {
+    galleryType: "couple",
     titleKey: "home.works.coupleTitle",
     descriptionKey: "home.works.coupleDescription",
     modalDescriptionKey: "home.works.coupleModalDescription",
-    img: IMG.couple,
+    img: IMG.couple1Card,
     imagePosition: "object-[center_70%]",
     images: [
-        { src: IMG.couple },
-        { src: IMG.couple2 },
-        { src: IMG.couple3 },
+      { src: IMG.couple1 },
+      { src: IMG.couple2 },
+      { src: IMG.couple3 },
     ],
   },
   {
+    galleryType: "family",
     titleKey: "home.works.familyTitle",
     descriptionKey: "home.works.familyDescription",
     modalDescriptionKey: "home.works.familyModalDescription",
-    img: IMG.family1,
+    img: IMG.family1Card,
     imagePosition: "object-[center_70%]",
     images: [
-        { src: IMG.family1 },
-        { src: IMG.family2 },
-        { src: IMG.family3 },
+      { src: IMG.family1 },
+      { src: IMG.family2 },
+      { src: IMG.family3 },
     ],
   },
   {
+    galleryType: "wedding",
     titleKey: "home.works.weddingTitle",
     descriptionKey: "home.works.weddingDescription",
     modalDescriptionKey: "home.works.weddingModalDescription",
-    img: IMG.wedding1,
+    img: IMG.wedding1Card,
     imagePosition: "object-[center_70%]",
     images: [
-        { src: IMG.wedding1 },
-        { src: IMG.wedding2 },
-        { src: IMG.wedding3 },
+      { src: IMG.wedding1 },
+      { src: IMG.wedding2 },
+      { src: IMG.wedding3 },
     ],
   },
 ];
@@ -91,35 +106,45 @@ export default function WorksGallery() {
   const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
-  const closeGallery = useCallback(() => setActive(null), []);
-  const works = WORKS.map((work) => ({
-    ...work,
-    title: t(work.titleKey),
-    description: t(work.descriptionKey),
-    modal: {
-      title: t(work.titleKey),
+
+  const closeGallery = useCallback(() => {
+    setActive(null);
+  }, []);
+
+  const works = WORKS.map((work) => {
+    const title = t(work.titleKey);
+    const description = t(work.descriptionKey);
+
+    const modal: GalleryModalData = {
+      title,
       description: t(work.modalDescriptionKey),
       images: work.images,
-    },
-  }));
+      galleryType: work.galleryType,
+    };
+
+    return {
+      ...work,
+      title,
+      description,
+      modal,
+    };
+  });
 
   return (
     <section
       id="works"
       className="relative mx-auto max-w-7xl scroll-mt-20 px-4 py-20 sm:px-6 md:py-24 lg:px-8"
     >
-      {/* Заголовок блока */}
       <SectionHeading
         eyebrow={t("home.works.eyebrow")}
         title={t("home.works.title")}
         subtitle={t("home.works.subtitle")}
       />
 
-      {/* Карточки работ */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {works.map((work, index) => (
           <motion.div
-            key={work.title}
+            key={work.galleryType}
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -138,8 +163,8 @@ export default function WorksGallery() {
               <img
                 src={work.img}
                 alt={work.title}
-                width={800}
-                height={560}
+                width={work.galleryType === "personal" ? 720 : 640}
+                height={work.galleryType === "personal" ? 580 : 855}
                 loading="lazy"
                 decoding="async"
                 className={`absolute inset-0 block h-full w-full object-cover ${
@@ -147,7 +172,6 @@ export default function WorksGallery() {
                 } transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
               />
 
-              {/* Мягкое затемнение изображения */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
 
               <div className="absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
@@ -161,7 +185,6 @@ export default function WorksGallery() {
 
                 <span className="mt-2 inline-flex max-w-full items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md md:mt-3 md:py-2 md:text-[10px] md:tracking-[0.08em]">
                   {t("common.details")}
-
                   <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </span>
               </div>
@@ -170,7 +193,6 @@ export default function WorksGallery() {
         ))}
       </div>
 
-      {/* Instagram */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -207,16 +229,20 @@ export default function WorksGallery() {
         </div>
       </motion.div>
 
-      <GalleryModal
-        data={active}
-        onClose={closeGallery}
-        returnFocusRef={activeTriggerRef}
-        cta={{
-          label: t("common.order"),
-          href: "/order",
-          testId: "btn-modal-order",
-        }}
-      />
+      {active && (
+        <Suspense fallback={null}>
+          <GalleryModal
+            data={active}
+            onClose={closeGallery}
+            returnFocusRef={activeTriggerRef}
+            cta={{
+              label: t("common.order"),
+              href: "/order",
+              testId: "btn-modal-order",
+            }}
+          />
+        </Suspense>
+      )}
     </section>
   );
 }

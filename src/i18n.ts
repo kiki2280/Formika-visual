@@ -1,13 +1,16 @@
-import i18n from "i18next";
+import i18n, { type Resource } from "i18next";
 import { initReactI18next } from "react-i18next";
 import ru from "@/locales/ru.json";
-import lv from "@/locales/lv.json";
-import en from "@/locales/en.json";
 
 export const FORMIKA_LANGUAGE_STORAGE_KEY = "formika-language";
 export const SUPPORTED_LANGUAGES = ["ru", "lv", "en"] as const;
 
 export type FormikaLanguage = (typeof SUPPORTED_LANGUAGES)[number];
+
+const DEFERRED_LANGUAGE_LOADERS = {
+  lv: () => import("@/locales/lv.json").then((module) => module.default),
+  en: () => import("@/locales/en.json").then((module) => module.default),
+} satisfies Record<Exclude<FormikaLanguage, "ru">, () => Promise<object>>;
 
 export function isFormikaLanguage(value: unknown): value is FormikaLanguage {
   return (
@@ -51,13 +54,20 @@ function syncDocumentLanguage(language: string) {
   }
 }
 
-void i18n.use(initReactI18next).init({
-  resources: {
-    ru: { translation: ru },
-    lv: { translation: lv },
-    en: { translation: en },
-  },
-  lng: getInitialLanguage(),
+const initialLanguage = getInitialLanguage();
+const initialResources: Resource = {
+  ru: { translation: ru },
+};
+
+if (initialLanguage !== "ru") {
+  initialResources[initialLanguage] = {
+    translation: await DEFERRED_LANGUAGE_LOADERS[initialLanguage](),
+  };
+}
+
+await i18n.use(initReactI18next).init({
+  resources: initialResources,
+  lng: initialLanguage,
   fallbackLng: "ru",
   supportedLngs: SUPPORTED_LANGUAGES,
   load: "currentOnly",
@@ -69,6 +79,18 @@ void i18n.use(initReactI18next).init({
     useSuspense: false,
   },
 });
+
+export async function changeFormikaLanguage(language: FormikaLanguage) {
+  if (
+    language !== "ru" &&
+    !i18n.hasResourceBundle(language, "translation")
+  ) {
+    const translation = await DEFERRED_LANGUAGE_LOADERS[language]();
+    i18n.addResourceBundle(language, "translation", translation, true, true);
+  }
+
+  await i18n.changeLanguage(language);
+}
 
 syncDocumentLanguage(i18n.resolvedLanguage ?? i18n.language);
 

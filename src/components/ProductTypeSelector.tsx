@@ -22,14 +22,14 @@ const PRODUCTS: ProductOption[] = [
     id: "frame",
     titleKey: "orderSelection.frameTitle",
     subtitleKey: "orderSelection.frameDescription",
-    image: `${base}images/optimized/work-family-1.webp`,
+    image: `${base}images/optimized/work-family-1-card.webp`,
     imagePosition: "object-[center_52%]",
   },
   {
     id: "keychain",
     titleKey: "orderSelection.keychainTitle",
     subtitleKey: "orderSelection.keychainDescription",
-    image: `${base}images/optimized/ready-keychain-3.webp`,
+    image: `${base}images/optimized/ready-keychain-3-card.webp`,
     imagePosition: "object-[center_80%]",
   },
 ];
@@ -71,8 +71,8 @@ export default function ProductTypeSelector({
               <img
                 src={product.image}
                 alt={t(product.titleKey)}
-                width={800}
-                height={640}
+                width={640}
+                height={855}
                 loading="eager"
                 decoding="async"
                 fetchPriority={index === 0 ? "high" : "auto"}
@@ -113,7 +113,7 @@ export default function ProductTypeSelector({
                 {t(product.titleKey)}
               </h3>
 
-              <p className="mt-2 max-w-md font-sans text-sm leading-relaxed text-white/50">
+              <p className="mt-2 max-w-md font-sans text-sm leading-relaxed text-white/65">
                 {t(product.subtitleKey)}
               </p>
 
