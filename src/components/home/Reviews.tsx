@@ -60,9 +60,10 @@ const REVIEWS: Review[] = [
 interface ReviewCardProps {
   review: Review;
   index: number;
+  mobileHidden?: boolean;
 }
 
-function ReviewCard({ review, index }: ReviewCardProps) {
+function ReviewCard({ review, index, mobileHidden = false }: ReviewCardProps) {
   const initial = review.name.trim().charAt(0).toUpperCase();
 
   return (
@@ -76,22 +77,23 @@ function ReviewCard({ review, index }: ReviewCardProps) {
         duration: 0.45,
         delay: (index % 3) * 0.06,
       }}
-      className="
-        group relative flex min-h-[220px] flex-col overflow-hidden sm:min-h-[270px]
+      className={`
+        group relative flex min-h-[220px] flex-col overflow-hidden md:min-h-[270px]
         rounded-[28px] border border-white/10
         bg-gradient-to-br from-[#211d1a]/90 via-[#171513]/95 to-[#11100f]
-        p-4 sm:p-6
+        p-4 md:p-6
         shadow-[0_16px_42px_rgba(0,0,0,0.28)]
         transition-all duration-300
         hover:-translate-y-1 hover:border-primary/40
         hover:shadow-[0_24px_58px_rgba(0,0,0,0.45),0_0_28px_rgba(255,106,0,0.06)]
-      "
+        ${mobileHidden ? "hidden md:flex" : ""}
+      `}
       data-testid={`card-review-${index}`}
     >
       <div className="pointer-events-none absolute -right-14 -top-14 h-32 w-32 rounded-full bg-primary/[0.04] blur-3xl transition-colors duration-300 group-hover:bg-primary/[0.1]" />
 
       <Quote
-        className="pointer-events-none absolute right-4 top-4 h-8 w-8 text-primary/[0.09] sm:right-5 sm:top-5 sm:h-10 sm:w-10"
+        className="pointer-events-none absolute right-4 top-4 h-8 w-8 text-primary/[0.09] md:right-5 md:top-5 md:h-10 md:w-10"
         strokeWidth={1.4}
       />
 
@@ -112,16 +114,16 @@ function ReviewCard({ review, index }: ReviewCardProps) {
         <span className="text-xs font-semibold text-white/30">5.0</span>
       </div>
 
-      <blockquote className="relative mt-4 flex-1 sm:mt-7">
-        <p className="font-sans text-sm leading-relaxed text-white/75 sm:text-[15px]">
+      <blockquote className="relative mt-4 flex-1 md:mt-7">
+        <p className="font-sans text-sm leading-relaxed text-white/75 md:text-[15px]">
           «{review.text}»
         </p>
       </blockquote>
 
-      <div className="relative mt-4 flex items-center gap-3 border-t border-white/10 pt-4 sm:mt-7 sm:pt-5">
+      <div className="relative mt-4 flex items-center gap-3 border-t border-white/10 pt-4 md:mt-7 md:pt-5">
         <span
           className="
-            flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11
+            flex h-10 w-10 shrink-0 items-center justify-center md:h-11 md:w-11
             rounded-full border border-primary/30 bg-primary/10
             font-sans text-base font-bold text-primary
             shadow-[0_0_22px_rgba(255,106,0,0.08)]
@@ -146,7 +148,6 @@ function ReviewCard({ review, index }: ReviewCardProps) {
 
 export default function Reviews() {
   const [showAll, setShowAll] = useState(false);
-  const visibleReviews = showAll ? REVIEWS : REVIEWS.slice(0, 3);
 
   return (
     <section
@@ -162,20 +163,21 @@ export default function Reviews() {
           subtitle="Тёплые слова о персональных подарках, созданных в FORMIKA."
         />
 
-        <div className="mt-10 grid gap-3 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-3 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
           <AnimatePresence initial={false}>
-            {visibleReviews.map((review, index) => (
+            {REVIEWS.map((review, index) => (
               <ReviewCard
                 key={`${review.name}-${index}`}
                 review={review}
                 index={index}
+                mobileHidden={index >= 3 && !showAll}
               />
             ))}
           </AnimatePresence>
         </div>
 
         {REVIEWS.length > 3 && (
-          <div className="mt-6 flex justify-center sm:mt-8">
+          <div className="mt-6 flex justify-center md:hidden">
             <button
               type="button"
               onClick={() => setShowAll((current) => !current)}

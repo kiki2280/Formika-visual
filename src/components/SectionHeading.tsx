@@ -19,15 +19,15 @@ export interface SectionHeadingProps {
 
 const TITLE_SIZES = {
   display:
-    "text-[1.875rem] min-[390px]:text-[2.125rem] sm:text-5xl lg:text-[3.625rem]",
+    "text-[1.875rem] min-[390px]:text-[2.125rem] md:text-5xl lg:text-[3.625rem]",
   section:
-    "text-[1.875rem] min-[390px]:text-[2.125rem] sm:text-[2.75rem] md:text-5xl lg:text-[3.5rem]",
+    "text-[1.875rem] min-[390px]:text-[2.125rem] md:text-4xl lg:text-[2.75rem]",
   wide:
-    "text-[1.75rem] min-[375px]:text-[1.875rem] min-[430px]:text-[2rem] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[3.625rem] xl:text-[3.75rem]",
+    "text-[1.75rem] min-[375px]:text-[1.875rem] min-[430px]:text-[2rem] md:text-[2.875rem] lg:text-[3.25rem] xl:text-[3.65rem]",
   compact:
-    "text-[1.75rem] min-[390px]:text-[1.875rem] sm:text-4xl md:text-[2.75rem]",
+    "text-[1.75rem] min-[390px]:text-[1.875rem] md:text-4xl",
   legal:
-    "text-[1.75rem] min-[390px]:text-[1.875rem] sm:text-4xl md:text-[2.75rem] lg:text-5xl",
+    "text-[1.75rem] min-[390px]:text-[1.875rem] md:text-4xl lg:text-5xl",
 } as const;
 
 export default function SectionHeading({
@@ -74,7 +74,7 @@ export default function SectionHeading({
 
       <Heading
         className={cn(
-          "mt-4 max-w-full break-words font-serif font-medium leading-[1.06] tracking-normal text-white [overflow-wrap:anywhere]",
+          "mt-4 max-w-full break-words font-serif font-medium leading-[1.06] tracking-normal text-white [overflow-wrap:anywhere] md:break-normal md:leading-[1.08] md:[overflow-wrap:normal]",
           uppercase && "uppercase",
           TITLE_SIZES[size],
           isCentered ? "mx-auto max-w-6xl" : "max-w-3xl",

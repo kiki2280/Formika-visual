@@ -71,12 +71,12 @@ export default function CommunityCTA() {
               eyebrow="FORMIKA в соцсетях"
               title={
                 <>
-                  <span className="block sm:inline">Присоединяйтесь</span>{" "}
-                  <span className="block sm:inline">к сообществу</span>{" "}
-                  <span className="block sm:inline">FORMIKA</span>
+                  <span className="block md:inline">Присоединяйтесь</span>{" "}
+                  <span className="block md:inline">к сообществу</span>{" "}
+                  <span className="block md:inline">FORMIKA</span>
                 </>
               }
-              titleClassName="text-[clamp(1.625rem,8vw,2.125rem)] leading-[1.1] sm:text-[2.75rem] sm:leading-[1.06] md:text-5xl lg:text-[3.5rem]"
+              titleClassName="text-[clamp(1.625rem,8vw,2.125rem)] leading-[1.1] md:text-[inherit] md:leading-[inherit]"
               subtitle="Новые работы, идеи подарков и процесс создания — в наших социальных сетях."
             />
 

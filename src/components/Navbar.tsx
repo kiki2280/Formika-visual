@@ -212,7 +212,7 @@ export default function Navbar() {
       return;
     }
 
-    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
     let animationFrame = 0;
     let lastScrollY = window.scrollY;
     let directionStartY = lastScrollY;
@@ -478,6 +478,8 @@ export default function Navbar() {
         shadow-[0_10px_35px_rgba(0,0,0,0.22)]
         backdrop-blur-xl
         transition-[transform,opacity] duration-200 ease-out
+        md:sticky md:left-auto md:right-auto md:border-b md:border-white/[0.08]
+        md:pt-0 md:opacity-100 md:translate-y-0
         ${
           isNavbarVisible || isMobileMenuOpen
             ? "translate-y-0 opacity-100"
@@ -487,7 +489,7 @@ export default function Navbar() {
       >
       {/* Деликатное свечение сверху */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/[0.08]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/[0.08] md:hidden" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-5">
@@ -675,7 +677,7 @@ export default function Navbar() {
       </nav>
 
       <div
-        className="h-[calc(72px+env(safe-area-inset-top))]"
+        className="h-[calc(72px+env(safe-area-inset-top))] md:hidden"
         aria-hidden="true"
       />
 

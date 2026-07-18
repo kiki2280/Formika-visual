@@ -188,32 +188,37 @@ export default function GalleryModal({
     onClose();
   };
 
+  const hasFourImages = data?.images.length === 4;
   const ctaClassName =
-    "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_rgba(255,106,0,0.30)] transition-colors hover:bg-primary/90";
+    "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_rgba(255,106,0,0.30)] transition-colors hover:bg-primary/90 md:h-auto md:px-8 md:py-3 md:tracking-wide md:shadow-[0_8px_30px_rgba(255,106,0,0.35)]";
 
   return createPortal(
     <AnimatePresence>
       {data && (
         <motion.div
-          className="fixed inset-0 z-[120] flex items-center justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:p-6"
+          className="fixed inset-0 z-[120] flex items-center justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] md:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <button
             type="button"
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm md:bg-black/70 md:backdrop-blur-md"
             onClick={onClose}
             aria-label="Закрыть галерею"
             data-testid="modal-backdrop"
           />
 
           <motion.div
-            className="relative z-10 flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-white/10 bg-[#151515] shadow-[0_28px_90px_rgba(0,0,0,0.72),0_0_45px_rgba(255,106,0,0.10)]"
-            initial={{ scale: 0.97, opacity: 0, y: 16 }}
+            className={`relative z-10 flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-white/10 bg-[#151515] shadow-[0_28px_90px_rgba(0,0,0,0.72),0_0_45px_rgba(255,106,0,0.10)] md:block md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:overscroll-contain md:rounded-3xl md:border-border md:bg-card md:shadow-[0_0_60px_rgba(255,106,0,0.15)] md:scrollbar-hide ${
+              hasFourImages
+                ? "md:max-w-[1360px] lg:w-[92%]"
+                : "md:max-w-[1120px] lg:w-[84%]"
+            }`}
+            initial={{ scale: 0.92, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.98, opacity: 0, y: 8 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
+            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="gallery-modal-title"
@@ -224,25 +229,25 @@ export default function GalleryModal({
               ref={closeButtonRef}
               type="button"
               onClick={onClose}
-              className="absolute right-3 top-3 z-30 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-black/70 text-white/70 shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:right-5 sm:top-5"
+              className="absolute right-3 top-3 z-30 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-black/70 text-white/70 shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:right-5 md:top-5 md:h-10 md:w-10 md:border-border md:bg-background/60 md:text-muted-foreground md:shadow-none md:backdrop-blur-none"
               aria-label="Закрыть"
               data-testid="btn-close-modal"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="overflow-y-auto overscroll-contain p-4 sm:p-7 lg:p-8">
-              <div className="pr-12 sm:pr-14">
+            <div className="overflow-y-auto overscroll-contain p-4 md:overflow-visible md:p-7 lg:p-8">
+              <div className="pr-12 md:pr-14">
                 <h2
                   id="gallery-modal-title"
-                  className="font-serif text-2xl font-medium leading-tight tracking-normal text-white sm:text-3xl lg:text-4xl"
+                  className="font-serif text-2xl font-medium leading-tight tracking-normal text-white md:font-sans md:text-4xl md:font-bold"
                 >
                   {data.title}
                 </h2>
 
                 <p
                   id="gallery-modal-description"
-                  className="mt-3 max-w-3xl font-sans text-sm leading-relaxed text-white/60 sm:text-base"
+                  className="mt-3 max-w-3xl font-sans text-sm leading-relaxed text-white/60 md:mt-4 md:max-w-2xl md:text-base md:text-muted-foreground"
                 >
                   {data.description}
                 </p>
@@ -254,16 +259,20 @@ export default function GalleryModal({
                 )}
               </div>
 
-              <div className="relative mt-5 sm:mt-6">
+              <div className="relative mt-5">
                 <div
                   ref={galleryRef}
                   onScroll={handleGalleryScroll}
-                  className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-4"
+                  className={`flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:snap-none md:overflow-visible md:overscroll-auto md:gap-[14px] ${
+                    hasFourImages
+                      ? "md:grid-cols-2 lg:grid-cols-4 lg:gap-3"
+                      : "md:grid-cols-3"
+                  }`}
                 >
                   {data.images.map((image, index) => (
                     <figure
                       key={`${image.src}-${index}`}
-                      className="h-[min(52dvh,520px)] w-[88%] shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] sm:h-[min(58dvh,640px)] sm:w-full"
+                      className="h-[min(52dvh,520px)] w-[88%] shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] md:h-auto md:w-auto md:aspect-[3/4] md:snap-none md:rounded-[24px] md:border-border md:bg-[#111]"
                       data-testid={`modal-example-${index}`}
                     >
                       <img
@@ -271,7 +280,7 @@ export default function GalleryModal({
                         alt={image.alt || `${data.title} ${index + 1}`}
                         loading={index === activeImage ? "eager" : "lazy"}
                         decoding="async"
-                        className="h-full w-full object-contain"
+                        className="h-full w-full object-contain md:scale-[1.03] md:object-cover md:transition-transform md:duration-[450ms] md:ease-out md:hover:scale-[1.08]"
                       />
                     </figure>
                   ))}
@@ -283,7 +292,7 @@ export default function GalleryModal({
                       type="button"
                       onClick={() => scrollToImage(activeImage - 1)}
                       disabled={activeImage === 0}
-                      className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex"
+                      className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex md:hidden"
                       aria-label="Предыдущее фото"
                     >
                       <ChevronLeft className="h-5 w-5" />
@@ -293,7 +302,7 @@ export default function GalleryModal({
                       type="button"
                       onClick={() => scrollToImage(activeImage + 1)}
                       disabled={activeImage === data.images.length - 1}
-                      className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex"
+                      className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex md:hidden"
                       aria-label="Следующее фото"
                     >
                       <ChevronRight className="h-5 w-5" />
@@ -302,7 +311,7 @@ export default function GalleryModal({
                 )}
               </div>
 
-              <div className="mt-4 flex min-h-9 items-center justify-between gap-4">
+              <div className="mt-4 flex min-h-9 items-center justify-between gap-4 md:hidden">
                 <p className="font-sans text-xs font-semibold tabular-nums text-white/55">
                   {activeImage + 1} / {data.images.length}
                 </p>
@@ -328,7 +337,7 @@ export default function GalleryModal({
               </div>
 
               {cta && (
-                <div className="mt-5 flex justify-end">
+                <div className="mt-5 flex justify-end md:mt-9">
                   {cta.href ? (
                     <Link
                       href={cta.href}

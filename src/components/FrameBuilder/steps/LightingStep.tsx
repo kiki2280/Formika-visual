@@ -60,7 +60,7 @@ export default function LightingStep({
   onChange,
 }: StepProps) {
   return (
-    <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+    <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 md:gap-5">
       {LIGHTING.map((option) => {
         const isSelected = state.lighting === option.id;
         const price = PRICING.lighting[option.id];
@@ -92,7 +92,7 @@ export default function LightingStep({
             `}
           >
             {/* Визуальная часть */}
-            <div className="relative h-[170px] overflow-hidden border-b border-white/[0.07] bg-[#141414] sm:h-[250px]">
+            <div className="relative h-[170px] overflow-hidden border-b border-white/[0.07] bg-[#141414] md:h-[250px]">
               {option.image ? (
                 <>
                   <img
@@ -115,12 +115,12 @@ export default function LightingStep({
                 </>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="absolute h-36 w-36 rounded-full border border-white/[0.035] sm:h-44 sm:w-44" />
-                  <div className="absolute h-28 w-28 rounded-full border border-white/[0.05] sm:h-32 sm:w-32" />
+                  <div className="absolute h-36 w-36 rounded-full border border-white/[0.035] md:h-44 md:w-44" />
+                  <div className="absolute h-28 w-28 rounded-full border border-white/[0.05] md:h-32 md:w-32" />
 
-                  <div className="flex h-20 w-20 items-center justify-center rounded-[24px] border border-white/[0.10] bg-white/[0.025] shadow-[0_18px_45px_rgba(0,0,0,0.35)] sm:h-24 sm:w-24 sm:rounded-[28px]">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-[24px] border border-white/[0.10] bg-white/[0.025] shadow-[0_18px_45px_rgba(0,0,0,0.35)] md:h-24 md:w-24 md:rounded-[28px]">
                     <LightbulbOff
-                      className="h-8 w-8 text-white/35 sm:h-10 sm:w-10"
+                      className="h-8 w-8 text-white/35 md:h-10 md:w-10"
                       strokeWidth={1.5}
                     />
                   </div>
@@ -152,12 +152,12 @@ export default function LightingStep({
             </div>
 
             {/* Информация */}
-            <div className="flex min-h-[125px] flex-col p-4 sm:min-h-[150px] sm:p-5">
+            <div className="flex min-h-[125px] flex-col p-4 md:min-h-[150px] md:p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <h3
                     className={`
-                      font-sans text-base font-semibold sm:text-lg
+                      font-sans text-base font-semibold md:text-lg
                       leading-tight tracking-[-0.02em]
 
                       ${
@@ -170,7 +170,7 @@ export default function LightingStep({
                     {option.id}
                   </h3>
 
-                  <p className="mt-1.5 font-sans text-[13px] leading-relaxed text-white/[0.43] sm:mt-2 sm:text-sm">
+                  <p className="mt-1.5 font-sans text-[13px] leading-relaxed text-white/[0.43] md:mt-2 md:text-sm">
                     {option.subtitle}
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export default function LightingStep({
                 </span>
               </div>
 
-              <div className="mt-auto pt-3 sm:pt-4">
+              <div className="mt-auto pt-3 md:pt-4">
                 <span
                   className={`
                     font-sans text-[10px] font-bold

@@ -50,7 +50,7 @@ export default function Advantages() {
           title={
             <>
               <span>Наши</span>{" "}
-              <span className="block whitespace-nowrap text-[clamp(1.5rem,7vw,1.875rem)] sm:inline sm:text-[2.75rem] md:text-5xl lg:text-[3.5rem]">
+              <span className="block whitespace-nowrap text-[clamp(1.5rem,7vw,1.875rem)] md:inline md:text-[inherit]">
                 преимущества
               </span>
             </>
@@ -78,7 +78,7 @@ export default function Advantages() {
                 <article
                   key={item.title}
                   className={`
-                    group relative min-h-0 p-4 sm:min-h-[230px] sm:p-7
+                    group relative min-h-0 p-4 md:min-h-[230px] md:p-7
                     transition-colors duration-300
                     hover:bg-primary/[0.025]
 
@@ -92,7 +92,7 @@ export default function Advantages() {
                   <div className="flex items-start justify-between gap-4">
                     <span
                       className="
-                        flex h-10 w-10 items-center justify-center rounded-xl sm:h-12 sm:w-12 sm:rounded-2xl
+                        flex h-10 w-10 items-center justify-center rounded-xl md:h-12 md:w-12 md:rounded-2xl
                         border border-primary/30 bg-primary/10 text-primary
                         transition-all duration-300
                         group-hover:border-primary/50
@@ -100,7 +100,7 @@ export default function Advantages() {
                         group-hover:shadow-[0_0_26px_rgba(255,106,0,0.15)]
                       "
                     >
-                      <Icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.8} />
+                      <Icon className="h-[18px] w-[18px] md:h-5 md:w-5" strokeWidth={1.8} />
                     </span>
 
                     <span className="text-xs font-bold tracking-[0.12em] text-white/15">
@@ -108,11 +108,11 @@ export default function Advantages() {
                     </span>
                   </div>
 
-                  <h3 className="mt-5 font-sans text-base font-semibold leading-snug text-white sm:mt-8 sm:text-lg">
+                  <h3 className="mt-5 font-sans text-base font-semibold leading-snug text-white md:mt-8 md:text-lg">
                     {item.title}
                   </h3>
 
-                  <p className="mt-2 font-sans text-[13px] leading-relaxed text-white/50 sm:mt-3 sm:text-sm">
+                  <p className="mt-2 font-sans text-[13px] leading-relaxed text-white/50 md:mt-3 md:text-sm">
                     {item.description}
                   </p>
                 </article>
