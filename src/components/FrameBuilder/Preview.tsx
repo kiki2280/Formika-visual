@@ -166,6 +166,10 @@ export default function Preview({ state, onChange }: PreviewProps) {
 
   const positions = state.previewPositions ?? {};
   const rotations = state.previewRotations ?? {};
+  const [localPositions, setLocalPositions] = useState<PosMap>(positions);
+  const localPositionsRef = useRef<PosMap>(positions);
+  const pendingDragPosRef = useRef<{ id: string; pos: Pos } | null>(null);
+  const dragFrameRef = useRef<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const dragRef   = useRef<DragState | null>(null);
   const rotateRef = useRef<{ id: string } | null>(null);
@@ -179,30 +183,63 @@ export default function Preview({ state, onChange }: PreviewProps) {
       : accIds.includes(id) ? accIds
       : heartIds;
 
-  const setPositions = useCallback((updater: (prev: PosMap) => PosMap) => {
-    onChange(prevState => ({
+  const setLocalPositionsSafely = useCallback((updater: (prev: PosMap) => PosMap) => {
+    setLocalPositions((prev) => {
+      const next = updater(prev);
+      localPositionsRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const commitPosition = useCallback((id: string, pos: Pos) => {
+    onChange((prevState) => ({
       ...prevState,
-      previewPositions: updater(prevState.previewPositions ?? {}),
+      previewPositions: {
+        ...(prevState.previewPositions ?? {}),
+        [id]: pos,
+      },
     }));
   }, [onChange]);
 
-  // Initialize positions for new elements, keep existing ones
+  // Initialize positions for new elements, keep existing ones.
+  // The preview uses local positions while dragging and writes to the main
+  // builder state only when the pointer is released.
   useEffect(() => {
-    setPositions(prev => {
-      const next: PosMap = {};
-      let changed = Object.keys(prev).some(id => !allIds.includes(id));
-      allIds.forEach(id => {
-        const raw = prev[id] ?? defaultPos(id, groupOf(id), innerW, innerH);
-        const pos = clamp(raw, innerW, innerH, marginsFor(id, charScaleValue));
-        next[id] = pos;
-        if (!prev[id] || prev[id].x !== pos.x || prev[id].y !== pos.y) {
-          changed = true;
-        }
-      });
-      return changed ? next : prev;
+    if (dragRef.current) return;
+
+    const source = state.previewPositions ?? {};
+    const next: PosMap = {};
+
+    allIds.forEach((id) => {
+      const raw = source[id] ?? defaultPos(id, groupOf(id), innerW, innerH);
+      next[id] = clamp(
+        raw,
+        innerW,
+        innerH,
+        marginsFor(id, charScaleValue),
+      );
     });
-    // Drop the selection if the selected element no longer exists
-    setSelectedId(prev => (prev && allIds.includes(prev) ? prev : null));
+
+    localPositionsRef.current = next;
+    setLocalPositions(next);
+
+    const changed =
+      Object.keys(source).some((id) => !allIds.includes(id)) ||
+      allIds.some((id) => {
+        const prev = source[id];
+        const current = next[id];
+        return !prev || prev.x !== current.x || prev.y !== current.y;
+      });
+
+    if (changed) {
+      onChange((prevState) => ({
+        ...prevState,
+        previewPositions: next,
+      }));
+    }
+
+    // Drop the selection if the selected element no longer exists.
+    setSelectedId((prev) => (prev && allIds.includes(prev) ? prev : null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.characters.length, state.pets.join(), state.accessories.join(), heartIds.join(), state.size]);
 
@@ -219,7 +256,13 @@ export default function Preview({ state, onChange }: PreviewProps) {
   };
 
   const getPos = (id: string, group: string[]): Pos =>
-    positions[id] ?? clamp(defaultPos(id, group, innerW, innerH), innerW, innerH, marginsFor(id, charScaleValue));
+    localPositions[id] ??
+    clamp(
+      defaultPos(id, group, innerW, innerH),
+      innerW,
+      innerH,
+      marginsFor(id, charScaleValue),
+    );
 
   const isDragging = (id: string) => dragRef.current?.id === id;
 
@@ -231,13 +274,38 @@ export default function Preview({ state, onChange }: PreviewProps) {
     return { x: m.clientX, y: m.clientY };
   };
 
-  // Release any interaction immediately and detach window listeners (prevents "sticking")
+  // Release any interaction immediately and detach window listeners.
+  // A dragged position is committed to the main builder state only once here.
   const endInteraction = useCallback(() => {
+    const activeDrag = dragRef.current;
+
+    if (dragFrameRef.current !== null) {
+      cancelAnimationFrame(dragFrameRef.current);
+      dragFrameRef.current = null;
+    }
+
+    if (pendingDragPosRef.current) {
+      const { id, pos } = pendingDragPosRef.current;
+      localPositionsRef.current = {
+        ...localPositionsRef.current,
+        [id]: pos,
+      };
+      setLocalPositions(localPositionsRef.current);
+      pendingDragPosRef.current = null;
+    }
+
+    if (activeDrag) {
+      const finalPos = localPositionsRef.current[activeDrag.id];
+      if (finalPos) {
+        commitPosition(activeDrag.id, finalPos);
+      }
+    }
+
     dragRef.current = null;
     rotateRef.current = null;
     detachRef.current();
     detachRef.current = () => {};
-  }, []);
+  }, [commitPosition]);
 
   // While interacting, track the pointer on the whole window so drag/rotate keeps
   // working outside the SVG and always releases on mouseup / touchend / touchcancel.
@@ -292,7 +360,20 @@ export default function Preview({ state, onChange }: PreviewProps) {
         x: originPosX + (svgPos.x - originMouseX),
         y: originPosY + (svgPos.y - originMouseY),
       }, innerW, innerH, marginsFor(id, charScaleValue));
-      setPositions(prev => ({ ...prev, [id]: newPos }));
+      pendingDragPosRef.current = { id, pos: newPos };
+
+      if (dragFrameRef.current === null) {
+        dragFrameRef.current = requestAnimationFrame(() => {
+          dragFrameRef.current = null;
+          const pending = pendingDragPosRef.current;
+          if (!pending) return;
+
+          setLocalPositionsSafely((prev) => ({
+            ...prev,
+            [pending.id]: pending.pos,
+          }));
+        });
+      }
     }
   };
 
@@ -303,6 +384,7 @@ export default function Preview({ state, onChange }: PreviewProps) {
     const pt = pointer(e);
     const svgPos = clientToSVG(pt.x, pt.y);
     const current = getPos(id, groupOf(id));
+    pendingDragPosRef.current = null;
     dragRef.current = {
       id,
       originMouseX: svgPos.x,
@@ -312,7 +394,7 @@ export default function Preview({ state, onChange }: PreviewProps) {
     };
     beginInteraction();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positions, charIds, petIds, accIds, heartIds, innerW, innerH, beginInteraction]);
+  }, [localPositions, charIds, petIds, accIds, heartIds, innerW, innerH, beginInteraction]);
 
   const startRotate = useCallback((id: string, e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
@@ -322,7 +404,7 @@ export default function Preview({ state, onChange }: PreviewProps) {
     beginInteraction();
   }, [beginInteraction]);
 
-  // Safety: always release listeners on unmount
+  // Safety: always release listeners and animation frames on unmount.
   useEffect(() => endInteraction, [endInteraction]);
 
   return (

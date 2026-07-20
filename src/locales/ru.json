@@ -326,10 +326,12 @@
     "stepOfTotal": "Шаг {{step}} из {{total}}"
   },
   "frameBuilder": {
-    "eyebrow": "Конструктор рамки",
-    "previousStepUnavailableAria": "Предыдущего шага нет",
-    "previousStepAria": "Вернуться на предыдущий шаг конструктора рамки",
-    "steps": {
+      "eyebrow": "Конструктор рамки",
+      "previousStepUnavailableAria": "Предыдущего шага нет",
+      "previousStepAria": "Вернуться на предыдущий шаг конструктора рамки",
+      "resetButton": "Сбросить",
+      "resetConfirmation": "Сбросить весь конструктор? Все выбранные настройки будут удалены.",
+      "steps": {
       "sizeTitle": "Размер рамки",
       "sizeSubtitle": "Выберите подходящий формат композиции",
       "colorTitle": "Цвет рамки",

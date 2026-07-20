@@ -325,11 +325,13 @@
     "currentPrice": "Current price",
     "stepOfTotal": "Step {{step}} of {{total}}"
   },
-  "frameBuilder": {
-    "eyebrow": "Frame builder",
-    "previousStepUnavailableAria": "There is no previous step",
-    "previousStepAria": "Return to the previous step of the frame builder",
-    "steps": {
+    "frameBuilder": {
+      "eyebrow": "Frame builder",
+      "previousStepUnavailableAria": "There is no previous step",
+      "previousStepAria": "Return to the previous frame builder step",
+      "resetButton": "Reset",
+      "resetConfirmation": "Reset the entire builder? All selected settings will be deleted.",
+      "steps": {
       "sizeTitle": "Frame size",
       "sizeSubtitle": "Choose the right format for your composition",
       "colorTitle": "Frame color",

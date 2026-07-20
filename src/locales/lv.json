@@ -326,10 +326,12 @@
     "stepOfTotal": "Solis {{step}} no {{total}}"
   },
   "frameBuilder": {
-    "eyebrow": "Rāmīša konstruktors",
-    "previousStepUnavailableAria": "Iepriekšējā soļa nav",
-    "previousStepAria": "Atgriezties uz iepriekšējo rāmīša konstruktora soli",
-    "steps": {
+      "eyebrow": "Rāmja konstruktors",
+      "previousStepUnavailableAria": "Iepriekšējais solis nav pieejams",
+      "previousStepAria": "Atgriezties uz iepriekšējo rāmja konstruktora soli",
+      "resetButton": "Atiestatīt",
+      "resetConfirmation": "Vai atiestatīt visu konstruktoru? Visi izvēlētie iestatījumi tiks dzēsti.",
+      "steps": {
       "sizeTitle": "Rāmīša izmērs",
       "sizeSubtitle": "Izvēlieties piemērotu kompozīcijas formātu",
       "colorTitle": "Rāmīša krāsa",

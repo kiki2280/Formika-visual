@@ -1,7 +1,7 @@
 ﻿import { useState } from "react";
 import { AnimatePresence, motion } from "@/lib/motion";
 import { useCallback, type Dispatch, type SetStateAction } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import {
   type FrameOrderState,
   makeCharacter,
@@ -254,6 +254,27 @@ export default function FrameBuilder({
     });
   };
 
+  const resetBuilder = () => {
+      const shouldReset = window.confirm(
+          t("frameBuilder.resetConfirmation"),
+        );
+
+    if (!shouldReset) return;
+
+    setPersisted(createInitialFrameBuilderState());
+
+    setFaceValidationUi({
+      attempted: false,
+      focusCharacterId: null,
+      requestId: 0,
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const renderStep = () => {
     switch (current.key) {
       case "size":
@@ -357,10 +378,32 @@ export default function FrameBuilder({
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <div className="mb-4 flex justify-start">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <ReturnToProductSelectionButton
           onClick={onReturnToProductSelection}
         />
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={resetBuilder}
+          className="
+            h-10 rounded-full
+            border-white/[0.12]
+            bg-white/[0.02]
+            px-4
+            font-sans text-sm font-semibold
+            text-white/[0.65]
+            transition-all duration-300
+            hover:border-primary/55
+            hover:bg-primary/[0.07]
+            hover:text-primary
+          "
+          data-testid="btn-reset-builder"
+        >
+          <RotateCcw className="mr-2 h-4 w-4" />
+          {t("frameBuilder.resetButton")}
+        </Button>
       </div>
 
       <BuilderProgress
