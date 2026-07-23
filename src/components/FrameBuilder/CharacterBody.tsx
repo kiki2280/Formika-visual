@@ -1,5 +1,12 @@
 import { useId } from "react";
-import { DEFAULT_FACE_ID, DEFAULT_FACE_ITEM, ITEMS, type Character } from "@/lib/types";
+import {
+  DEFAULT_BOTTOM_ID,
+  DEFAULT_FACE_ID,
+  DEFAULT_FACE_ITEM,
+  DEFAULT_TOP_ID,
+  ITEMS,
+  type Character,
+} from "@/lib/types";
 import { getAccessoryDefaultPosition, getAccessoryDisplay, isFixedAccessory } from "@/lib/accessoryDisplay";
 import { getHairDisplay } from "@/lib/hairDisplay";
 import AccessoryGlyph from "../AccessoryGlyph";
@@ -66,10 +73,12 @@ export default function CharacterBody({
   selectedAccessory = null,
 }: CharacterBodyProps) {
   const armsClipId = useId().replace(/:/g, "");
-  const bodyColor = char.top ? "#FF6A00" : "#444";
-  const topSrc = char.top ? ITEMS.top.find((t) => t.id === char.top)?.img : undefined;
-  const bottomSrc = char.bottom ? ITEMS.bottom.find((b) => b.id === char.bottom)?.img : undefined;
-  const bottomYOffset = char.bottom ? BOTTOM_Y_OFFSET[char.bottom] ?? 0 : 0;
+  const selectedTopId = char.top ?? DEFAULT_TOP_ID;
+  const selectedBottomId = char.bottom ?? DEFAULT_BOTTOM_ID;
+  const bodyColor = "#FF6A00";
+  const topSrc = ITEMS.top.find((item) => item.id === selectedTopId)?.img;
+  const bottomSrc = ITEMS.bottom.find((item) => item.id === selectedBottomId)?.img;
+  const bottomYOffset = BOTTOM_Y_OFFSET[selectedBottomId] ?? 0;
   const selectedFaceId = char.face ?? DEFAULT_FACE_ID;
   const selectedFaceItem =
     selectedFaceId === DEFAULT_FACE_ID
@@ -83,7 +92,7 @@ export default function CharacterBody({
     hairItem && (hairBackSrc || hairFrontSrc)
       ? getHairDisplay(hairItem.id)
       : null;
-  const legsColor = char.bottom ? "#cc5500" : "#383838";
+  const legsColor = "#cc5500";
   const interactive = !!onAccessoryDown;
   const accessoryEntries = char.accessories.map((accId, index) => ({
     accId,

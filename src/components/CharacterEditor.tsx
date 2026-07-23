@@ -73,7 +73,13 @@ export default function CharacterEditor({
       onChange({ ...character, hair: null });
       return;
     }
-    onChange({ ...character, [type]: character[type] === id ? null : id });
+    if ((type === "top" || type === "bottom") && character[type] === id) {
+      return;
+    }
+    onChange({
+      ...character,
+      [type]: character[type] === id ? null : id,
+    });
   };
 
   const toggleAcc = (id: string) => {

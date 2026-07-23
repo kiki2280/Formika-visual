@@ -390,7 +390,10 @@
       "included": "Included in the price"
     },
     "characters": {
-      "pricingNote": "The first character is included in the price · each additional character +{{price}} €"
+      "pricingNote": "The first character is included in the price · each additional character +{{price}} €",
+      "limitMessage": "You can add up to {{count}} characters for the selected frame",
+      "reduceWarning": "Reduce the number of characters to {{count}} to continue",
+      "recommendedQuantity": "Recommended quantity: 1"
     },
     "pets": {
       "namesTitle": "Pet names",

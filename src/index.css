@@ -237,7 +237,7 @@
   --primary: 25 100% 50%;
   --primary-foreground: 0 0% 8%;
   --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 53%;
+  --muted-foreground: 0 0% 72%;
   --accent: 25 100% 50%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
@@ -264,6 +264,10 @@
     background-color: #111111;
     color: #e5e2e1;
     @apply font-sans antialiased;
+  }
+  ::placeholder {
+    color: rgba(255, 255, 255, 0.56);
+    opacity: 1;
   }
   h1, h2 {
     @apply font-serif;
@@ -399,6 +403,46 @@
 
 .order-process-marker {
   opacity: 0.82;
+}
+
+/*
+ * Readability floor for legacy low-opacity text utilities. This only adjusts
+ * colour; typography, spacing, imagery, borders, and decorative opacity stay
+ * unchanged.
+ */
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/25"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/15"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/30"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/35"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/38"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/40"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.14]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.35]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.38]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.4]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.42]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.43]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.44]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.45]"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/[0.48]"] {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/50"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/55"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/58"],
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-white/60"] {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:where(p, span, a, button, label, input, textarea, li, dt, dd, div)[class~="text-muted-foreground/60"] {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.56) !important;
+  opacity: 1;
 }
 
 .order-process-row[data-order-state="active"] .order-process-card {

@@ -13,6 +13,9 @@ interface CharacterBuilderProps {
   minCharacters?: number;
   extraCharacterPrice?: number;
   note?: string;
+  limitMessage?: string;
+  overLimitMessage?: string;
+  recommendedMessage?: string;
   addButtonLabel?: string;
   showAccessories?: boolean;
   showName?: boolean;
@@ -21,7 +24,6 @@ interface CharacterBuilderProps {
   faceValidationRequestId?: number;
 }
 
-const DEFAULT_CLOTHING = { top: "TOP-13", bottom: "BOTTOM-13" };
 const VBW = 200;
 const VBH = 320;
 const CX = 100;
@@ -143,6 +145,9 @@ export default function CharacterBuilder({
   minCharacters = 1,
   extraCharacterPrice,
   note,
+  limitMessage,
+  overLimitMessage,
+  recommendedMessage,
   addButtonLabel,
   showAccessories = true,
   showName = true,
@@ -156,6 +161,8 @@ export default function CharacterBuilder({
   const [active, setActive] = useState(0);
   const characterTabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const activeIndex = Math.min(active, characters.length - 1);
+  const hasReachedLimit = characters.length >= maxCharacters;
+  const isOverLimit = characters.length > maxCharacters;
   const characterIdsSignature = characters.map((character) => character.id).join("|");
 
   useEffect(() => {
@@ -183,7 +190,7 @@ export default function CharacterBuilder({
 
   const addCharacter = () => {
     if (characters.length >= maxCharacters) return;
-    onChange([...characters, makeCharacter(undefined, DEFAULT_CLOTHING)]);
+    onChange([...characters, makeCharacter()]);
     setActive(characters.length);
   };
 
@@ -234,20 +241,42 @@ export default function CharacterBuilder({
             </button>
           );
         })}
-        {characters.length < maxCharacters && (
-          <button
-            type="button"
-            onClick={addCharacter}
-            className="px-4 py-2 rounded-full border border-dashed border-primary/50 text-sm font-semibold text-primary hover:bg-primary/10 transition-all flex items-center gap-1.5"
-            data-testid="btn-add-character"
-          >
-            <Plus className="w-4 h-4" />
+        <button
+          type="button"
+          onClick={addCharacter}
+          disabled={hasReachedLimit}
+          className="flex min-h-10 items-center gap-1.5 rounded-full border border-dashed border-primary/50 px-4 py-2 text-sm font-semibold text-primary transition-all hover:bg-primary/10 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-muted-foreground disabled:hover:bg-transparent"
+          data-testid="btn-add-character"
+        >
+          <Plus className="h-4 w-4" />
           {resolvedAddButtonLabel}
-          </button>
-        )}
+        </button>
       </div>
 
+      {recommendedMessage && (
+        <p className="text-sm font-medium text-foreground">
+          {recommendedMessage}
+        </p>
+      )}
+
       {note && <p className="text-xs text-muted-foreground">{note}</p>}
+
+      {hasReachedLimit && limitMessage && (
+        <div
+          className={`rounded-xl border px-4 py-3 text-sm ${
+            isOverLimit
+              ? "border-destructive/60 bg-destructive/10 text-destructive"
+              : "border-primary/35 bg-primary/10 text-foreground"
+          }`}
+          role={isOverLimit ? "alert" : "status"}
+          data-testid="character-limit-message"
+        >
+          <p>{limitMessage}</p>
+          {isOverLimit && overLimitMessage && (
+            <p className="mt-1 font-semibold">{overLimitMessage}</p>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
         <div className="lg:sticky lg:top-[150px]">

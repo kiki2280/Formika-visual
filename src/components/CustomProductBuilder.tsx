@@ -17,6 +17,7 @@ import {
   getPetLabel,
   getReadyKeychainName,
   makeCharacter,
+  normalizeCharactersClothing,
   type KeychainOrderState,
 } from "@/lib/types";
 import {
@@ -61,6 +62,15 @@ function createInitialKeychainBuilderState(): KeychainOrderState {
     pets: [],
     deliveryMethod: null,
     deliveryPrice: 0,
+  };
+}
+
+function normalizeKeychainBuilderState(
+  state: KeychainOrderState,
+): KeychainOrderState {
+  return {
+    ...state,
+    characters: normalizeCharactersClothing(state.characters),
   };
 }
 
@@ -123,6 +133,7 @@ export default function CustomProductBuilder({
     KEYCHAIN_BUILDER_STORAGE_KEY,
     createInitialKeychainBuilderState,
     isKeychainOrderState,
+    normalizeKeychainBuilderState,
   );
   const [faceValidationUi, setFaceValidationUi] = useState({
     attempted: false,

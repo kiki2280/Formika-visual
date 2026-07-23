@@ -194,6 +194,9 @@ export interface Character {
   accessoryPositions?: Record<string, PreviewPosition>;
 }
 
+export const DEFAULT_TOP_ID = "TOP-13";
+export const DEFAULT_BOTTOM_ID = "BOTTOM-13";
+
 export interface FrameOrderState {
   size: "10x15" | "17x22" | "22x17";
   color: "Чёрная" | "Белая";
@@ -210,6 +213,18 @@ export interface FrameOrderState {
   previewPositions?: PreviewPositions;
   /** Saved rotations for rotatable preview elements, keyed by element instance id. */
   previewRotations?: Record<string, number>;
+}
+
+export const FRAME_CHARACTER_LIMITS: Record<FrameOrderState["size"], number> = {
+  "10x15": 2,
+  "17x22": 4,
+  "22x17": 6,
+};
+
+export function getFrameCharacterLimit(
+  size: FrameOrderState["size"],
+): number {
+  return FRAME_CHARACTER_LIMITS[size];
 }
 
 export interface KeychainOrderState {
@@ -571,6 +586,38 @@ export function getReadyKeychainName(id: string): string {
   return key ? i18n.t(key) : id;
 }
 
+export function normalizeCharacterClothing(character: Character): Character {
+  const top = ITEMS.top.some((item) => item.id === character.top)
+    ? character.top
+    : DEFAULT_TOP_ID;
+  const bottom = ITEMS.bottom.some((item) => item.id === character.bottom)
+    ? character.bottom
+    : DEFAULT_BOTTOM_ID;
+
+  if (top === character.top && bottom === character.bottom) return character;
+
+  return {
+    ...character,
+    top,
+    bottom,
+  };
+}
+
+export function normalizeCharactersClothing(
+  characters: readonly Character[],
+): Character[] {
+  return characters.map(normalizeCharacterClothing);
+}
+
 export function makeCharacter(id?: string, defaults: Partial<Character> = {}): Character {
-  return { id: id ?? Math.random().toString(36).slice(2), name: "", face: DEFAULT_FACE_ID, hair: null, top: null, bottom: null, accessories: [], ...defaults };
+  return {
+    id: id ?? Math.random().toString(36).slice(2),
+    name: "",
+    face: DEFAULT_FACE_ID,
+    hair: null,
+    top: DEFAULT_TOP_ID,
+    bottom: DEFAULT_BOTTOM_ID,
+    accessories: [],
+    ...defaults,
+  };
 }

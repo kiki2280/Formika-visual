@@ -5,10 +5,14 @@ export function usePersistentBuilderState<T>(
   storageKey: string,
   createInitialState: () => T,
   validate: (value: unknown) => value is T,
+  normalize?: (value: T) => T,
 ): [T, Dispatch<SetStateAction<T>>] {
-  const [state, setState] = useState<T>(
-    () => loadBuilderState(storageKey, validate) ?? createInitialState(),
-  );
+  const [state, setState] = useState<T>(() => {
+    const initialState =
+      loadBuilderState(storageKey, validate) ?? createInitialState();
+
+    return normalize ? normalize(initialState) : initialState;
+  });
 
   useEffect(() => {
     saveBuilderState(storageKey, state);

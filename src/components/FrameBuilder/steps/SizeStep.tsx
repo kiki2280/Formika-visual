@@ -1,6 +1,6 @@
 import { Check, Info } from "lucide-react";
 import type { FrameOrderState } from "@/lib/types";
-import { PRICING } from "@/lib/types";
+import { getFrameCharacterLimit, PRICING } from "@/lib/types";
 import { useTranslation } from "react-i18next";
 
 interface StepProps {
@@ -33,6 +33,9 @@ export default function SizeStep({
   onChange,
 }: StepProps) {
   const { t } = useTranslation();
+  const characterLimit = getFrameCharacterLimit(state.size);
+  const exceedsCharacterLimit =
+    state.characters.length > characterLimit;
 
   return (
     <div className="space-y-4">
@@ -40,6 +43,25 @@ export default function SizeStep({
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
         <p>{t("frameBuilder.size.horizontalHint")}</p>
       </div>
+
+      {exceedsCharacterLimit && (
+        <div
+          className="rounded-2xl border border-destructive/60 bg-destructive/10 px-4 py-3 text-sm leading-relaxed text-destructive"
+          role="alert"
+          data-testid="frame-size-character-warning"
+        >
+          <p>
+            {t("frameBuilder.characters.limitMessage", {
+              count: characterLimit,
+            })}
+          </p>
+          <p className="mt-1 font-semibold">
+            {t("frameBuilder.characters.reduceWarning", {
+              count: characterLimit,
+            })}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {SIZES.map((size) => {
@@ -102,7 +124,7 @@ export default function SizeStep({
                 </div>
               </div>
 
-              <p className="mt-2 font-sans text-sm leading-relaxed text-white/[0.44]">
+              <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
                 {t(size.subtitleKey)}
               </p>
 

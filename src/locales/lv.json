@@ -390,7 +390,10 @@
       "included": "Iekļauts cenā"
     },
     "characters": {
-      "pricingNote": "Pirmā figūriņa ir iekļauta cenā · katra nākamā +{{price}} €"
+      "pricingNote": "Pirmā figūriņa ir iekļauta cenā · katra nākamā +{{price}} €",
+      "limitMessage": "Izvēlētajam rāmim var pievienot ne vairāk kā {{count}} tēlus",
+      "reduceWarning": "Lai turpinātu, samaziniet tēlu skaitu līdz {{count}}",
+      "recommendedQuantity": "Ieteicamais daudzums: 1"
     },
     "pets": {
       "namesTitle": "Mājdzīvnieku vārdi",

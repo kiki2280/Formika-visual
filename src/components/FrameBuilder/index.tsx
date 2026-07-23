@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "@/lib/motion";
 import { useCallback, type Dispatch, type SetStateAction } from "react";
 import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import {
+  getFrameCharacterLimit,
+  normalizeCharactersClothing,
   type FrameOrderState,
   makeCharacter,
 } from "@/lib/types";
@@ -123,6 +125,18 @@ function createInitialFrameBuilderState(): PersistedFrameBuilderState {
   };
 }
 
+function normalizePersistedFrameBuilderState(
+  persisted: PersistedFrameBuilderState,
+): PersistedFrameBuilderState {
+  return {
+    ...persisted,
+    state: {
+      ...persisted.state,
+      characters: normalizeCharactersClothing(persisted.state.characters),
+    },
+  };
+}
+
 function isPersistedFrameBuilderState(
   value: unknown,
 ): value is PersistedFrameBuilderState {
@@ -149,6 +163,7 @@ export default function FrameBuilder({
     FRAME_BUILDER_STORAGE_KEY,
     createInitialFrameBuilderState,
     isPersistedFrameBuilderState,
+    normalizePersistedFrameBuilderState,
   );
   const [faceValidationUi, setFaceValidationUi] = useState({
     attempted: false,
@@ -217,8 +232,37 @@ export default function FrameBuilder({
     return false;
   };
 
+  const requireAllowedCharacterCount = () => {
+    const limit = getFrameCharacterLimit(state.size);
+    if (state.characters.length <= limit) return true;
+
+    toast({
+      title: t("frameBuilder.characters.limitMessage", { count: limit }),
+      description: t("frameBuilder.characters.reduceWarning", {
+        count: limit,
+      }),
+      variant: "destructive",
+    });
+    return false;
+  };
+
   const goNext = () => {
     if (isLast) return;
+
+    if (
+      (current.key === "characters" || current.key === "preview") &&
+      !requireAllowedCharacterCount()
+    ) {
+      if (current.key !== "characters") {
+        setStep(CHARACTERS_STEP_INDEX);
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+      return;
+    }
 
     if (
       (current.key === "characters" || current.key === "preview") &&
@@ -359,6 +403,15 @@ export default function FrameBuilder({
           <ReviewStep
             state={state}
             onChange={setState}
+            onInvalidCharacterCount={() => {
+              requireAllowedCharacterCount();
+              setStep(CHARACTERS_STEP_INDEX);
+
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }}
             onInvalidCharacters={(firstInvalidCharacterId) => {
               showFaceValidationError(firstInvalidCharacterId);
               setStep(CHARACTERS_STEP_INDEX);

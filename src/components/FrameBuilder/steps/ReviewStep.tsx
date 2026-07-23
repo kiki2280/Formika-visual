@@ -16,6 +16,7 @@ import {
   getFrameColorLabel,
   getHairLabel,
   getHeartLabel,
+  getFrameCharacterLimit,
   getLightingLabel,
   getPetLabel,
   type FrameOrderState,
@@ -31,6 +32,7 @@ interface StepProps {
   state: FrameOrderState;
   onChange: Dispatch<SetStateAction<FrameOrderState>>;
   onInvalidCharacters: (firstInvalidCharacterId: string) => void;
+  onInvalidCharacterCount: () => void;
 }
 
 function Row({ label, value, detail }: { label: string; value: string; detail?: string }) {
@@ -49,6 +51,7 @@ export default function ReviewStep({
   state,
   onChange,
   onInvalidCharacters,
+  onInvalidCharacterCount,
 }: StepProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -80,7 +83,19 @@ export default function ReviewStep({
     return false;
   };
 
+  const requireAllowedCharacterCount = () => {
+    if (
+      state.characters.length <= getFrameCharacterLimit(state.size)
+    ) {
+      return true;
+    }
+
+    onInvalidCharacterCount();
+    return false;
+  };
+
   const handleCopy = async () => {
+    if (!requireAllowedCharacterCount()) return;
     if (!requireSelectedFaces()) return;
     if (!requireDelivery()) return;
     try {
@@ -99,6 +114,7 @@ export default function ReviewStep({
   };
 
   const handleOpenTelegram = () => {
+    if (!requireAllowedCharacterCount()) return;
     if (!requireSelectedFaces()) return;
     if (!requireDelivery()) return;
     window.open(CONTACTS.orderTelegram.href, "_blank", "noopener,noreferrer");
