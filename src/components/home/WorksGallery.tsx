@@ -1,16 +1,18 @@
 import { lazy, Suspense, useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Instagram } from "lucide-react";
+import { ArrowRight, Instagram, ZoomIn } from "lucide-react";
 
 import type {
   GalleryModalData,
   GalleryModalType,
 } from "@/components/GalleryModal";
+import type { ImageLightboxData } from "@/components/ImageLightbox";
 import { motion } from "@/lib/motion";
 import SectionHeading from "./SectionHeading";
 
 const base = import.meta.env.BASE_URL;
 const GalleryModal = lazy(() => import("@/components/GalleryModal"));
+const ImageLightbox = lazy(() => import("@/components/ImageLightbox"));
 
 const IMG = {
   personal1: `${base}images/optimized/works-personal-1.webp`,
@@ -103,7 +105,9 @@ const WORKS: WorkItem[] = [
 export default function WorksGallery() {
   const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
+  const [lightbox, setLightbox] = useState<ImageLightboxData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
+  const lightboxTriggerRef = useRef<HTMLElement>(null);
 
   const closeGallery = useCallback(() => {
     setActive(null);
@@ -149,15 +153,22 @@ export default function WorksGallery() {
             transition={{ duration: 0.5, delay: index * 0.08 }}
             className="h-full"
           >
-            <button
-              type="button"
-              onClick={(event) => {
-                activeTriggerRef.current = event.currentTarget;
-                setActive(work.modal);
-              }}
-              className="group relative block aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:aspect-[4/5]"
-              data-testid={`card-work-${index}`}
-            >
+            <div className="group relative aspect-[4/3] w-full cursor-pointer overflow-hidden rounded-[26px] border border-white/10 bg-black text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] md:aspect-[4/5]">
+              <button
+                type="button"
+                onClick={(event) => {
+                  activeTriggerRef.current = event.currentTarget;
+                  setActive(work.modal);
+                }}
+                className="absolute inset-0 z-10 rounded-[26px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                aria-label={t("home.works.openCategoryAria", {
+                  category: work.title,
+                })}
+                data-testid={`card-work-${index}`}
+              >
+                <span className="sr-only">{work.title}</span>
+              </button>
+
               <img
                 src={work.img}
                 alt={work.title}
@@ -170,9 +181,26 @@ export default function WorksGallery() {
                 } transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
 
-              <div className="absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
+              <button
+                type="button"
+                onClick={(event) => {
+                  lightboxTriggerRef.current = event.currentTarget;
+                  setLightbox({
+                    images: work.images,
+                    initialIndex: 0,
+                    caption: work.title,
+                  });
+                }}
+                className="absolute right-3 top-3 z-20 inline-flex h-11 w-11 cursor-zoom-in items-center justify-center rounded-full border border-white/20 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label={t("imageViewer.enlarge")}
+                data-testid={`enlarge-work-${index}`}
+              >
+                <ZoomIn className="h-5 w-5" />
+              </button>
+
+              <div className="pointer-events-none absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
                 <h3 className="font-sans text-base font-semibold leading-snug text-white md:text-lg">
                   {work.title}
                 </h3>
@@ -186,7 +214,7 @@ export default function WorksGallery() {
                   <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </span>
               </div>
-            </button>
+            </div>
           </motion.div>
         ))}
       </div>
@@ -241,6 +269,14 @@ export default function WorksGallery() {
           />
         </Suspense>
       )}
+
+      <Suspense fallback={null}>
+        <ImageLightbox
+          data={lightbox}
+          onClose={() => setLightbox(null)}
+          returnFocusRef={lightboxTriggerRef}
+        />
+      </Suspense>
     </section>
   );
 }

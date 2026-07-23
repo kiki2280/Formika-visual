@@ -4,17 +4,17 @@ import {
   useCallback,
   useRef,
   useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
 } from "react";
 import { motion } from "@/lib/motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ZoomIn } from "lucide-react";
 import type { GalleryModalData } from "@/components/GalleryModal";
+import type { ImageLightboxData } from "@/components/ImageLightbox";
 import SectionHeading from "./SectionHeading";
 import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
 const GalleryModal = lazy(() => import("@/components/GalleryModal"));
+const ImageLightbox = lazy(() => import("@/components/ImageLightbox"));
 
 const IMG = {
   keychain: `${base}images/optimized/product-keychain-card.jpg`,
@@ -67,7 +67,9 @@ const PRODUCTS: {
 export default function OtherProducts() {
   const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
+  const [lightbox, setLightbox] = useState<ImageLightboxData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
+  const lightboxTriggerRef = useRef<HTMLElement>(null);
   const closeGallery = useCallback(() => setActive(null), []);
   const products = PRODUCTS.map((product) => ({
     ...product,
@@ -110,21 +112,22 @@ export default function OtherProducts() {
             }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            onClick={(event: ReactMouseEvent<HTMLDivElement>) =>
-              openGallery(p.modal, event.currentTarget)
-            }
-            onKeyDown={(event: ReactKeyboardEvent<HTMLDivElement>) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                openGallery(p.modal, event.currentTarget);
-              }
-            }}
             className="group relative aspect-[3/2] cursor-pointer overflow-hidden rounded-[26px] border border-white/10 bg-black shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-[border-color,box-shadow] duration-300 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            data-testid={`card-product-${i}`}
-            role="button"
-            tabIndex={0}
-            aria-label={t("home.otherProducts.openGalleryAria", { title: p.title })}
           >
+            <button
+              type="button"
+              onClick={(event) =>
+                openGallery(p.modal, event.currentTarget)
+              }
+              className="absolute inset-0 z-10 rounded-[26px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+              data-testid={`card-product-${i}`}
+              aria-label={t("home.otherProducts.openGalleryAria", {
+                title: p.title,
+              })}
+            >
+              <span className="sr-only">{p.title}</span>
+            </button>
+
             <img
               src={p.img}
               alt={p.title}
@@ -135,9 +138,26 @@ export default function OtherProducts() {
               className={`absolute inset-0 h-full w-full object-cover ${p.imagePosition ?? "object-center"} transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10 md:from-black/95 md:via-black/20 md:to-black/20" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10 md:from-black/95 md:via-black/20 md:to-black/20" />
 
-            <div className="absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
+            <button
+              type="button"
+              onClick={(event) => {
+                lightboxTriggerRef.current = event.currentTarget;
+                setLightbox({
+                  images: p.images,
+                  initialIndex: 0,
+                  caption: p.title,
+                });
+              }}
+              className="absolute right-3 top-3 z-20 inline-flex h-11 w-11 cursor-zoom-in items-center justify-center rounded-full border border-white/20 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label={t("imageViewer.enlarge")}
+              data-testid={`enlarge-product-${i}`}
+            >
+              <ZoomIn className="h-5 w-5" />
+            </button>
+
+            <div className="pointer-events-none absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
               <h3 className="font-sans text-base font-semibold leading-snug text-white md:text-xl">
                 {p.title}
               </h3>
@@ -171,6 +191,14 @@ export default function OtherProducts() {
           />
         </Suspense>
       )}
+
+      <Suspense fallback={null}>
+        <ImageLightbox
+          data={lightbox}
+          onClose={() => setLightbox(null)}
+          returnFocusRef={lightboxTriggerRef}
+        />
+      </Suspense>
     </section>
   );
 }

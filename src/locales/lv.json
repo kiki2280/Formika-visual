@@ -116,6 +116,7 @@
       "categorySelectorAria": "Mūsu darbu kategorijas",
       "openPhotoHint": "Nospiediet uz fotoattēla, lai to palielinātu",
       "openPhotoAria": "Atvērt {{number}}. fotoattēlu kategorijā “{{category}}”",
+      "openCategoryAria": "Atvērt kategoriju “{{category}}”",
       "instagramTitle": "Vairāk darbu — mūsu Instagram",
       "instagramDescription": "Jaunas kompozīcijas, radīšanas process un dāvanu idejas.",
       "instagramButton": "Skatīt Instagram"
@@ -258,6 +259,12 @@
     "openPhotoAria": "Atvērt fotoattēlu {{number}}",
     "imageAlt": "{{title}} {{number}}",
     "counter": "{{current}} / {{total}}"
+  },
+  "imageViewer": {
+    "enlarge": "Palielināt attēlu",
+    "close": "Aizvērt",
+    "previous": "Iepriekšējais attēls",
+    "next": "Nākamais attēls"
   },
   "orderSelection": {
     "eyebrow": "Sāciet ar formātu",

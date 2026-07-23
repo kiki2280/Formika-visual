@@ -116,6 +116,7 @@
       "categorySelectorAria": "Our work categories",
       "openPhotoHint": "Select a photo to enlarge it",
       "openPhotoAria": "Open photo {{number}} in the {{category}} category",
+      "openCategoryAria": "Open the {{category}} category",
       "instagramTitle": "See more of our work on Instagram",
       "instagramDescription": "New compositions, behind-the-scenes details, and gift ideas.",
       "instagramButton": "View Instagram"
@@ -258,6 +259,12 @@
     "openPhotoAria": "Open photo {{number}}",
     "imageAlt": "{{title}} {{number}}",
     "counter": "{{current}} / {{total}}"
+  },
+  "imageViewer": {
+    "enlarge": "Enlarge image",
+    "close": "Close",
+    "previous": "Previous image",
+    "next": "Next image"
   },
   "orderSelection": {
     "eyebrow": "Start with the format",

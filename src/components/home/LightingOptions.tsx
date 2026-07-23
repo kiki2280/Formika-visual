@@ -4,17 +4,17 @@ import {
   useCallback,
   useRef,
   useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
 } from "react";
 import { motion } from "@/lib/motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ZoomIn } from "lucide-react";
 import type { GalleryModalData } from "@/components/GalleryModal";
+import type { ImageLightboxData } from "@/components/ImageLightbox";
 import SectionHeading from "./SectionHeading";
 import { useTranslation } from "react-i18next";
 
 const base = import.meta.env.BASE_URL;
 const GalleryModal = lazy(() => import("@/components/GalleryModal"));
+const ImageLightbox = lazy(() => import("@/components/ImageLightbox"));
 
 const IMG = {
   clouds1: `${base}images/optimized/light-clouds-card1.webp`,
@@ -78,7 +78,9 @@ const OPTIONS: {
 export default function LightingOptions() {
   const { t } = useTranslation();
   const [active, setActive] = useState<GalleryModalData | null>(null);
+  const [lightbox, setLightbox] = useState<ImageLightboxData | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
+  const lightboxTriggerRef = useRef<HTMLElement>(null);
   const closeGallery = useCallback(() => setActive(null), []);
   const options = OPTIONS.map((option) => ({
     ...option,
@@ -115,21 +117,22 @@ export default function LightingOptions() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            onClick={(event: ReactMouseEvent<HTMLDivElement>) =>
-              openGallery(o.modal, event.currentTarget)
-            }
-            onKeyDown={(event: ReactKeyboardEvent<HTMLDivElement>) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                openGallery(o.modal, event.currentTarget);
-              }
-            }}
-            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border transition-colors hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            data-testid={`card-lighting-${i}`}
-            role="button"
-            tabIndex={0}
-            aria-label={t("home.lighting.openGalleryAria", { title: o.title })}
+            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border transition-colors hover:border-primary/60"
           >
+            <button
+              type="button"
+              onClick={(event) =>
+                openGallery(o.modal, event.currentTarget)
+              }
+              className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+              data-testid={`card-lighting-${i}`}
+              aria-label={t("home.lighting.openGalleryAria", {
+                title: o.title,
+              })}
+            >
+              <span className="sr-only">{o.title}</span>
+            </button>
+
             <div className="relative h-80 overflow-hidden">
               <img
                 src={o.img}
@@ -141,8 +144,26 @@ export default function LightingOptions() {
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+
+              <button
+                type="button"
+                onClick={(event) => {
+                  lightboxTriggerRef.current = event.currentTarget;
+                  setLightbox({
+                    images: o.images,
+                    initialIndex: 0,
+                    caption: o.title,
+                  });
+                }}
+                className="absolute right-3 top-3 z-20 inline-flex h-11 w-11 cursor-zoom-in items-center justify-center rounded-full border border-white/20 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label={t("imageViewer.enlarge")}
+                data-testid={`enlarge-lighting-${i}`}
+              >
+                <ZoomIn className="h-5 w-5" />
+              </button>
             </div>
-            <div className="absolute inset-x-0 bottom-0 p-6">
+
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6">
               <h3 className="font-sans text-lg font-semibold uppercase tracking-normal text-white md:text-xl">{o.title}</h3>
               <p className="mt-1 text-sm text-gray-300">{o.description}</p>
               <span
@@ -170,6 +191,14 @@ export default function LightingOptions() {
           />
         </Suspense>
       )}
+
+      <Suspense fallback={null}>
+        <ImageLightbox
+          data={lightbox}
+          onClose={() => setLightbox(null)}
+          returnFocusRef={lightboxTriggerRef}
+        />
+      </Suspense>
     </section>
   );
 }

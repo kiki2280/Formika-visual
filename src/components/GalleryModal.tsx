@@ -12,13 +12,14 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  ZoomIn,
   X,
 } from "lucide-react";
+import ImageLightbox, {
+  type ImageLightboxImage,
+} from "@/components/ImageLightbox";
 
-export interface GalleryModalImage {
-  src: string;
-  alt?: string;
-}
+export type GalleryModalImage = ImageLightboxImage;
 
 export type GalleryModalType =
   | "personal"
@@ -68,6 +69,11 @@ export default function GalleryModal({
   const galleryRef = useRef<HTMLDivElement>(null);
   const scrollFrameRef = useRef(0);
   const leaveForRouteRef = useRef(false);
+  const lightboxTriggerRef = useRef<HTMLElement>(null);
+  const lightboxOpenRef = useRef(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  lightboxOpenRef.current = lightboxIndex !== null;
 
   useEffect(() => {
     if (!data) return;
@@ -78,6 +84,7 @@ export default function GalleryModal({
     );
 
     setActiveImage(startIndex);
+    setLightboxIndex(null);
     leaveForRouteRef.current = false;
 
     window.requestAnimationFrame(() => {
@@ -104,7 +111,7 @@ export default function GalleryModal({
     const scrollbarWidth = window.innerWidth - root.clientWidth;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape" && !lightboxOpenRef.current) onClose();
     };
 
     body.style.position = "fixed";
@@ -203,6 +210,14 @@ export default function GalleryModal({
     onClose();
   };
 
+  const openLightbox = (
+    index: number,
+    trigger: HTMLElement,
+  ) => {
+    lightboxTriggerRef.current = trigger;
+    setLightboxIndex(index);
+  };
+
 const isLightbox = data?.displayMode === "lightbox";
 const hasFourImages = !isLightbox && data?.images.length === 4;
 
@@ -275,7 +290,7 @@ const mobileImageClassName = (() => {
 
 const ctaClassName =
   "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-[0_8px_30px_rgba(255,106,0,0.30)] transition-colors hover:bg-primary/90 md:h-auto md:px-8 md:py-3 md:tracking-wide md:shadow-[0_8px_30px_rgba(255,106,0,0.35)]";
-  return createPortal(
+  const galleryModal = createPortal(
     <AnimatePresence>
       {data && (
         <motion.div
@@ -368,23 +383,37 @@ const ctaClassName =
                         }
                         data-testid={`modal-example-${index}`}
                       >
-                      <img
-                        src={image.src}
-                        alt={
-                          image.alt ||
-                          t("galleryModal.imageAlt", {
-                            title: data.title,
-                            number: index + 1,
-                          })
+                      <button
+                        type="button"
+                        onClick={(event) =>
+                          openLightbox(index, event.currentTarget)
                         }
-                        loading={index === activeImage ? "eager" : "lazy"}
-                        decoding="async"
-                       className={
-                         isLightbox
-                           ? "h-full w-full object-contain p-1 sm:p-3"
-                           : `${mobileImageClassName} h-full w-full object-contain transition-transform duration-[450ms] ease-out md:scale-[1.03] md:hover:scale-[1.06]`
-                       }
-                      />
+                        className="group/image relative block h-full w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                        aria-label={t("imageViewer.enlarge")}
+                        data-testid={`modal-enlarge-${index}`}
+                      >
+                        <img
+                          src={image.src}
+                          alt={
+                            image.alt ||
+                            t("galleryModal.imageAlt", {
+                              title: data.title,
+                              number: index + 1,
+                            })
+                          }
+                          loading={index === activeImage ? "eager" : "lazy"}
+                          decoding="async"
+                          className={
+                            isLightbox
+                              ? "h-full w-full object-contain p-1 sm:p-3"
+                              : `${mobileImageClassName} h-full w-full object-contain transition-transform duration-[450ms] ease-out md:scale-[1.03] md:group-hover/image:scale-[1.06]`
+                          }
+                        />
+
+                        <span className="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors group-hover/image:border-primary group-hover/image:text-primary">
+                          <ZoomIn className="h-5 w-5" />
+                        </span>
+                      </button>
                     </figure>
                   ))}
                 </div>
@@ -485,5 +514,24 @@ const ctaClassName =
       )}
     </AnimatePresence>,
     document.body,
+  );
+
+  return (
+    <>
+      {galleryModal}
+      <ImageLightbox
+        data={
+          data && lightboxIndex !== null
+            ? {
+                images: data.images,
+                initialIndex: lightboxIndex,
+                caption: data.title,
+              }
+            : null
+        }
+        onClose={() => setLightboxIndex(null)}
+        returnFocusRef={lightboxTriggerRef}
+      />
+    </>
   );
 }
