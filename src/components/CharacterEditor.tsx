@@ -78,7 +78,12 @@ export default function CharacterEditor({
 
   const toggleAcc = (id: string) => {
     const current = character.accessories ?? [];
-    const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+    const isSelected = current.includes(id);
+    if (!isSelected && current.length >= 2) return;
+
+    const next = isSelected
+      ? current.filter((x) => x !== id)
+      : [...current, id];
     onChange({ ...character, accessories: next });
   };
 
@@ -196,6 +201,9 @@ export default function CharacterEditor({
       label: itemLabel(item),
       img: item.img,
       selected: (character.accessories ?? []).includes(item.id),
+      disabled:
+        (character.accessories ?? []).length >= 2 &&
+        !(character.accessories ?? []).includes(item.id),
       testId: `item-${item.id}-acc-char-${index}`,
     })),
   ];
@@ -243,7 +251,8 @@ export default function CharacterEditor({
           title={t(SECTION_LABEL_KEYS.accessories)}
           options={accessoryOptions}
           onClose={() => setActiveSection(null)}
-          collapseOptions
+          description={t("characterEditor.accessoryLimitMessage")}
+          showDoneButton
           onSelect={(id) => {
             if (id === "__none__") {
               onChange({ ...character, accessories: [], accessoryPositions: {} });

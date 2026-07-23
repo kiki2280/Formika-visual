@@ -39,7 +39,10 @@ export default function PreviewStep({ state, onChange, onBack, onNext }: StepPro
           {t("frameBuilder.preview.screenshotTip")}
         </div>
 
-        <div className="rounded-2xl border border-border bg-card/70 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+        <div className="rounded-2xl border border-primary/50 bg-primary/10 px-4 py-3 text-xs font-medium leading-relaxed text-white shadow-[0_10px_28px_rgba(255,106,0,0.10)]">
+          <span className="font-bold text-primary">
+            {t("frameBuilder.preview.movementTipLabel")}
+          </span>
           {t("frameBuilder.preview.movementTip")} {t("frameBuilder.preview.rotationTip")}
         </div>
 

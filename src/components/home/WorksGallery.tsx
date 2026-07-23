@@ -1,13 +1,23 @@
-﻿import { useCallback, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { lazy, Suspense } from "react";
-import { ArrowRight, Instagram } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Instagram,
+  Maximize2,
+} from "lucide-react";
 
 import type {
   GalleryModalData,
   GalleryModalType,
 } from "@/components/GalleryModal";
-import { motion } from "@/lib/motion";
+import { AnimatePresence, motion } from "@/lib/motion";
 import SectionHeading from "./SectionHeading";
 
 const base = import.meta.env.BASE_URL;
@@ -15,24 +25,16 @@ const GalleryModal = lazy(() => import("@/components/GalleryModal"));
 
 const IMG = {
   personal1: `${base}images/optimized/works-personal-1.webp`,
-  personal1Card: `${base}images/optimized/works-personal-1-card.webp`,
   personal2: `${base}images/optimized/works-personal-2.webp`,
   personal3: `${base}images/optimized/works-personal-3.webp`,
-
   couple1: `${base}images/optimized/works-couples-1.webp`,
-  couple1Card: `${base}images/optimized/works-couples-1-card.webp`,
   couple2: `${base}images/optimized/works-couples-2.webp`,
   couple3: `${base}images/optimized/works-couples-3.webp`,
-
   family1: `${base}images/optimized/work-family-1.webp`,
-  family1Card: `${base}images/optimized/work-family-1-card.webp`,
   family2: `${base}images/optimized/work-family-2.webp`,
   family3: `${base}images/optimized/work-family-3.webp`,
-
-  // В проекте эти файлы сейчас называются "wrdding".
-  // Оставляем реальные имена, чтобы изображения не пропали.
+  // These are the real filenames currently shipped by the project.
   wedding1: `${base}images/optimized/work-wrdding-1.webp`,
-  wedding1Card: `${base}images/optimized/work-wrdding-1-card.webp`,
   wedding2: `${base}images/optimized/work-wrdding-2.webp`,
   wedding3: `${base}images/optimized/work-wrdding-3.webp`,
 };
@@ -42,7 +44,6 @@ interface WorkItem {
   titleKey: string;
   descriptionKey: string;
   modalDescriptionKey: string;
-  img: string;
   imagePosition?: string;
   images: GalleryModalData["images"];
 }
@@ -53,7 +54,6 @@ const WORKS: WorkItem[] = [
     titleKey: "home.works.personalTitle",
     descriptionKey: "home.works.personalDescription",
     modalDescriptionKey: "home.works.personalModalDescription",
-    img: IMG.personal1Card,
     imagePosition: "object-[center_70%]",
     images: [
       { src: IMG.personal1 },
@@ -66,7 +66,6 @@ const WORKS: WorkItem[] = [
     titleKey: "home.works.coupleTitle",
     descriptionKey: "home.works.coupleDescription",
     modalDescriptionKey: "home.works.coupleModalDescription",
-    img: IMG.couple1Card,
     imagePosition: "object-[center_70%]",
     images: [
       { src: IMG.couple1 },
@@ -79,7 +78,6 @@ const WORKS: WorkItem[] = [
     titleKey: "home.works.familyTitle",
     descriptionKey: "home.works.familyDescription",
     modalDescriptionKey: "home.works.familyModalDescription",
-    img: IMG.family1Card,
     imagePosition: "object-[center_70%]",
     images: [
       { src: IMG.family1 },
@@ -92,7 +90,6 @@ const WORKS: WorkItem[] = [
     titleKey: "home.works.weddingTitle",
     descriptionKey: "home.works.weddingDescription",
     modalDescriptionKey: "home.works.weddingModalDescription",
-    img: IMG.wedding1Card,
     imagePosition: "object-[center_70%]",
     images: [
       { src: IMG.wedding1 },
@@ -102,33 +99,47 @@ const WORKS: WorkItem[] = [
   },
 ];
 
+interface ActiveLightbox {
+  data: GalleryModalData;
+  imageIndex: number;
+}
+
 export default function WorksGallery() {
   const { t } = useTranslation();
-  const [active, setActive] = useState<GalleryModalData | null>(null);
+  const [activeCategory, setActiveCategory] = useState(0);
+  const [activeLightbox, setActiveLightbox] =
+    useState<ActiveLightbox | null>(null);
   const activeTriggerRef = useRef<HTMLElement>(null);
 
   const closeGallery = useCallback(() => {
-    setActive(null);
+    setActiveLightbox(null);
   }, []);
 
   const works = WORKS.map((work) => {
     const title = t(work.titleKey);
     const description = t(work.descriptionKey);
 
-    const modal: GalleryModalData = {
-      title,
-      description: t(work.modalDescriptionKey),
-      images: work.images,
-      galleryType: work.galleryType,
-    };
-
     return {
       ...work,
       title,
       description,
-      modal,
+      modal: {
+        title,
+        description: t(work.modalDescriptionKey),
+        images: work.images,
+        galleryType: work.galleryType,
+        displayMode: "lightbox" as const,
+      },
     };
   });
+
+  const selectedWork = works[activeCategory];
+
+  const moveCategory = (direction: -1 | 1) => {
+    setActiveCategory(
+      (current) => (current + direction + works.length) % works.length,
+    );
+  };
 
   return (
     <section
@@ -141,57 +152,120 @@ export default function WorksGallery() {
         subtitle={t("home.works.subtitle")}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {works.map((work, index) => (
-          <motion.div
-            key={work.galleryType}
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, delay: index * 0.08 }}
-            className="h-full"
+      <div className="mb-6 flex items-center gap-2 sm:gap-3">
+        <button
+          type="button"
+          onClick={() => moveCategory(-1)}
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.035] text-white transition-colors hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label={t("home.works.previousCategoryAria")}
+          data-testid="works-category-previous"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+
+        <div className="formika-gallery-scroll min-w-0 flex-1 overflow-x-auto">
+          <div
+            className="flex min-w-max gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] p-1.5"
+            role="tablist"
+            aria-label={t("home.works.categorySelectorAria")}
           >
-            <button
-              type="button"
-              onClick={(event) => {
-                activeTriggerRef.current = event.currentTarget;
-                setActive(work.modal);
-              }}
-              className="group relative block aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black text-left shadow-[0_16px_45px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_65px_rgba(0,0,0,0.48),0_0_32px_rgba(255,106,0,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary md:aspect-[4/5]"
-              data-testid={`card-work-${index}`}
-            >
-              <img
-                src={work.img}
-                alt={work.title}
-                width={work.galleryType === "personal" ? 720 : 640}
-                height={work.galleryType === "personal" ? 580 : 855}
-                loading="lazy"
-                decoding="async"
-                className={`absolute inset-0 block h-full w-full object-cover ${
-                  work.imagePosition ?? "object-center"
-                } transition-transform duration-700 ease-out group-hover:scale-[1.025]`}
-              />
+            {works.map((work, index) => (
+              <button
+                key={work.galleryType}
+                type="button"
+                role="tab"
+                aria-selected={activeCategory === index}
+                onClick={() => setActiveCategory(index)}
+                className={`h-10 rounded-full px-4 text-xs font-bold uppercase tracking-[0.05em] transition-colors sm:px-5 ${
+                  activeCategory === index
+                    ? "bg-primary text-primary-foreground shadow-[0_8px_24px_rgba(255,106,0,0.22)]"
+                    : "text-white/60 hover:bg-white/[0.06] hover:text-white"
+                }`}
+                data-testid={`works-category-${work.galleryType}`}
+              >
+                {work.title}
+              </button>
+            ))}
+          </div>
+        </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/20" />
-
-              <div className="absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
-                <h3 className="font-sans text-base font-semibold leading-snug text-white md:text-lg">
-                  {work.title}
-                </h3>
-
-                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/75 sm:text-sm md:mt-1.5">
-                  {work.description}
-                </p>
-
-                <span className="mt-2 inline-flex max-w-full items-center gap-2 whitespace-normal rounded-full border border-primary/35 bg-black/55 px-3 py-1.5 text-[9px] font-bold uppercase leading-tight tracking-[0.06em] text-primary backdrop-blur-md md:mt-3 md:py-2 md:text-[10px] md:tracking-[0.08em]">
-                  {t("common.details")}
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </button>
-          </motion.div>
-        ))}
+        <button
+          type="button"
+          onClick={() => moveCategory(1)}
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.035] text-white transition-colors hover:border-primary/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label={t("home.works.nextCategoryAria")}
+          data-testid="works-category-next"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
       </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedWork.galleryType}
+          initial={{ opacity: 0, x: 16 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -16 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          role="tabpanel"
+          className="overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.02] p-4 sm:p-5"
+        >
+          <div className="mb-4 sm:flex sm:items-end sm:justify-between sm:gap-6">
+            <div>
+              <h3 className="font-sans text-xl font-semibold text-white sm:text-2xl">
+                {selectedWork.title}
+              </h3>
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                {selectedWork.description}
+              </p>
+            </div>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.08em] text-primary sm:mt-0">
+              {t("home.works.openPhotoHint")}
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {selectedWork.images.map((image, imageIndex) => (
+              <button
+                key={image.src}
+                type="button"
+                onClick={(event) => {
+                  activeTriggerRef.current = event.currentTarget;
+                  setActiveLightbox({
+                    data: selectedWork.modal,
+                    imageIndex,
+                  });
+                }}
+                className="group relative aspect-[4/3] overflow-hidden rounded-[22px] border border-white/10 bg-black text-left shadow-[0_14px_38px_rgba(0,0,0,0.24)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:aspect-[3/4]"
+                data-testid={`work-photo-${selectedWork.galleryType}-${imageIndex}`}
+                aria-label={t("home.works.openPhotoAria", {
+                  category: selectedWork.title,
+                  number: imageIndex + 1,
+                })}
+              >
+                <img
+                  src={image.src}
+                  alt={t("galleryModal.imageAlt", {
+                    title: selectedWork.title,
+                    number: imageIndex + 1,
+                  })}
+                  width={720}
+                  height={900}
+                  loading="lazy"
+                  decoding="async"
+                  className={`h-full w-full object-cover ${
+                    selectedWork.imagePosition ?? "object-center"
+                  } transition-transform duration-700 ease-out group-hover:scale-[1.035]`}
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <span className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/65 text-white backdrop-blur transition-colors group-hover:border-primary/60 group-hover:text-primary">
+                  <Maximize2 className="h-4 w-4" />
+                </span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -211,7 +285,6 @@ export default function WorksGallery() {
               <p className="font-sans text-lg font-semibold text-white sm:text-xl">
                 {t("home.works.instagramTitle")}
               </p>
-
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 {t("home.works.instagramDescription")}
               </p>
@@ -229,10 +302,11 @@ export default function WorksGallery() {
         </div>
       </motion.div>
 
-      {active && (
+      {activeLightbox && (
         <Suspense fallback={null}>
           <GalleryModal
-            data={active}
+            data={activeLightbox.data}
+            initialImageIndex={activeLightbox.imageIndex}
             onClose={closeGallery}
             returnFocusRef={activeTriggerRef}
             cta={{

@@ -111,6 +111,11 @@
       "weddingTitle": "Kāzu kompozīcijas",
       "weddingDescription": "Piemiņas rāmītis ar jūsu pāri, datumu un vārdiem.",
       "weddingModalDescription": "Veidojam maigus rāmīšus ar kāzu figūriņām — ar jūsu pāri, datumu, vārdiem un svarīgām stāsta detaļām. Ja vēlaties tieši kāzu figūriņas, rakstiet mums Telegram: mēs pastāstīsim, kādi varianti ir pieejami.",
+      "previousCategoryAria": "Rādīt iepriekšējo darbu kategoriju",
+      "nextCategoryAria": "Rādīt nākamo darbu kategoriju",
+      "categorySelectorAria": "Mūsu darbu kategorijas",
+      "openPhotoHint": "Nospiediet uz fotoattēla, lai to palielinātu",
+      "openPhotoAria": "Atvērt {{number}}. fotoattēlu kategorijā “{{category}}”",
       "instagramTitle": "Vairāk darbu — mūsu Instagram",
       "instagramDescription": "Jaunas kompozīcijas, radīšanas process un dāvanu idejas.",
       "instagramButton": "Skatīt Instagram"
@@ -313,13 +318,17 @@
     "closeSelectionAria": "Aizvērt izvēli",
     "chooseFromList": "Izvēlieties variantu no saraksta",
     "dragAccessoryHint": "Velciet aksesuāru, lai novietotu to rokā",
+    "accessoryLimitMessage": "Vienam tēlam var izvēlēties ne vairāk kā 2 aksesuārus",
     "addCharacter": "Pievienot figūriņu",
     "validationError": "Izvēlieties seju katram personāžam. Matus var nepievienot."
   },
   "petsSelector": {
     "noPet": "Bez mājdzīvnieka",
     "noAnimalsDescription": "Kompozīcija bez dzīvniekiem",
-    "petDescription": "Mājdzīvnieks kompozīcijai"
+    "petDescription": "Mājdzīvnieks kompozīcijai",
+    "quantityAria": "Daudzums: {{pet}}",
+    "addAria": "Pievienot {{pet}}",
+    "removeAria": "Noņemt {{pet}}"
   },
   "builderProgress": {
     "currentPrice": "Pašreizējā cena",
@@ -358,6 +367,7 @@
       "classicVertical": "Klasisks vertikāls formāts",
       "popular": "Populārs",
       "horizontal": "Horizontāls formāts",
+      "horizontalHint": "Lai izvietotu vairāk tēlu, izvēlieties horizontālu rāmi",
       "dimension": "{{width}} × {{height}}",
       "price": "{{price}} €"
     },
@@ -376,7 +386,8 @@
       "rgb": "LED RGB",
       "rgbDescription": "Daudzkrāsu apgaismojums ar pulti un režīmiem",
       "clouds": "LED ar mākoņiem",
-      "cloudsDescription": "Telpisks debesu efekts un maiga krāsaina gaisma"
+      "cloudsDescription": "Telpisks debesu efekts un maiga krāsaina gaisma",
+      "included": "Iekļauts cenā"
     },
     "characters": {
       "pricingNote": "Pirmā figūriņa ir iekļauta cenā · katra nākamā +{{price}} €"
@@ -385,13 +396,17 @@
       "namesTitle": "Mājdzīvnieku vārdi",
       "namesDescription": "Lauks nav obligāts. Vārdu var pievienot pasūtījuma personalizācijai.",
       "nameLabel": "Mājdzīvnieka vārds",
-      "namePlaceholder": "Ievadiet vārdu"
+      "namePlaceholder": "Ievadiet vārdu",
+      "limitMessage": "Var pievienot ne vairāk kā 5 dzīvniekus"
     },
     "accessories": {
       "showAll": "Rādīt visas detaļas",
       "none": "Bez detaļām",
       "noneDescription": "Tīrs fons bez papildu elementiem",
-      "itemDescription": "Papildu fona detaļa"
+      "itemDescription": "Papildu fona detaļa",
+      "quantityAria": "Daudzums: {{accessory}}",
+      "addAria": "Pievienot {{accessory}}",
+      "removeAria": "Noņemt {{accessory}}"
     },
     "hearts": {
       "instruction": "Pievienojiet sirsniņas fonam",
@@ -420,6 +435,7 @@
       "subtitle": "Pārvietojiet figūriņas, sirsniņas un fona detaļas rāmīša iekšpusē.",
       "tipLabel": "Padoms: ",
       "screenshotTip": "Uzņemiet gatavā maketa ekrānuzņēmumu un nosūtiet to mums Telegram kopā ar pasūtījumu — tā mēs sapratīsim, kā aptuveni salikt jūsu rāmīti.",
+      "movementTipLabel": "Var pārvietot: ",
       "movementTip": "Katru figūriņu var pārvietot atsevišķi, tāpat arī sirsniņas, mājdzīvniekus un fona detaļas.",
       "rotationTip": "Pēc izvēles sirsniņas var pagriezt ar mazo marķieri."
     },

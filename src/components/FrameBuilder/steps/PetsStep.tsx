@@ -4,6 +4,7 @@ import PetSelectionGrid from "@/components/PetSelectionGrid";
 import {
   type FrameOrderState,
   ITEMS,
+  getCatalogItemId,
   getPetLabel,
 } from "@/lib/types";
 
@@ -37,6 +38,14 @@ export default function PetsStep({
     return next;
   };
 
+  const removePetNames = (ids: string[]) => {
+    const next = { ...state.petNames };
+    ids.forEach((id) => {
+      delete next[id];
+    });
+    return next;
+  };
+
   const setPets = (
     pets: string[],
     removedPets: string[],
@@ -48,6 +57,10 @@ export default function PetsStep({
         removedPets.length > 0
           ? removePetPositions(removedPets)
           : state.previewPositions,
+      petNames:
+        removedPets.length > 0
+          ? removePetNames(removedPets)
+          : state.petNames,
     });
   };
 
@@ -70,6 +83,9 @@ export default function PetsStep({
         selectedPets={state.pets}
         onSelectionChange={setPets}
         testIdPrefix="pets"
+        allowMultiple
+        maxTotal={5}
+        limitMessage={t("frameBuilder.pets.limitMessage")}
       />
 
       {state.pets.length > 0 && (
@@ -95,8 +111,9 @@ export default function PetsStep({
 
           <div className="grid gap-4 sm:grid-cols-2">
             {state.pets.map((id) => {
+              const catalogId = getCatalogItemId(id);
               const pet = ITEMS.pets.find(
-                (item) => item.id === id,
+                (item) => item.id === catalogId,
               );
 
               return (

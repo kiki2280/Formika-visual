@@ -1,6 +1,7 @@
 import accessory30Preview from "@/assets/accessories/accessory30-preview.png";
 import accessory31Preview from "@/assets/accessories/accessory31-preview.png";
 import accessory32Preview from "@/assets/accessories/accessory32-preview.png";
+import { getCatalogItemId } from "@/lib/types";
 
 export type AccessoryDisplayContext = "character" | "frame";
 type AccessoryDisplayMode = "draggable" | "fixed";
@@ -81,7 +82,7 @@ export const accessoryDisplayConfig: Record<string, AccessoryDisplayConfig> = {
 };
 
 export function getAccessoryDisplay(id: string, context: AccessoryDisplayContext = "character") {
-  const config = accessoryDisplayConfig[id] ?? {};
+  const config = accessoryDisplayConfig[getCatalogItemId(id)] ?? {};
   const baseSize = context === "frame" ? FRAME_BASE_SIZE : CHARACTER_BASE_SIZE;
   const scale = config.scale ?? 1;
 
@@ -109,9 +110,9 @@ export function getAccessoryDisplay(id: string, context: AccessoryDisplayContext
 }
 
 export function getAccessoryDefaultPosition(id: string) {
-  return accessoryDisplayConfig[id]?.defaultPosition;
+  return accessoryDisplayConfig[getCatalogItemId(id)]?.defaultPosition;
 }
 
 export function isFixedAccessory(id: string) {
-  return accessoryDisplayConfig[id]?.mode === "fixed";
+  return accessoryDisplayConfig[getCatalogItemId(id)]?.mode === "fixed";
 }

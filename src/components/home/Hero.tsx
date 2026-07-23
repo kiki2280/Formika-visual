@@ -217,34 +217,42 @@ export default function Hero() {
 
           {/* Две дополнительные фотографии */}
           {COLLAGE.map((card, index) => (
-            <img
+            <div
               key={card.src}
-              src={card.src}
-              alt={t("home.hero.exampleImageAlt")}
-              width={card.sourceWidth}
-              height={card.sourceHeight}
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-              className="
-                hero-photo-float absolute rounded-2xl
-                border border-white/10 opacity-80
-                shadow-[0_24px_60px_rgba(0,0,0,0.55)]
-                transition-opacity duration-300 hover:opacity-100
-              "
+              className="absolute"
               style={
                 {
                   top: card.top,
                   left: card.left,
                   width: card.width,
                   zIndex: card.z,
-                  "--hero-rotate": `${card.rotate}deg`,
-                  "--hero-float-rise": `-${7 + index * 2}px`,
-                  "--hero-float-duration": `${5.3 + index * 0.7}s`,
-                  "--hero-float-delay": card.delay,
                 } as CSSProperties
               }
-            />
+            >
+              <img
+                src={card.src}
+                alt={t("home.hero.exampleImageAlt")}
+                width={card.sourceWidth}
+                height={card.sourceHeight}
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className="
+                  hero-photo-float w-full rounded-2xl
+                  border border-white/10 opacity-80
+                  shadow-[0_24px_60px_rgba(0,0,0,0.55)]
+                  transition-opacity duration-300 hover:opacity-100
+                "
+                style={
+                  {
+                    "--hero-rotate": `${card.rotate}deg`,
+                    "--hero-float-rise": `-${7 + index * 2}px`,
+                    "--hero-float-duration": `${5.3 + index * 0.7}s`,
+                    "--hero-float-delay": card.delay,
+                  } as CSSProperties
+                }
+              />
+            </div>
           ))}
 
           {/* Тонкие декоративные окружности */}

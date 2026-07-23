@@ -1,4 +1,4 @@
-import { ITEMS, getPetLabel } from "@/lib/types";
+import { ITEMS, getCatalogItemId, getPetLabel } from "@/lib/types";
 
 interface PetGlyphProps {
   id: string;
@@ -7,7 +7,8 @@ interface PetGlyphProps {
 }
 
 export default function PetGlyph({ id, showLabel = true, labelFill = "#111111" }: PetGlyphProps) {
-  const pet = ITEMS.pets.find((item) => item.id === id);
+  const catalogId = getCatalogItemId(id);
+  const pet = ITEMS.pets.find((item) => item.id === catalogId);
   const label = getPetLabel(id);
 
   if (pet?.img) {

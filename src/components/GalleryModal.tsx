@@ -37,6 +37,7 @@ export interface GalleryModalData {
   images: GalleryModalImage[];
   price?: string;
   galleryType?: GalleryModalType;
+  displayMode?: "gallery" | "lightbox";
 }
 
 export interface GalleryModalCta {
@@ -202,7 +203,8 @@ export default function GalleryModal({
     onClose();
   };
 
- const hasFourImages = data?.images.length === 4;
+const isLightbox = data?.displayMode === "lightbox";
+const hasFourImages = !isLightbox && data?.images.length === 4;
 
 const mobileFigureClassName = (() => {
   switch (data?.galleryType) {
@@ -291,10 +293,12 @@ const ctaClassName =
           />
 
           <motion.div
-            className={` formika-gallery-scroll relative z-10 flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-white/10 bg-[#151515] shadow-[0_28px_90px_rgba(0,0,0,0.72),0_0_45px_rgba(255,106,0,0.10)] md:block md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:overscroll-contain md:rounded-3xl md:border-border md:bg-card md:shadow-[0_0_60px_rgba(255,106,0,0.15)] md:scrollbar-hide ${
+            className={` formika-gallery-scroll relative z-10 flex max-h-full w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-white/10 bg-[#151515] shadow-[0_28px_90px_rgba(0,0,0,0.72),0_0_45px_rgba(255,106,0,0.10)] md:max-h-[calc(100dvh-2rem)] md:rounded-3xl md:border-border md:bg-card md:shadow-[0_0_60px_rgba(255,106,0,0.15)] ${
               hasFourImages
                 ? "md:max-w-[1360px] lg:w-[92%]"
-                : "md:max-w-[1120px] lg:w-[84%]"
+                : isLightbox
+                  ? "md:max-w-[1180px] lg:w-[90%]"
+                  : "md:max-w-[1120px] lg:w-[84%]"
             }`}
             initial={{ scale: 0.92, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -344,16 +348,24 @@ const ctaClassName =
                 <div
                   ref={galleryRef}
                   onScroll={handleGalleryScroll}
-                  className={`flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth formika-gallery-scroll md:grid md:snap-none md:overflow-visible md:overscroll-auto md:gap-[14px] ${
-                    hasFourImages
-                      ? "md:grid-cols-2 lg:grid-cols-4 lg:gap-3"
-                      : "md:grid-cols-3"
+                  className={`formika-gallery-scroll flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth ${
+                    isLightbox
+                      ? "gap-0 rounded-2xl bg-black/30"
+                      : `gap-3 md:grid md:snap-none md:overflow-visible md:overscroll-auto md:gap-[14px] ${
+                          hasFourImages
+                            ? "md:grid-cols-2 lg:grid-cols-4 lg:gap-3"
+                            : "md:grid-cols-3"
+                        }`
                   }`}
                 >
                   {data.images.map((image, index) => (
                     <figure
                         key={`${image.src}-${index}`}
-                        className={`${mobileFigureClassName} shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] md:h-auto md:w-auto md:aspect-[3/4] md:snap-none md:rounded-[24px] md:border-border md:bg-[#111]`}
+                        className={
+                          isLightbox
+                            ? "flex h-[min(58dvh,720px)] w-full shrink-0 snap-center items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] sm:h-[min(64dvh,760px)]"
+                            : `${mobileFigureClassName} shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0c] md:h-auto md:w-auto md:aspect-[3/4] md:snap-none md:rounded-[24px] md:border-border md:bg-[#111]`
+                        }
                         data-testid={`modal-example-${index}`}
                       >
                       <img
@@ -367,7 +379,11 @@ const ctaClassName =
                         }
                         loading={index === activeImage ? "eager" : "lazy"}
                         decoding="async"
-                       className={`${mobileImageClassName} h-full w-full object-contain transition-transform duration-[450ms] ease-out md:scale-[1.03] md:object-cover md:hover:scale-[1.08]`}
+                       className={
+                         isLightbox
+                           ? "h-full w-full object-contain p-1 sm:p-3"
+                           : `${mobileImageClassName} h-full w-full object-contain transition-transform duration-[450ms] ease-out md:scale-[1.03] md:hover:scale-[1.06]`
+                       }
                       />
                     </figure>
                   ))}
@@ -379,7 +395,9 @@ const ctaClassName =
                       type="button"
                       onClick={() => scrollToImage(activeImage - 1)}
                       disabled={activeImage === 0}
-                      className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex md:hidden"
+                      className={`absolute left-2 top-1/2 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/75 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:left-3 ${
+                        isLightbox ? "flex" : "hidden sm:flex md:hidden"
+                      }`}
                       aria-label={t("galleryModal.previousPhotoAria")}
                     >
                       <ChevronLeft className="h-5 w-5" />
@@ -389,7 +407,9 @@ const ctaClassName =
                       type="button"
                       onClick={() => scrollToImage(activeImage + 1)}
                       disabled={activeImage === data.images.length - 1}
-                      className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:flex md:hidden"
+                      className={`absolute right-2 top-1/2 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/75 text-white shadow-lg backdrop-blur-md transition-colors hover:border-primary/60 hover:text-primary disabled:pointer-events-none disabled:opacity-25 sm:right-3 ${
+                        isLightbox ? "flex" : "hidden sm:flex md:hidden"
+                      }`}
                       aria-label={t("galleryModal.nextPhotoAria")}
                     >
                       <ChevronRight className="h-5 w-5" />
@@ -398,7 +418,11 @@ const ctaClassName =
                 )}
               </div>
 
-              <div className="mt-4 flex min-h-9 items-center justify-between gap-4 md:hidden">
+              <div
+                className={`mt-4 min-h-9 items-center justify-between gap-4 ${
+                  isLightbox ? "flex" : "flex md:hidden"
+                }`}
+              >
                 <p className="font-sans text-xs font-semibold tabular-nums text-white/55">
                   {t("galleryModal.counter", {
                     current: activeImage + 1,

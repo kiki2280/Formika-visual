@@ -1,10 +1,14 @@
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Layers3 } from "lucide-react";
+import { Check, Layers3, Minus, Plus } from "lucide-react";
 import {
   type FrameOrderState,
   ITEMS,
+  addCatalogInstance,
+  countCatalogInstances,
   getAccessoryLabel,
+  getCatalogItemId,
+  removeCatalogInstance,
 } from "@/lib/types";
 import { getAccessoryPrice } from "@/lib/accessoryPricing";
 import CollapsibleOptionGrid from "@/components/CollapsibleOptionGrid";
@@ -35,7 +39,6 @@ const ACCESSORY_CARD_SCALE: Record<string, number> = {
   accessory39: 1.1,
 };
 
-
 function getCardScale(id: string) {
   return ACCESSORY_CARD_SCALE[id] ?? 1;
 }
@@ -50,9 +53,7 @@ export default function AccessoriesStep({
       ITEMS.accessories.filter(
         (accessory) =>
           accessory.img &&
-          !HIDDEN_BACKGROUND_ACCESSORY_IDS.has(
-            accessory.id,
-          ),
+          !HIDDEN_BACKGROUND_ACCESSORY_IDS.has(accessory.id),
       ),
     [],
   );
@@ -61,7 +62,7 @@ export default function AccessoriesStep({
     () =>
       state.accessories.filter(
         (id) =>
-          !HIDDEN_BACKGROUND_ACCESSORY_IDS.has(id),
+          !HIDDEN_BACKGROUND_ACCESSORY_IDS.has(getCatalogItemId(id)),
       ),
     [state.accessories],
   );
@@ -69,66 +70,79 @@ export default function AccessoriesStep({
   const hasSelectedHiddenAccessory =
     visibleAccessories
       .slice(3)
-      .some((accessory) =>
-        selectedAccessories.includes(
-          accessory.id,
-        ),
+      .some(
+        (accessory) =>
+          countCatalogInstances(selectedAccessories, accessory.id) > 0,
       );
 
+  const withoutPositions = (removedIds: readonly string[]) => {
+    if (!state.previewPositions || removedIds.length === 0) {
+      return state.previewPositions;
+    }
+
+    const next = { ...state.previewPositions };
+    removedIds.forEach((id) => {
+      delete next[id];
+    });
+    return next;
+  };
+
   useEffect(() => {
-    if (
-      selectedAccessories.length !==
-      state.accessories.length
-    ) {
+    if (selectedAccessories.length !== state.accessories.length) {
+      const selectedSet = new Set(selectedAccessories);
+      const removedIds = state.accessories.filter((id) => !selectedSet.has(id));
+
       onChange({
         ...state,
         accessories: selectedAccessories,
+        previewPositions: withoutPositions(removedIds),
       });
     }
-  }, [
-    onChange,
-    selectedAccessories,
-    state,
-  ]);
+  }, [onChange, selectedAccessories, state]);
 
-  const toggle = (id: string) => {
-    const isSelected =
-      selectedAccessories.includes(id);
+  const addAccessory = (id: string) => {
+    onChange({
+      ...state,
+      accessories: addCatalogInstance(selectedAccessories, id),
+    });
+  };
 
-    const next = isSelected
-      ? selectedAccessories.filter(
-          (selectedId) => selectedId !== id,
-        )
-      : [...selectedAccessories, id];
+  const removeAccessory = (id: string) => {
+    const { next, removedId } = removeCatalogInstance(
+      selectedAccessories,
+      id,
+    );
+    if (!removedId) return;
 
     onChange({
       ...state,
       accessories: next,
+      previewPositions: withoutPositions([removedId]),
     });
   };
 
-  const noDetailsSelected =
-    selectedAccessories.length === 0;
+  const clearAccessories = () => {
+    onChange({
+      ...state,
+      accessories: [],
+      previewPositions: withoutPositions(selectedAccessories),
+    });
+  };
+
+  const noDetailsSelected = selectedAccessories.length === 0;
 
   return (
     <CollapsibleOptionGrid
       className="grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       initialVisible={3}
       desktopInitialVisible={3}
-      expandedByDefault={
-        hasSelectedHiddenAccessory
-      }
+      expandedByDefault={hasSelectedHiddenAccessory}
       buttonLabel={t("frameBuilder.accessories.showAll")}
       testId="background-accessories-show-all"
       alwaysVisible={
         <button
           type="button"
-          onClick={() =>
-            onChange({
-              ...state,
-              accessories: [],
-            })
-          }
+          onClick={clearAccessories}
           aria-pressed={noDetailsSelected}
           data-testid="accessories-none"
           className={`
@@ -154,51 +168,31 @@ export default function AccessoriesStep({
                 className="h-9 w-9 text-white/30"
                 strokeWidth={1.5}
               />
-
               <span className="absolute h-[2px] w-12 -rotate-45 rounded-full bg-primary/75" />
             </div>
 
             {noDetailsSelected && (
               <div className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white shadow-[0_0_20px_rgba(255,106,0,0.28)]">
-                <Check
-                  className="h-4 w-4"
-                  strokeWidth={2.5}
-                />
+                <Check className="h-4 w-4" strokeWidth={2.5} />
               </div>
             )}
           </div>
 
           <div className="flex flex-1 flex-col p-4">
             <h3
-              className={`
-                font-sans text-base font-semibold
-                tracking-[-0.02em]
-
-                ${
-                  noDetailsSelected
-                    ? "text-primary"
-                    : "text-white"
-                }
-              `}
+              className={`font-sans text-base font-semibold tracking-[-0.02em] ${
+                noDetailsSelected ? "text-primary" : "text-white"
+              }`}
             >
               {t("frameBuilder.accessories.none")}
             </h3>
-
             <p className="mt-1.5 font-sans text-xs leading-relaxed text-white/40">
               {t("frameBuilder.accessories.noneDescription")}
             </p>
-
             <span
-              className={`
-                mt-auto pt-4 font-sans
-                text-sm font-semibold
-
-                ${
-                  noDetailsSelected
-                    ? "text-primary"
-                    : "text-white/55"
-                }
-              `}
+              className={`mt-auto pt-4 font-sans text-sm font-semibold ${
+                noDetailsSelected ? "text-primary" : "text-white/55"
+              }`}
             >
               {t("common.freePrice")}
             </span>
@@ -208,29 +202,23 @@ export default function AccessoriesStep({
     >
       {visibleAccessories.map((accessory) => {
         const accessoryLabel = getAccessoryLabel(accessory.id);
-        const isSelected =
-          selectedAccessories.includes(
-            accessory.id,
-          );
-
-        const scale = getCardScale(accessory.id);
-        const price = getAccessoryPrice(
+        const quantity = countCatalogInstances(
+          selectedAccessories,
           accessory.id,
         );
+        const isSelected = quantity > 0;
+        const scale = getCardScale(accessory.id);
+        const price = getAccessoryPrice(accessory.id);
 
         return (
-          <button
+          <article
             key={accessory.id}
-            type="button"
-            onClick={() => toggle(accessory.id)}
-            aria-pressed={isSelected}
             data-testid={`accessory-${accessory.id}`}
             className={`
               group relative flex min-h-[280px] w-full
               flex-col overflow-hidden rounded-[22px]
               border bg-[#171717] text-left
               transition-all duration-300
-              active:scale-[0.99]
 
               ${
                 isSelected
@@ -241,7 +229,6 @@ export default function AccessoriesStep({
           >
             <div className="relative flex h-[170px] items-center justify-center overflow-hidden border-b border-white/[0.07] bg-[#141414]">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.055),transparent_68%)]" />
-
               <div className="relative h-full w-full transition-transform duration-500 group-hover:scale-[1.05]">
                 <img
                   src={accessory.img!}
@@ -252,74 +239,66 @@ export default function AccessoriesStep({
                   decoding="async"
                   draggable={false}
                   className="h-full w-full object-contain p-6"
-                  style={{
-                    transform: `scale(${scale})`,
-                  }}
-                />
-              </div>
-
-              <div
-                className={`
-                  absolute right-4 top-4
-                  flex h-9 w-9 items-center
-                  justify-center rounded-full
-                  border transition-all duration-300
-
-                  ${
-                    isSelected
-                      ? "scale-100 border-primary bg-primary text-white opacity-100 shadow-[0_0_20px_rgba(255,106,0,0.28)]"
-                      : "scale-90 border-white/[0.12] bg-black/30 text-transparent opacity-0 group-hover:scale-100 group-hover:opacity-100"
-                  }
-                `}
-              >
-                <Check
-                  className="h-4 w-4"
-                  strokeWidth={2.5}
+                  style={{ transform: `scale(${scale})` }}
                 />
               </div>
             </div>
 
             <div className="flex flex-1 flex-col p-4">
               <h3
-                className={`
-                  font-sans text-base font-semibold
-                  leading-snug tracking-[-0.02em]
-
-                  ${
-                    isSelected
-                      ? "text-primary"
-                      : "text-white"
-                  }
-                `}
+                className={`font-sans text-base font-semibold leading-snug tracking-[-0.02em] ${
+                  isSelected ? "text-primary" : "text-white"
+                }`}
               >
                 {accessoryLabel}
               </h3>
-
               <p className="mt-1.5 font-sans text-xs text-white/40">
                 {t("frameBuilder.accessories.itemDescription")}
               </p>
 
-              <div className="mt-auto pt-4">
-                <span
-                  className={`
-                    inline-flex rounded-full border
-                    px-2.5 py-1
-                    font-sans text-xs font-semibold
-
-                    ${
-                      isSelected
-                        ? "border-primary/30 bg-primary/[0.08] text-primary"
-                        : "border-white/[0.09] bg-white/[0.025] text-white/65"
-                    }
-                  `}
-                >
-                  {t("common.addedPrice", {
-                    price,
-                  })}
+              <div className="mt-auto flex items-center justify-between gap-2 pt-4">
+                <span className="font-sans text-xs font-semibold text-white/55">
+                  {t("common.addedPrice", { price })}
                 </span>
+
+                <div
+                  className="flex items-center gap-1 rounded-full border border-white/[0.12] bg-black/25 p-1"
+                  role="group"
+                  aria-label={t("frameBuilder.accessories.quantityAria", {
+                    accessory: accessoryLabel,
+                  })}
+                >
+                  <button
+                    type="button"
+                    onClick={() => removeAccessory(accessory.id)}
+                    disabled={quantity === 0}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-white transition-colors hover:bg-primary/15 hover:text-primary disabled:cursor-not-allowed disabled:opacity-25"
+                    aria-label={t("frameBuilder.accessories.removeAria", {
+                      accessory: accessoryLabel,
+                    })}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <output
+                    className="min-w-5 text-center font-sans text-sm font-bold tabular-nums text-white"
+                    aria-live="polite"
+                  >
+                    {quantity}
+                  </output>
+                  <button
+                    type="button"
+                    onClick={() => addAccessory(accessory.id)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+                    aria-label={t("frameBuilder.accessories.addAria", {
+                      accessory: accessoryLabel,
+                    })}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
-          </button>
+          </article>
         );
       })}
     </CollapsibleOptionGrid>

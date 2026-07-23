@@ -21,6 +21,7 @@ export default defineConfig({
     port: 4173,
   },
   build: {
+    outDir: "dist/client",
     rollupOptions: {
       output: {
         onlyExplicitManualChunks: true,

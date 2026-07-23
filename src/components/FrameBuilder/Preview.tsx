@@ -1,5 +1,9 @@
 ﻿import { useRef, useState, useCallback, useEffect, type Dispatch, type SetStateAction } from "react";
-import { FrameOrderState, HEART_IMG } from "@/lib/types";
+import {
+  FrameOrderState,
+  HEART_IMG,
+  getCatalogItemId,
+} from "@/lib/types";
 import { useTranslation } from "react-i18next";
 import { getAccessoryDisplay } from "@/lib/accessoryDisplay";
 import { getPetDisplayScale } from "@/lib/petDisplay";
@@ -33,9 +37,11 @@ function getFrameDims(size: FrameOrderState["size"]) {
 type Kind = "char" | "pet" | "acc" | "heart";
 
 function kindOf(id: string): Kind {
-  return id.startsWith("HEART-") ? "heart"
-    : id.startsWith("P-") || /^cat\d+$/i.test(id) || /^dog\d+$/i.test(id) ? "pet"
-    : (id.startsWith("A-") && !id.startsWith("A-A")) || /^accessory\d+$/i.test(id) ? "acc"
+  const catalogId = getCatalogItemId(id);
+
+  return catalogId.startsWith("HEART-") ? "heart"
+    : catalogId.startsWith("P-") || /^cat\d+$/i.test(catalogId) || /^dog\d+$/i.test(catalogId) ? "pet"
+    : (catalogId.startsWith("A-") && !catalogId.startsWith("A-A")) || /^accessory\d+$/i.test(catalogId) ? "acc"
     : "char";
 }
 

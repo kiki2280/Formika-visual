@@ -1,4 +1,4 @@
-import { ITEMS, getAccessoryLabel } from "@/lib/types";
+import { ITEMS, getAccessoryLabel, getCatalogItemId } from "@/lib/types";
 
 interface AccessoryGlyphProps {
   id: string;
@@ -21,7 +21,8 @@ export default function AccessoryGlyph({
   showLabel = false,
   labelFill = "#111111",
 }: AccessoryGlyphProps) {
-  const accessory = ITEMS.accessories.find((item) => item.id === id);
+  const catalogId = getCatalogItemId(id);
+  const accessory = ITEMS.accessories.find((item) => item.id === catalogId);
   const label = getAccessoryLabel(id);
   const displayWidth = width ?? size;
   const displayHeight = height ?? size;

@@ -83,6 +83,8 @@
   transform-origin: center;
   animation: hero-photo-float var(--hero-float-duration, 5.6s) ease-in-out infinite;
   animation-delay: var(--hero-float-delay, 0s);
+  backface-visibility: hidden;
+  contain: layout paint style;
   will-change: transform;
 }
 

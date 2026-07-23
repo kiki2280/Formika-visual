@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import CollapsibleOptionGrid from "./CollapsibleOptionGrid";
 import { useTranslation } from "react-i18next";
 
 export interface CharacterChoiceOption {
@@ -10,6 +9,7 @@ export interface CharacterChoiceOption {
   label: string;
   img?: string;
   selected?: boolean;
+  disabled?: boolean;
   testId?: string;
 }
 
@@ -19,7 +19,8 @@ interface CharacterOptionModalProps {
   onSelect?: (id: string) => void;
   onClose: () => void;
   closeOnSelect?: boolean;
-  collapseOptions?: boolean;
+  description?: string;
+  showDoneButton?: boolean;
   children?: ReactNode;
 }
 
@@ -29,7 +30,8 @@ export default function CharacterOptionModal({
   onSelect,
   onClose,
   closeOnSelect = false,
-  collapseOptions = false,
+  description,
+  showDoneButton = false,
   children,
 }: CharacterOptionModalProps) {
   const { t } = useTranslation();
@@ -59,6 +61,7 @@ export default function CharacterOptionModal({
     <button
       key={option.id}
       type="button"
+      disabled={option.disabled}
       onClick={() => {
         onSelect?.(option.id);
         if (closeOnSelect) onClose();
@@ -67,8 +70,11 @@ export default function CharacterOptionModal({
         "flex min-h-[96px] flex-col items-center justify-center gap-2 rounded-xl border p-2 text-center text-xs font-bold transition-all",
         option.selected
           ? "border-primary bg-primary/10 text-primary shadow-[0_0_0_2px_rgba(255,106,0,0.8)]"
-          : "border-border bg-background/35 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+          : "border-border bg-background/35 text-muted-foreground hover:border-primary/50 hover:text-foreground",
+        option.disabled &&
+          "cursor-not-allowed border-border/60 opacity-35 hover:border-border hover:text-muted-foreground",
       )}
+      aria-pressed={option.selected}
       data-testid={option.testId}
     >
       {option.img ? (
@@ -95,22 +101,6 @@ export default function CharacterOptionModal({
 
   const renderOptions = () => {
     if (!options) return null;
-
-    if (collapseOptions) {
-      const alwaysVisibleOptions = options.filter((option) => option.id === "__none__");
-      const collapsibleOptions = options.filter((option) => option.id !== "__none__");
-
-      return (
-        <CollapsibleOptionGrid
-          alwaysVisible={alwaysVisibleOptions.map(renderOptionButton)}
-          className={optionGridClassName}
-          expandedByDefault={collapsibleOptions.slice(3).some((option) => option.selected)}
-          testId="character-options-show-all"
-        >
-          {collapsibleOptions.map(renderOptionButton)}
-        </CollapsibleOptionGrid>
-      );
-    }
 
     return (
       <div className={optionGridClassName}>
@@ -139,9 +129,15 @@ export default function CharacterOptionModal({
         <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-4 sm:px-6">
           <div>
             <h3 className="font-sans text-xl font-bold sm:text-2xl">{title}</h3>
-            {options && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("characterEditor.chooseFromList")}
+            {(description || options) && (
+              <p
+                className={cn(
+                  "mt-1 text-xs",
+                  description ? "font-medium text-primary" : "text-muted-foreground",
+                )}
+                role={description ? "status" : undefined}
+              >
+                {description ?? t("characterEditor.chooseFromList")}
               </p>
             )}
           </div>
@@ -156,11 +152,24 @@ export default function CharacterOptionModal({
           </button>
         </div>
 
-        <div className="overflow-y-auto p-4 sm:p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
           {children}
 
           {renderOptions()}
         </div>
+
+        {showDoneButton && (
+          <div className="shrink-0 border-t border-border bg-card/95 px-4 py-3 backdrop-blur sm:px-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="ml-auto flex h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              data-testid="btn-done-character-option-modal"
+            >
+              {t("characterEditor.done")}
+            </button>
+          </div>
+        )}
       </div>
     </div>,
     document.body

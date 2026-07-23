@@ -111,6 +111,11 @@
       "weddingTitle": "Wedding compositions",
       "weddingDescription": "A keepsake frame with your couple, date, and names.",
       "weddingModalDescription": "We create elegant frames with wedding figures — featuring your couple, date, names, and meaningful details from your story. If you would like wedding figures specifically, message us on Telegram and we will tell you which options are available.",
+      "previousCategoryAria": "Show the previous work category",
+      "nextCategoryAria": "Show the next work category",
+      "categorySelectorAria": "Our work categories",
+      "openPhotoHint": "Select a photo to enlarge it",
+      "openPhotoAria": "Open photo {{number}} in the {{category}} category",
       "instagramTitle": "See more of our work on Instagram",
       "instagramDescription": "New compositions, behind-the-scenes details, and gift ideas.",
       "instagramButton": "View Instagram"
@@ -313,13 +318,17 @@
     "closeSelectionAria": "Close selection",
     "chooseFromList": "Choose an option from the list",
     "dragAccessoryHint": "Drag the accessory to place it in the character’s hand",
+    "accessoryLimitMessage": "You can select up to 2 accessories per character",
     "addCharacter": "Add a character",
     "validationError": "Choose a face for every character. Hair is optional."
   },
   "petsSelector": {
     "noPet": "No pet",
     "noAnimalsDescription": "Composition without animals",
-    "petDescription": "Pet for the composition"
+    "petDescription": "Pet for the composition",
+    "quantityAria": "Quantity: {{pet}}",
+    "addAria": "Add {{pet}}",
+    "removeAria": "Remove {{pet}}"
   },
   "builderProgress": {
     "currentPrice": "Current price",
@@ -358,6 +367,7 @@
       "classicVertical": "Classic vertical format",
       "popular": "Popular",
       "horizontal": "Horizontal format",
+      "horizontalHint": "Choose a horizontal frame to fit more characters",
       "dimension": "{{width}} × {{height}}",
       "price": "{{price}} €"
     },
@@ -376,7 +386,8 @@
       "rgb": "LED RGB",
       "rgbDescription": "Multicolor lighting with a remote and multiple modes",
       "clouds": "LED with clouds",
-      "cloudsDescription": "A three-dimensional sky effect with soft colored light"
+      "cloudsDescription": "A three-dimensional sky effect with soft colored light",
+      "included": "Included in the price"
     },
     "characters": {
       "pricingNote": "The first character is included in the price · each additional character +{{price}} €"
@@ -385,13 +396,17 @@
       "namesTitle": "Pet names",
       "namesDescription": "This field is optional. You can add a name to personalize the order.",
       "nameLabel": "Pet name",
-      "namePlaceholder": "Enter a name"
+      "namePlaceholder": "Enter a name",
+      "limitMessage": "You can add up to 5 pets"
     },
     "accessories": {
       "showAll": "Show all details",
       "none": "No details",
       "noneDescription": "A clean background without additional elements",
-      "itemDescription": "Additional background detail"
+      "itemDescription": "Additional background detail",
+      "quantityAria": "Quantity: {{accessory}}",
+      "addAria": "Add {{accessory}}",
+      "removeAria": "Remove {{accessory}}"
     },
     "hearts": {
       "instruction": "Add hearts to the background",
@@ -420,6 +435,7 @@
       "subtitle": "Drag the characters, hearts, and background details inside the frame.",
       "tipLabel": "Tip: ",
       "screenshotTip": "Take a screenshot of the finished layout and send it to us on Telegram with your order. This will help us understand how you would roughly like your frame to be assembled.",
+      "movementTipLabel": "You can move: ",
       "movementTip": "Each character can be moved separately, as can the hearts, pets, and background details.",
       "rotationTip": "Hearts can be rotated using the small handle after selecting them."
     },

@@ -121,6 +121,67 @@ export interface PreviewPosition {
 
 export type PreviewPositions = Record<string, PreviewPosition>;
 
+const SELECTION_INSTANCE_SEPARATOR = "#";
+
+/**
+ * Repeated pets and background details are stored as lightweight instance ids.
+ * The first selection keeps the legacy catalog id; further copies use
+ * `catalogId#number`, so previously saved builder states remain valid.
+ */
+export function getCatalogItemId(instanceId: string): string {
+  return instanceId.split(SELECTION_INSTANCE_SEPARATOR, 1)[0];
+}
+
+export function countCatalogInstances(
+  instanceIds: readonly string[],
+  catalogId: string,
+): number {
+  return instanceIds.filter(
+    (instanceId) => getCatalogItemId(instanceId) === catalogId,
+  ).length;
+}
+
+export function addCatalogInstance(
+  instanceIds: readonly string[],
+  catalogId: string,
+): string[] {
+  if (!instanceIds.some((instanceId) => instanceId === catalogId)) {
+    return [...instanceIds, catalogId];
+  }
+
+  let suffix = 2;
+  while (instanceIds.includes(`${catalogId}${SELECTION_INSTANCE_SEPARATOR}${suffix}`)) {
+    suffix += 1;
+  }
+
+  return [
+    ...instanceIds,
+    `${catalogId}${SELECTION_INSTANCE_SEPARATOR}${suffix}`,
+  ];
+}
+
+export function removeCatalogInstance(
+  instanceIds: readonly string[],
+  catalogId: string,
+): { next: string[]; removedId: string | null } {
+  let removeIndex = -1;
+  for (let index = instanceIds.length - 1; index >= 0; index -= 1) {
+    if (getCatalogItemId(instanceIds[index]) === catalogId) {
+      removeIndex = index;
+      break;
+    }
+  }
+
+  if (removeIndex < 0) {
+    return { next: [...instanceIds], removedId: null };
+  }
+
+  return {
+    next: instanceIds.filter((_, index) => index !== removeIndex),
+    removedId: instanceIds[removeIndex],
+  };
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -444,8 +505,9 @@ export function getCharacterOptionLabel(item: { id: string; label?: string }): s
 }
 
 function getItemLabel(items: readonly { id: string; label?: string }[], id: string): string {
-  const item = items.find((candidate) => candidate.id === id);
-  return item ? getCharacterOptionLabel(item) : getCatalogOptionLabel(id);
+  const catalogId = getCatalogItemId(id);
+  const item = items.find((candidate) => candidate.id === catalogId);
+  return item ? getCharacterOptionLabel(item) : getCatalogOptionLabel(catalogId);
 }
 
 export function getHairLabel(id: string): string {
