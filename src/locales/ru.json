@@ -116,7 +116,6 @@
       "categorySelectorAria": "Категории наших работ",
       "openPhotoHint": "Нажмите на фото, чтобы увеличить",
       "openPhotoAria": "Открыть фото {{number}} категории «{{category}}»",
-      "openCategoryAria": "Открыть категорию «{{category}}»",
       "instagramTitle": "Больше работ — в нашем Instagram",
       "instagramDescription": "Новые композиции, детали создания и идеи для подарков.",
       "instagramButton": "Смотреть Instagram"
@@ -259,12 +258,6 @@
     "openPhotoAria": "Открыть фото {{number}}",
     "imageAlt": "{{title}} {{number}}",
     "counter": "{{current}} / {{total}}"
-  },
-  "imageViewer": {
-    "enlarge": "Увеличить изображение",
-    "close": "Закрыть",
-    "previous": "Предыдущее изображение",
-    "next": "Следующее изображение"
   },
   "orderSelection": {
     "eyebrow": "Начните с формата",
