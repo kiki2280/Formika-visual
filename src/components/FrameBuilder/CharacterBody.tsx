@@ -128,7 +128,7 @@ export default function CharacterBody({
         <g key="hair-back">
           <image
             href={hairBackSrc}
-            x={hairDisplay.x}
+            x={hairDisplay.x - 0.7}
             y={hairDisplay.y}
             width={hairDisplay.width}
             height={hairDisplay.height}
@@ -237,7 +237,7 @@ export default function CharacterBody({
         <g key="hair-front">
           <image
             href={hairFrontSrc}
-            x={hairDisplay.x}
+            x={hairDisplay.x - 0.7}
             y={hairDisplay.y}
             width={hairDisplay.width}
             height={hairDisplay.height}
