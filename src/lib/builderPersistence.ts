@@ -146,7 +146,11 @@ export function isFrameOrderState(value: unknown): value is FrameOrderState {
   if (!isRecord(value)) return false;
 
   return (
-    (value.size === "10x15" || value.size === "17x22" || value.size === "22x17") &&
+    (value.size === "10x15" ||
+      value.size === "17x22" ||
+      value.size === "22x17" ||
+      value.size === "20x25" ||
+      value.size === "25x20") &&
     (value.color === "Чёрная" || value.color === "Белая") &&
     (value.lighting === "Без подсветки" ||
       value.lighting === "LED-гирлянда" ||

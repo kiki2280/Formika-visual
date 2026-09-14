@@ -26,6 +26,14 @@ const SIZES: {
     id: "22x17",
     subtitleKey: "frameBuilder.size.horizontal",
   },
+  {
+    id: "20x25",
+    subtitleKey: "frameBuilder.size.classicVertical",
+  },
+  {
+    id: "25x20",
+    subtitleKey: "frameBuilder.size.horizontal",
+  },
 ];
 
 export default function SizeStep({

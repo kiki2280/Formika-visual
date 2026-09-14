@@ -31,6 +31,8 @@ interface DragState {
 function getFrameDims(size: FrameOrderState["size"]) {
   if (size === "10x15") return { w: 240, h: 340 };
   if (size === "22x17") return { w: 400, h: 300 };
+  if (size === "20x25") return { w: 320, h: 400 };
+  if (size === "25x20") return { w: 400, h: 320 };
   return { w: 300, h: 400 }; // 17x22 default
 }
 
