@@ -368,6 +368,7 @@
       "popular": "Populārs",
       "horizontal": "Horizontāls formāts",
       "horizontalHint": "Lai izvietotu vairāk tēlu, izvēlieties horizontālu rāmi",
+      "maxCapacity": "Maksimālais figūriņu skaits: {{count}}",
       "dimension": "{{width}} × {{height}}",
       "price": "{{price}} €"
     },
@@ -393,6 +394,17 @@
       "pricingNote": "Pirmā figūriņa ir iekļauta cenā · katra nākamā +{{price}} €",
       "limitMessage": "Izvēlētajam rāmim var pievienot ne vairāk kā {{count}} tēlus",
       "reduceWarning": "Lai turpinātu, samaziniet tēlu skaitu līdz {{count}}",
+      "mountingTitle": "Figūriņu stiprinājuma veids",
+      "mounting": {
+        "background": {
+          "title": "Pielīmētas pie fona",
+          "description": "Figūriņas ir piestiprinātas tieši pie rāmīša aizmugures."
+        },
+        "bricks": {
+          "title": "Stāv uz klucīšiem",
+          "description": "Katra figūriņa ir novietota uz LEGO klucīša rāmīša iekšpusē."
+        }
+      },
       "recommendedQuantity": "Ieteicamais daudzums: 1"
     },
     "pets": {

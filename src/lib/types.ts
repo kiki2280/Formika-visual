@@ -198,10 +198,11 @@ export const DEFAULT_TOP_ID = "TOP-13";
 export const DEFAULT_BOTTOM_ID = "BOTTOM-13";
 
 export interface FrameOrderState {
-  size: "10x15" | "17x22" | "22x17" | "20x25" | "25x20";
+  size: "10x15" | "17x22" | "22x17" | "22x25" | "25x22";
   color: "Чёрная" | "Белая";
   lighting: "Без подсветки" | "LED-гирлянда" | "LED RGB" | "LED с облаками";
   characters: Character[];
+  characterMounting: "background" | "bricks";
   pets: string[];
   petNames: Record<string, string>;
   accessories: string[];
@@ -216,11 +217,11 @@ export interface FrameOrderState {
 }
 
 export const FRAME_CHARACTER_LIMITS: Record<FrameOrderState["size"], number> = {
-  "10x15": 2,
-  "17x22": 4,
+  "10x15": 1,
+  "17x22": 2,
   "22x17": 6,
-  "20x25": 4,
-  "25x20": 6,
+  "22x25": 6,
+  "25x22": 7,
 };
 
 export function getFrameCharacterLimit(
@@ -351,7 +352,7 @@ const HAIR_ITEMS: HairItem[] = Array.from(
   });
 
 export const PRICING = {
-  frame: { "10x15": 15, "17x22": 20, "22x17": 20, "20x25": 25, "25x20": 25 },
+  frame: { "10x15": 15, "17x22": 20, "22x17": 20, "22x25": 25, "25x22": 25 },
   extraCharacter: 5,
   lighting: {
     "Без подсветки": 0,

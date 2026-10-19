@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "@/lib/motion";
 import { useCallback, type Dispatch, type SetStateAction } from "react";
 import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
@@ -107,6 +107,7 @@ function createInitialFrameBuilderState(): PersistedFrameBuilderState {
       size: "17x22",
       color: "Чёрная",
       lighting: "Без подсветки",
+      characterMounting: "background",
       characters: [
         makeCharacter("1", {
           top: "TOP-13",

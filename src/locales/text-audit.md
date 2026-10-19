@@ -183,6 +183,12 @@
 | `frameBuilder.size.compactVertical` | Компактная вертикальная рамка | `src/components/FrameBuilder/steps/SizeStep.tsx` | 17–101 | вариант размера, бейдж или цена |
 | `frameBuilder.size.dimension` | {{width}} × {{height}} | `src/components/FrameBuilder/steps/SizeStep.tsx` | 17–101 | вариант размера, бейдж или цена |
 | `frameBuilder.size.horizontal` | Горизонтальный формат | `src/components/FrameBuilder/steps/SizeStep.tsx` | 17–101 | вариант размера, бейдж или цена |
+| `frameBuilder.size.maxCapacity` | Максимальная вместимость (человечков): {{count}} | `src/components/FrameBuilder/steps/SizeStep.tsx` | карточка размера | вместимость человечков |
+| `frameBuilder.characters.mountingTitle` | Способ крепления человечков | `src/components/FrameBuilder/steps/CharactersStep.tsx` | блок выбора человечков | заголовок блока |
+| `frameBuilder.characters.mounting.background.title` | Приклеены к фону | `src/components/FrameBuilder/steps/CharactersStep.tsx` | вариант способа крепления | заголовок карточки |
+| `frameBuilder.characters.mounting.background.description` | Фигурки закреплены прямо на задней стенке рамки. | `src/components/FrameBuilder/steps/CharactersStep.tsx` | вариант способа крепления | описание карточки |
+| `frameBuilder.characters.mounting.bricks.title` | Стоят на кубиках | `src/components/FrameBuilder/steps/CharactersStep.tsx` | вариант способа крепления | заголовок карточки |
+| `frameBuilder.characters.mounting.bricks.description` | Каждый человечек установлен на LEGO-кубик внутри рамки. | `src/components/FrameBuilder/steps/CharactersStep.tsx` | вариант способа крепления | описание карточки |
 | `frameBuilder.size.popular` | Популярный | `src/components/FrameBuilder/steps/SizeStep.tsx` | 17–101 | вариант размера, бейдж или цена |
 | `frameBuilder.size.price` | {{price}} € | `src/components/FrameBuilder/steps/SizeStep.tsx` | 17–101 | вариант размера, бейдж или цена |
 | `frameBuilder.steps.accessoriesSubtitle` | Выберите дополнительные элементы | `src/components/FrameBuilder/index.tsx` | 42–89 | описание или поясняющий текст |

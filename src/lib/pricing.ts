@@ -1,7 +1,7 @@
 export type DeliveryMethod = "delivery" | "pickup";
 
 export const PRICING = {
-  frame: { "10x15": 15, "17x22": 20, "22x17": 20, "20x25": 25, "25x20": 25 },
+  frame: { "10x15": 15, "17x22": 20, "22x17": 20, "22x25": 25, "25x22": 25 },
   extraCharacter: 5,
   lighting: {
     "Без подсветки": 0,

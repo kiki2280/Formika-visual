@@ -27,11 +27,11 @@ const SIZES: {
     subtitleKey: "frameBuilder.size.horizontal",
   },
   {
-    id: "20x25",
+    id: "22x25",
     subtitleKey: "frameBuilder.size.classicVertical",
   },
   {
-    id: "25x20",
+    id: "25x22",
     subtitleKey: "frameBuilder.size.horizontal",
   },
 ];
@@ -134,6 +134,12 @@ export default function SizeStep({
 
               <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
                 {t(size.subtitleKey)}
+              </p>
+
+              <p className="mt-2 font-sans text-sm leading-relaxed text-white/80">
+                {t("frameBuilder.size.maxCapacity", {
+                  count: getFrameCharacterLimit(size.id),
+                })}
               </p>
 
               <div className="mt-auto pt-5">

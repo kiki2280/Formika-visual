@@ -104,6 +104,18 @@ export function loadBuilderState<T>(
     if (!isRecord(parsed)) return null;
 
     const stored = parsed as unknown as StoredBuilderState;
+    // Preserve existing frame drafts when correcting the size identifiers.
+    if (
+      key === FRAME_BUILDER_STORAGE_KEY &&
+      stored.version === BUILDER_STORAGE_VERSION &&
+      isRecord(stored.data) &&
+      isRecord(stored.data.state)
+    ) {
+      const frame = stored.data.state;
+      if (frame.size === "20x25") frame.size = "22x25";
+      if (frame.size === "25x20") frame.size = "25x22";
+      if (frame.characterMounting === undefined) frame.characterMounting = "background";
+    }
     if (stored.version !== BUILDER_STORAGE_VERSION || !validate(stored.data)) {
       return null;
     }
@@ -149,8 +161,8 @@ export function isFrameOrderState(value: unknown): value is FrameOrderState {
     (value.size === "10x15" ||
       value.size === "17x22" ||
       value.size === "22x17" ||
-      value.size === "20x25" ||
-      value.size === "25x20") &&
+      value.size === "22x25" ||
+      value.size === "25x22") &&
     (value.color === "Чёрная" || value.color === "Белая") &&
     (value.lighting === "Без подсветки" ||
       value.lighting === "LED-гирлянда" ||
@@ -163,6 +175,7 @@ export function isFrameOrderState(value: unknown): value is FrameOrderState {
     isStringRecord(value.petNames) &&
     isStringArray(value.accessories) &&
     isNumberRecord(value.hearts, { integer: true, nonNegative: true }) &&
+    (value.characterMounting === "background" || value.characterMounting === "bricks") &&
     typeof value.customBg === "boolean" &&
     isDeliveryMethod(value.deliveryMethod) &&
     isFiniteNumber(value.deliveryPrice) &&
