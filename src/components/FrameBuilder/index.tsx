@@ -107,7 +107,6 @@ function createInitialFrameBuilderState(): PersistedFrameBuilderState {
       size: "17x22",
       color: "Чёрная",
       lighting: "Без подсветки",
-      characterMounting: "background",
       characters: [
         makeCharacter("1", {
           top: "TOP-13",

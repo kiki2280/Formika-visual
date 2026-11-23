@@ -89,9 +89,6 @@ export function getFrameOrderText(state: FrameOrderState): string {
     t("orderMessage.lightingHeading"),
     getLightingLabel(state.lighting),
     "",
-    t("frameBuilder.characters.mountingTitle"),
-    t("frameBuilder.characters.mounting." + state.characterMounting + ".title"),
-    "",
   ];
 
   state.characters.forEach((char, i) => {

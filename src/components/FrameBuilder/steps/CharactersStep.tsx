@@ -3,6 +3,7 @@ import {
   FrameOrderState,
   PRICING,
 } from "@/lib/types";
+import { Info } from "lucide-react";
 import CharacterBuilder from "../../CharacterBuilder";
 import { useTranslation } from "react-i18next";
 
@@ -26,37 +27,10 @@ export default function CharactersStep({
 
   return (
     <div className="space-y-6">
-      <section className="space-y-3" aria-labelledby="frame-character-mounting-title">
-        <h3 id="frame-character-mounting-title" className="font-sans text-lg font-semibold text-white">
-          {t("frameBuilder.characters.mountingTitle")}
-        </h3>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {(["background", "bricks"] as const).map((mounting) => {
-            const isSelected = state.characterMounting === mounting;
-            return (
-              <button
-                key={mounting}
-                type="button"
-                onClick={() => onChange({ ...state, characterMounting: mounting })}
-                aria-pressed={isSelected}
-                data-testid={`frame-character-mounting-${mounting}`}
-                className={`group rounded-[20px] border p-5 text-left transition-all duration-300 active:scale-[0.99] ${
-                  isSelected
-                    ? "border-primary bg-primary/[0.055] shadow-[0_0_0_1px_rgba(255,106,0,0.35)]"
-                    : "border-white/[0.10] bg-white/[0.025] hover:border-primary/40 hover:bg-white/[0.04]"
-                }`}
-              >
-                <span className={`font-sans text-base font-semibold ${isSelected ? "text-primary" : "text-white"}`}>
-                  {t(`frameBuilder.characters.mounting.${mounting}.title`)}
-                </span>
-                <span className="mt-2 block font-sans text-sm leading-relaxed text-muted-foreground">
-                  {t(`frameBuilder.characters.mounting.${mounting}.description`)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+      <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/[0.06] px-4 py-3 text-sm leading-relaxed text-white/80">
+        <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+        <p>{t("frameBuilder.characters.mountingNotice")}</p>
+      </div>
 
       <CharacterBuilder
         characters={state.characters}

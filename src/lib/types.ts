@@ -202,7 +202,6 @@ export interface FrameOrderState {
   color: "Чёрная" | "Белая";
   lighting: "Без подсветки" | "LED-гирлянда" | "LED RGB" | "LED с облаками";
   characters: Character[];
-  characterMounting: "background" | "bricks";
   pets: string[];
   petNames: Record<string, string>;
   accessories: string[];

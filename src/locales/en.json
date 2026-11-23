@@ -394,17 +394,7 @@
       "pricingNote": "The first character is included in the price · each additional character +{{price}} €",
       "limitMessage": "You can add up to {{count}} characters for the selected frame",
       "reduceWarning": "Reduce the number of characters to {{count}} to continue",
-      "mountingTitle": "How should the minifigures be mounted?",
-      "mounting": {
-        "background": {
-          "title": "Attached to the background",
-          "description": "The figures are attached directly to the back of the frame."
-        },
-        "bricks": {
-          "title": "Standing on bricks",
-          "description": "Each minifigure stands on a LEGO brick inside the frame."
-        }
-      },
+      "mountingNotice": "LEGO minifigures are always placed on bricks.",
       "recommendedQuantity": "Recommended quantity: 1"
     },
     "pets": {

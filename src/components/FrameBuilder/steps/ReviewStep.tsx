@@ -133,10 +133,6 @@ export default function ReviewStep({
             detail={t("frameBuilder.review.includesCharacter")}
           />
           <Row
-            label={t("frameBuilder.characters.mountingTitle")}
-            value={t(`frameBuilder.characters.mounting.${state.characterMounting}.title`)}
-          />
-          <Row
             label={t("frameBuilder.review.lightingSummary", {
               lighting: getLightingLabel(state.lighting),
             })}

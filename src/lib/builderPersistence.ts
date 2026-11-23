@@ -114,7 +114,7 @@ export function loadBuilderState<T>(
       const frame = stored.data.state;
       if (frame.size === "20x25") frame.size = "22x25";
       if (frame.size === "25x20") frame.size = "25x22";
-      if (frame.characterMounting === undefined) frame.characterMounting = "background";
+      delete frame.characterMounting;
     }
     if (stored.version !== BUILDER_STORAGE_VERSION || !validate(stored.data)) {
       return null;
@@ -175,7 +175,6 @@ export function isFrameOrderState(value: unknown): value is FrameOrderState {
     isStringRecord(value.petNames) &&
     isStringArray(value.accessories) &&
     isNumberRecord(value.hearts, { integer: true, nonNegative: true }) &&
-    (value.characterMounting === "background" || value.characterMounting === "bricks") &&
     typeof value.customBg === "boolean" &&
     isDeliveryMethod(value.deliveryMethod) &&
     isFiniteNumber(value.deliveryPrice) &&
